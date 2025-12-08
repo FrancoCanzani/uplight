@@ -97,9 +97,11 @@
 		"auth:generate": "@better-auth/cli generate",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
+		"db:migrate:local": "wrangler d1 migrations apply uplight-dev --local",
 		"db:push": "drizzle-kit push",
 		"deploy": "wrangler deploy --env production",
 		"dev": "vite",
+		"dev:setup": "npm run db:migrate:local && bun run dev",
 		"lint": "eslint .",
 		"preview": "npm run build && vite preview"
 	},

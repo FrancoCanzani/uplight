@@ -1,4 +1,4 @@
-import * as authSchema from "./auth-schema"; // This will be generated in a later step
+import * as authSchema from "./auth-schema";
 
 export const schema = {
   ...authSchema,
