@@ -1,8 +1,13 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { signUp, useSession } from "@/lib/auth/client";
+import { signIn, useSession } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,64 +28,66 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState } from "react";
 
-const signUpSchema = z
-  .object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    email: z.string().email("Please enter a valid email address"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
-
-type SignUpFormValues = z.infer<typeof signUpSchema>;
-
-export const Route = createFileRoute("/signup")({
-  component: SignUp,
+const loginSchema = z.object({
+  email: z.email("Please enter a valid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
-function SignUp() {
+const searchSchema = z.object({
+  redirect: z.string().optional(),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
+
+export const Route = createFileRoute("/(auth)/login")({
+  component: Login,
+  validateSearch: searchSchema,
+});
+
+function Login() {
+  const router = useRouter();
   const navigate = useNavigate();
+  const search = Route.useSearch();
   const { data: session } = useSession();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<SignUpFormValues>({
-    resolver: zodResolver(signUpSchema),
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
-      name: "",
       email: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
-  // Redirect if already logged in
   if (session?.user) {
     navigate({ to: "/" });
     return null;
   }
 
-  const onSubmit = async (data: SignUpFormValues) => {
+  const onSubmit = async (data: LoginFormValues) => {
     setError(null);
     setIsLoading(true);
 
     try {
-      const result = await signUp.email({
+      const result = await signIn.email({
         email: data.email,
         password: data.password,
-        name: data.name,
       });
 
       if (result.error) {
-        setError(result.error.message || "Failed to create account");
+        setError(result.error.message || "Failed to sign in");
       } else {
-        navigate({ to: "/" });
+        if (search.redirect) {
+          router.history.push(search.redirect);
+        } else {
+          navigate({ to: "/" });
+        }
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unexpected error occurred");
+      setError(
+        err instanceof Error ? err.message : "An unexpected error occurred"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -90,9 +97,9 @@ function SignUp() {
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Create Account</CardTitle>
+          <CardTitle>Sign In</CardTitle>
           <CardDescription>
-            Enter your information to create a new account
+            Enter your email and password to access your account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -103,25 +110,6 @@ function SignUp() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="John Doe"
-                        autoComplete="name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               <FormField
                 control={form.control}
@@ -152,26 +140,7 @@ function SignUp() {
                       <Input
                         type="password"
                         placeholder="••••••••"
-                        autoComplete="new-password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        autoComplete="new-password"
+                        autoComplete="current-password"
                         {...field}
                       />
                     </FormControl>
@@ -181,13 +150,13 @@ function SignUp() {
               />
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating account..." : "Sign Up"}
+                {isLoading ? "Signing in..." : "Sign In"}
               </Button>
 
               <div className="text-center text-sm text-muted-foreground">
-                Already have an account?{" "}
-                <Link to="/login" className="text-primary hover:underline">
-                  Sign in
+                Don't have an account?{" "}
+                <Link to="/signup" className="text-primary hover:underline">
+                  Sign up
                 </Link>
               </div>
             </form>

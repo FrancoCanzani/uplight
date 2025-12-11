@@ -1,0 +1,76 @@
+import z from "zod";
+
+export const LocationSchema = z.enum([
+  "wnam",
+  "enam",
+  "sam",
+  "weur",
+  "eeur",
+  "apac",
+  "oc",
+  "afr",
+  "me",
+]);
+
+export const ContentCheckSchema = z.object({
+  enabled: z.boolean().default(false),
+  mode: z.enum(["contains", "not_contains"]),
+  content: z.string().max(1000),
+});
+
+export const HttpMonitorSchema = z.object({
+  type: z.literal("http"),
+  name: z.string().min(1).max(50),
+  url: z.url({
+    protocol: /^https?$/,
+    hostname: z.regexes.domain,
+  }),
+  method: z.enum(["get", "post", "head", "put", "patch", "delete", "options"]),
+  interval: z.int().min(30).max(1800),
+  timeout: z.int().min(1).max(60).default(30),
+  locations: z.array(LocationSchema).min(1),
+  headers: z.record(z.string(), z.string()).optional(),
+  body: z.string().max(10000).optional(),
+  username: z.string().max(50).optional(),
+  password: z.string().max(50).optional(),
+  expectedStatusCodes: z.array(z.int().min(100).max(599)).default([200]),
+  followRedirects: z.boolean().default(true),
+  verifySSL: z.boolean().default(true),
+  contentCheck: ContentCheckSchema.optional(),
+});
+
+export const TcpMonitorSchema = z.object({
+  type: z.literal("tcp"),
+  name: z.string().min(1).max(50),
+  host: z.string().min(1).max(255),
+  port: z.int().min(1).max(65535),
+  interval: z.int().min(30).max(1800),
+  timeout: z.int().min(1).max(60).default(30),
+  locations: z.array(LocationSchema).min(1),
+  contentCheck: ContentCheckSchema.optional(),
+});
+
+export const MonitorSchema = z.discriminatedUnion("type", [
+  HttpMonitorSchema,
+  TcpMonitorSchema,
+]);
+
+export const CreateMonitorSchema = MonitorSchema;
+
+export const UpdateMonitorSchema = z.discriminatedUnion("type", [
+  HttpMonitorSchema.partial().extend({ type: z.literal("http") }),
+  TcpMonitorSchema.partial().extend({ type: z.literal("tcp") }),
+]);
+
+export type Location = z.infer<typeof LocationSchema>;
+export type ContentCheck = z.infer<typeof ContentCheckSchema>;
+
+export type HttpMonitor = z.infer<typeof HttpMonitorSchema>;
+export type HttpMonitorInput = z.input<typeof HttpMonitorSchema>;
+
+export type TcpMonitor = z.infer<typeof TcpMonitorSchema>;
+export type TcpMonitorInput = z.input<typeof TcpMonitorSchema>;
+
+export type Monitor = z.infer<typeof MonitorSchema>;
+export type CreateMonitor = z.infer<typeof CreateMonitorSchema>;
+export type UpdateMonitor = z.infer<typeof UpdateMonitorSchema>;

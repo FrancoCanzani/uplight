@@ -1,8 +1,14 @@
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { signOut, useSession } from "@/lib/auth/client";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { useSession } from "@/lib/auth/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import "../index.css";
 
 export const Route = createFileRoute("/")({
@@ -16,6 +22,39 @@ function Index() {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
+      <div className="p-2 flex gap-2 items-center justify-between border-b">
+        <div className="flex gap-2">
+          <Link to="/" className="[&.active]:font-bold">
+            Home
+          </Link>
+          <Link to="/about" className="[&.active]:font-bold">
+            About
+          </Link>
+        </div>
+        <div className="flex gap-2 items-center">
+          {session?.user ? (
+            <>
+              <span className="text-sm text-muted-foreground">
+                {session.user.name || session.user.email}
+              </span>
+              <Button variant="outline" size="sm" onClick={() => signOut()}>
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="ghost" size="sm">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button size="sm">Sign Up</Button>
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold">Vite + React + Hono + Cloudflare</h1>
         <p className="text-muted-foreground">
@@ -26,8 +65,12 @@ function Index() {
       {session?.user ? (
         <Card>
           <CardHeader>
-            <CardTitle>Welcome back, {session.user.name || session.user.email}!</CardTitle>
-            <CardDescription>You are successfully authenticated.</CardDescription>
+            <CardTitle>
+              Welcome back, {session.user.name || session.user.email}!
+            </CardTitle>
+            <CardDescription>
+              You are successfully authenticated.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -74,7 +117,8 @@ function Index() {
               count is {count}
             </Button>
             <p className="text-sm text-muted-foreground">
-              Edit <code>src/frontend/routes/index.tsx</code> and save to test HMR
+              Edit <code>src/frontend/routes/index.tsx</code> and save to test
+              HMR
             </p>
           </CardContent>
         </Card>
