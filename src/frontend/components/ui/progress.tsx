@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { Progress as ProgressPrimitive } from "@base-ui/react/progress"
+import { Progress as ProgressPrimitive } from "@base-ui/react/progress";
 
-import { cn } from "src/frontend/lib/utils"
+import { cn } from "@lib/utils";
 
 function Progress({
   className,
@@ -22,20 +22,20 @@ function Progress({
         <ProgressIndicator />
       </ProgressTrack>
     </ProgressPrimitive.Root>
-  )
+  );
 }
 
 function ProgressTrack({ className, ...props }: ProgressPrimitive.Track.Props) {
   return (
     <ProgressPrimitive.Track
       className={cn(
-        "bg-muted h-1 rounded-md relative flex w-full items-center overflow-x-hidden",
-        className
+        "bg-muted h-1 rounded-sm relative flex w-full items-center overflow-x-hidden",
+        className,
       )}
       data-slot="progress-track"
       {...props}
     />
-  )
+  );
 }
 
 function ProgressIndicator({
@@ -48,7 +48,7 @@ function ProgressIndicator({
       className={cn("bg-primary h-full transition-all", className)}
       {...props}
     />
-  )
+  );
 }
 
 function ProgressLabel({ className, ...props }: ProgressPrimitive.Label.Props) {
@@ -58,23 +58,26 @@ function ProgressLabel({ className, ...props }: ProgressPrimitive.Label.Props) {
       data-slot="progress-label"
       {...props}
     />
-  )
+  );
 }
 
 function ProgressValue({ className, ...props }: ProgressPrimitive.Value.Props) {
   return (
     <ProgressPrimitive.Value
-      className={cn("text-muted-foreground ml-auto text-xs/relaxed tabular-nums", className)}
+      className={cn(
+        "text-muted-foreground ml-auto text-xs/relaxed tabular-nums",
+        className,
+      )}
       data-slot="progress-value"
       {...props}
     />
-  )
+  );
 }
 
 export {
   Progress,
-  ProgressTrack,
   ProgressIndicator,
   ProgressLabel,
+  ProgressTrack,
   ProgressValue,
-}
+};

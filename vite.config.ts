@@ -20,6 +20,11 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src/frontend"),
+      "@lib": path.resolve(__dirname, "./src/frontend/lib"),
+      "@components": path.resolve(__dirname, "./src/frontend/components"),
+      "@features": path.resolve(__dirname, "./src/frontend/features"),
+      "@hooks": path.resolve(__dirname, "./src/frontend/hooks"),
+      "@routes": path.resolve(__dirname, "./src/frontend/routes"),
       "src": path.resolve(__dirname, "./src"),
     },
   },

@@ -16,7 +16,12 @@
 
 		"baseUrl": ".",
 		"paths": {
-			"@/*": ["./src/frontend/*"]
+			"@/*": ["./src/frontend/*"],
+			"@lib/*": ["./src/frontend/lib/*"],
+			"@components/*": ["./src/frontend/components/*"],
+			"@features/*": ["./src/frontend/features/*"],
+			"@hooks/*": ["./src/frontend/hooks/*"],
+			"@routes/*": ["./src/frontend/routes/*"]
 		},
 
 		"strict": true,

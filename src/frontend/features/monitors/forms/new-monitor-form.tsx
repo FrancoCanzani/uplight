@@ -1,5 +1,15 @@
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+  FieldTitle,
+} from "@/components/ui/field";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { NewHttpMonitorForm } from "./new-http-monitor-form";
 import { NewTcpMonitorForm } from "./new-tcp-monitor-form";
 
@@ -9,28 +19,57 @@ export function NewMonitorForm() {
   const [monitorType, setMonitorType] = useState<MonitorType>("http");
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <Tabs
-        value={monitorType}
-        onValueChange={(v) => setMonitorType(v as MonitorType)}
-      >
-        <TabsList className="mb-6 w-full">
-          <TabsTrigger value="http" className="flex-1">
-            HTTP Monitor
-          </TabsTrigger>
-          <TabsTrigger value="tcp" className="flex-1">
-            TCP Monitor
-          </TabsTrigger>
-        </TabsList>
+    <div className="space-y-8 w-full md:max-w-4xl">
+      <div>
+        <FieldGroup>
+          <FieldSet>
+            <div>
+              <FieldLabel>Monitor type</FieldLabel>
+              <FieldDescription>
+                Select the protocol we will use to monitor your service.
+              </FieldDescription>
+            </div>
+            <RadioGroup
+              value={monitorType}
+              onValueChange={(value) => setMonitorType(value as MonitorType)}
+              className="flex flex-col sm:flex-row"
+            >
+              <FieldLabel htmlFor="http">
+                <Field orientation="horizontal">
+                  <FieldContent>
+                    <FieldTitle>HTTP/HTTPS</FieldTitle>
+                    <FieldDescription>
+                      Monitor web services, APIs, and HTTP endpoints. Checks
+                      response status, headers, and content.
+                    </FieldDescription>
+                  </FieldContent>
+                  <RadioGroupItem value="http" id="http" />
+                </Field>
+              </FieldLabel>
+              <FieldLabel htmlFor="tcp">
+                <Field orientation="horizontal">
+                  <FieldContent>
+                    <FieldTitle>TCP</FieldTitle>
+                    <FieldDescription>
+                      Monitor TCP connections to servers, databases, and custom
+                      ports. Verifies port availability and connectivity.
+                    </FieldDescription>
+                  </FieldContent>
+                  <RadioGroupItem value="tcp" id="tcp" />
+                </Field>
+              </FieldLabel>
+            </RadioGroup>
+          </FieldSet>
+        </FieldGroup>
+      </div>
 
-        <TabsContent value="http">
+      <div>
+        {monitorType === "http" ? (
           <NewHttpMonitorForm />
-        </TabsContent>
-
-        <TabsContent value="tcp">
+        ) : (
           <NewTcpMonitorForm />
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
     </div>
   );
 }

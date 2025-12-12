@@ -26,9 +26,11 @@ export const HttpMonitorSchema = z.object({
     hostname: z.regexes.domain,
   }),
   method: z.enum(["get", "post", "head", "put", "patch", "delete", "options"]),
-  interval: z.int().min(30).max(1800),
+  interval: z.int().min(30000).max(1800000),
   timeout: z.int().min(1).max(60).default(30),
-  locations: z.array(LocationSchema).min(1),
+  locations: z
+    .array(LocationSchema)
+    .min(1, "Please select at least one monitoring location"),
   headers: z.record(z.string(), z.string()).optional(),
   body: z.string().max(10000).optional(),
   username: z.string().max(50).optional(),
@@ -36,6 +38,7 @@ export const HttpMonitorSchema = z.object({
   expectedStatusCodes: z.array(z.int().min(100).max(599)).default([200]),
   followRedirects: z.boolean().default(true),
   verifySSL: z.boolean().default(true),
+  checkDNS: z.boolean().default(false),
   contentCheck: ContentCheckSchema.optional(),
 });
 
@@ -44,9 +47,11 @@ export const TcpMonitorSchema = z.object({
   name: z.string().min(1).max(50),
   host: z.string().min(1).max(255),
   port: z.int().min(1).max(65535),
-  interval: z.int().min(30).max(1800),
+  interval: z.int().min(30000).max(1800000),
   timeout: z.int().min(1).max(60).default(30),
-  locations: z.array(LocationSchema).min(1),
+  locations: z
+    .array(LocationSchema)
+    .min(1, "Please select at least one monitoring location"),
   contentCheck: ContentCheckSchema.optional(),
 });
 
