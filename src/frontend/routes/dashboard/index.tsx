@@ -1,9 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/dashboard/')({
+export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  return <div>Hello "/dashboard/"!</div>
+  return (
+    <header className="p-2 flex items-center justify-end">
+      <Link to="/dashboard/monitors/new">New Monitor</Link>
+    </header>
+  );
 }

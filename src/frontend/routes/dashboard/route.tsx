@@ -1,3 +1,5 @@
+import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/dashboard")({
@@ -16,9 +18,11 @@ export const Route = createFileRoute("/dashboard")({
 
 function DashboardLayoutComponent() {
   return (
-    <div>
-      <h1>Dashboard Layout</h1>
-      <Outlet />
-    </div>
+    <SidebarProvider>
+      <DashboardSidebar />
+      <main className="flex-1">
+        <Outlet />
+      </main>
+    </SidebarProvider>
   );
 }
