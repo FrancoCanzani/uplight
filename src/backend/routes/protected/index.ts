@@ -1,9 +1,13 @@
-import { Hono } from "hono";
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { monitors } from "./monitors";
+import { teamsRouter } from "./teams";
+import { requireTeamMember } from "../../middleware/team";
+import type { AppEnv } from "../../types";
 
-const protectedRouter = new Hono<{ Bindings: Env }>();
+const protectedRouter = new OpenAPIHono<AppEnv>();
 
-protectedRouter.route("/monitors", monitors);
+protectedRouter.route("/teams", teamsRouter);
+protectedRouter.use("/teams/:teamId/monitors/*", requireTeamMember());
+protectedRouter.route("/teams/:teamId/monitors", monitors);
 
 export { protectedRouter };
-

@@ -1,7 +1,8 @@
 import { Context, Next } from "hono";
 import { createAuth } from "../../../auth";
+import type { AppEnv } from "../types";
 
-export async function authMiddleware(c: Context, next: Next) {
+export async function authMiddleware(c: Context<AppEnv>, next: Next) {
   const authInstance = createAuth(c.env);
 
   const session = await authInstance.api.getSession({
@@ -21,7 +22,7 @@ export async function authMiddleware(c: Context, next: Next) {
   await next();
 }
 
-export async function requireAuth(c: Context, next: Next) {
+export async function requireAuth(c: Context<AppEnv>, next: Next) {
   const user = c.get("user");
 
   if (!user) {

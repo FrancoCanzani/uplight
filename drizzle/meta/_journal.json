@@ -15,6 +15,27 @@
       "when": 1765633178450,
       "tag": "0001_luxuriant_zeigeist",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1765661888081,
+      "tag": "0002_loose_stingray",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1765664212992,
+      "tag": "0003_lonely_redwing",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1765665239471,
+      "tag": "0004_clever_black_crow",
+      "breakpoints": true
     }
   ]
 }

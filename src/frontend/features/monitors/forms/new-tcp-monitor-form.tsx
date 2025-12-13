@@ -23,6 +23,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
+import { useCreateMonitor } from "../api/use-create-monitor";
 import { INTERVALS, LOCATIONS } from "../constants";
 import { TcpMonitorSchema, type TcpMonitorInput } from "../schemas";
 
@@ -37,8 +38,9 @@ const defaultValues: TcpMonitorInput = {
   contentCheck: undefined,
 };
 
-export function NewTcpMonitorForm() {
+export function NewTcpMonitorForm({ teamId }: { teamId: number }) {
   const [contentCheckEnabled, setContentCheckEnabled] = useState(false);
+  const createMonitor = useCreateMonitor();
 
   const form = useForm({
     defaultValues,
@@ -46,7 +48,8 @@ export function NewTcpMonitorForm() {
       onChange: TcpMonitorSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log("TCP Monitor:", value);
+      const parsed = TcpMonitorSchema.parse(value);
+      createMonitor.mutate({ teamId, data: parsed });
     },
   });
 
@@ -447,11 +450,12 @@ export function NewTcpMonitorForm() {
             variant="destructive"
             size={"sm"}
             onClick={() => form.reset()}
+            disabled={createMonitor.isPending}
           >
             Reset
           </Button>
-          <Button type="submit" size={"sm"}>
-            Create Monitor
+          <Button type="submit" size={"sm"} disabled={createMonitor.isPending}>
+            {createMonitor.isPending ? "Creating..." : "Create Monitor"}
           </Button>
         </div>
       </div>

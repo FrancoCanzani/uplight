@@ -1,12 +1,13 @@
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { TeamProvider } from "@/features/teams/context/team-context";
+import { useSession } from "@/lib/auth/client";
 import {
   createFileRoute,
   Outlet,
   redirect,
   useNavigate,
 } from "@tanstack/react-router";
-import { useSession } from "@/lib/auth/client";
 import { useEffect } from "react";
 
 export const Route = createFileRoute("/dashboard")({
@@ -57,11 +58,13 @@ function DashboardLayoutComponent() {
   }
 
   return (
-    <SidebarProvider>
-      <DashboardSidebar />
-      <SidebarInset className="p-4 xl:p-6">
-        <Outlet />
-      </SidebarInset>
-    </SidebarProvider>
+    <TeamProvider>
+      <SidebarProvider>
+        <DashboardSidebar />
+        <SidebarInset className="p-4 xl:p-6">
+          <Outlet />
+        </SidebarInset>
+      </SidebarProvider>
+    </TeamProvider>
   );
 }

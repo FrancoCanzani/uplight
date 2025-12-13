@@ -10,6 +10,7 @@ import {
   FieldTitle,
 } from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useCurrentTeam } from "@/features/teams/context/team-context";
 import { NewHttpMonitorForm } from "./new-http-monitor-form";
 import { NewTcpMonitorForm } from "./new-tcp-monitor-form";
 
@@ -17,6 +18,19 @@ type MonitorType = "http" | "tcp";
 
 export function NewMonitorForm() {
   const [monitorType, setMonitorType] = useState<MonitorType>("http");
+  const { currentTeamId, isLoading } = useCurrentTeam();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!currentTeamId) {
+    return (
+      <p className="text-muted-foreground">
+        You need to create a team before adding monitors.
+      </p>
+    );
+  }
 
   return (
     <div className="space-y-8 w-full md:max-w-4xl">
@@ -65,9 +79,9 @@ export function NewMonitorForm() {
 
       <div>
         {monitorType === "http" ? (
-          <NewHttpMonitorForm />
+          <NewHttpMonitorForm teamId={currentTeamId} />
         ) : (
-          <NewTcpMonitorForm />
+          <NewTcpMonitorForm teamId={currentTeamId} />
         )}
       </div>
     </div>

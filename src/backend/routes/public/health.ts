@@ -1,6 +1,7 @@
-import { Hono } from "hono";
+import { OpenAPIHono } from "@hono/zod-openapi";
+import type { AppEnv } from "../../types";
 
-const health = new Hono<{ Bindings: Env }>();
+const health = new OpenAPIHono<AppEnv>();
 
 health.get("/", async (c) => {
   return c.json({
@@ -10,4 +11,3 @@ health.get("/", async (c) => {
 });
 
 export { health };
-

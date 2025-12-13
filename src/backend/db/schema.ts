@@ -1,15 +1,49 @@
 import { relations } from "drizzle-orm";
-import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core";
+import {
+  sqliteTable,
+  text,
+  integer,
+  index,
+  primaryKey,
+} from "drizzle-orm/sqlite-core";
 import * as authSchema from "./auth-schema";
 import { timestamps } from "./utils";
+
+export const team = sqliteTable("team", {
+  id: integer().primaryKey({ autoIncrement: true }),
+  name: text().notNull(),
+  personal: integer({ mode: "boolean" }).default(false).notNull(),
+  ...timestamps,
+});
+
+export const teamMember = sqliteTable(
+  "team_member",
+  {
+    teamId: integer()
+      .notNull()
+      .references(() => team.id, { onDelete: "cascade" }),
+    userId: text()
+      .notNull()
+      .references(() => authSchema.user.id, { onDelete: "cascade" }),
+    role: text({ enum: ["owner", "admin", "member"] })
+      .default("member")
+      .notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    primaryKey({ columns: [table.teamId, table.userId] }),
+    index("team_member_userId_idx").on(table.userId),
+    index("team_member_teamId_idx").on(table.teamId),
+  ]
+);
 
 export const monitor = sqliteTable(
   "monitor",
   {
-    id: text().primaryKey(),
-    userId: text()
+    id: integer().primaryKey({ autoIncrement: true }),
+    teamId: integer()
       .notNull()
-      .references(() => authSchema.user.id, { onDelete: "cascade" }),
+      .references(() => team.id, { onDelete: "cascade" }),
     type: text({ enum: ["http", "tcp"] }).notNull(),
     name: text().notNull(),
     interval: integer().notNull(),
@@ -45,20 +79,38 @@ export const monitor = sqliteTable(
     ...timestamps,
   },
   (table) => [
-    index("monitor_userId_idx").on(table.userId),
+    index("monitor_teamId_idx").on(table.teamId),
     index("monitor_type_idx").on(table.type),
     index("monitor_status_idx").on(table.status),
   ]
 );
 
-export const monitorRelations = relations(monitor, ({ one }) => ({
+export const teamRelations = relations(team, ({ many }) => ({
+  members: many(teamMember),
+  monitors: many(monitor),
+}));
+
+export const teamMemberRelations = relations(teamMember, ({ one }) => ({
+  team: one(team, {
+    fields: [teamMember.teamId],
+    references: [team.id],
+  }),
   user: one(authSchema.user, {
-    fields: [monitor.userId],
+    fields: [teamMember.userId],
     references: [authSchema.user.id],
+  }),
+}));
+
+export const monitorRelations = relations(monitor, ({ one }) => ({
+  team: one(team, {
+    fields: [monitor.teamId],
+    references: [team.id],
   }),
 }));
 
 export const schema = {
   ...authSchema,
+  team,
+  teamMember,
   monitor,
 } as const;

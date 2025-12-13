@@ -15,6 +15,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
+import { Route as DashboardTeamsNewRouteImport } from './routes/dashboard/teams/new'
+import { Route as DashboardTeamsTeamIdRouteImport } from './routes/dashboard/teams/$teamId'
 import { Route as DashboardMonitorsNewRouteImport } from './routes/dashboard/monitors/new'
 
 const AboutRoute = AboutRouteImport.update({
@@ -47,6 +49,16 @@ const authLoginRoute = authLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardTeamsNewRoute = DashboardTeamsNewRouteImport.update({
+  id: '/teams/new',
+  path: '/teams/new',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardTeamsTeamIdRoute = DashboardTeamsTeamIdRouteImport.update({
+  id: '/teams/$teamId',
+  path: '/teams/$teamId',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const DashboardMonitorsNewRoute = DashboardMonitorsNewRouteImport.update({
   id: '/monitors/new',
   path: '/monitors/new',
@@ -61,6 +73,8 @@ export interface FileRoutesByFullPath {
   '/signup': typeof authSignupRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/monitors/new': typeof DashboardMonitorsNewRoute
+  '/dashboard/teams/$teamId': typeof DashboardTeamsTeamIdRoute
+  '/dashboard/teams/new': typeof DashboardTeamsNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -69,6 +83,8 @@ export interface FileRoutesByTo {
   '/signup': typeof authSignupRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/monitors/new': typeof DashboardMonitorsNewRoute
+  '/dashboard/teams/$teamId': typeof DashboardTeamsTeamIdRoute
+  '/dashboard/teams/new': typeof DashboardTeamsNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -79,6 +95,8 @@ export interface FileRoutesById {
   '/(auth)/signup': typeof authSignupRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/monitors/new': typeof DashboardMonitorsNewRoute
+  '/dashboard/teams/$teamId': typeof DashboardTeamsTeamIdRoute
+  '/dashboard/teams/new': typeof DashboardTeamsNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -90,6 +108,8 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard/'
     | '/dashboard/monitors/new'
+    | '/dashboard/teams/$teamId'
+    | '/dashboard/teams/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -98,6 +118,8 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard'
     | '/dashboard/monitors/new'
+    | '/dashboard/teams/$teamId'
+    | '/dashboard/teams/new'
   id:
     | '__root__'
     | '/'
@@ -107,6 +129,8 @@ export interface FileRouteTypes {
     | '/(auth)/signup'
     | '/dashboard/'
     | '/dashboard/monitors/new'
+    | '/dashboard/teams/$teamId'
+    | '/dashboard/teams/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -161,6 +185,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/teams/new': {
+      id: '/dashboard/teams/new'
+      path: '/teams/new'
+      fullPath: '/dashboard/teams/new'
+      preLoaderRoute: typeof DashboardTeamsNewRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/teams/$teamId': {
+      id: '/dashboard/teams/$teamId'
+      path: '/teams/$teamId'
+      fullPath: '/dashboard/teams/$teamId'
+      preLoaderRoute: typeof DashboardTeamsTeamIdRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/dashboard/monitors/new': {
       id: '/dashboard/monitors/new'
       path: '/monitors/new'
@@ -174,11 +212,15 @@ declare module '@tanstack/react-router' {
 interface DashboardRouteRouteChildren {
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardMonitorsNewRoute: typeof DashboardMonitorsNewRoute
+  DashboardTeamsTeamIdRoute: typeof DashboardTeamsTeamIdRoute
+  DashboardTeamsNewRoute: typeof DashboardTeamsNewRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardMonitorsNewRoute: DashboardMonitorsNewRoute,
+  DashboardTeamsTeamIdRoute: DashboardTeamsTeamIdRoute,
+  DashboardTeamsNewRoute: DashboardTeamsNewRoute,
 }
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(

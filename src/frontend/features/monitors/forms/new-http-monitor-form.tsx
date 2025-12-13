@@ -31,6 +31,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@lib/utils";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
+import { useCreateMonitor } from "../api/use-create-monitor";
 import {
   HTTP_METHODS,
   INTERVALS,
@@ -57,12 +58,13 @@ const defaultValues: HttpMonitorInput = {
   expectedStatusCodes: [200],
   followRedirects: true,
   verifySSL: true,
-  checkDNS: false,
+  checkDNS: true,
   contentCheck: undefined,
 };
 
-export function NewHttpMonitorForm() {
+export function NewHttpMonitorForm({ teamId }: { teamId: number }) {
   const [contentCheckEnabled, setContentCheckEnabled] = useState(false);
+  const createMonitor = useCreateMonitor();
 
   const form = useForm({
     defaultValues,
@@ -70,7 +72,8 @@ export function NewHttpMonitorForm() {
       onChange: HttpMonitorSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log("HTTP Monitor:", value);
+      const parsed = HttpMonitorSchema.parse(value);
+      createMonitor.mutate({ teamId, data: parsed });
     },
   });
 
@@ -198,7 +201,7 @@ export function NewHttpMonitorForm() {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 const selectedInterval = INTERVALS.find(
-                  (interval) => interval.value === field.state.value,
+                  (interval) => interval.value === field.state.value
                 );
                 return (
                   <Field data-invalid={isInvalid}>
@@ -279,7 +282,7 @@ export function NewHttpMonitorForm() {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 const selectedOptions = getSelectedOptions(
-                  field.state.value || [],
+                  field.state.value || []
                 );
                 const displayText =
                   selectedOptions.length > 0
@@ -296,14 +299,14 @@ export function NewHttpMonitorForm() {
                         <PopoverTrigger
                           className={cn(
                             "bg-input/20 dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 h-9 rounded-sm border px-2 py-0.5 text-sm transition-colors focus-visible:ring-[2px] aria-invalid:ring-[2px] md:text-xs/relaxed text-left flex-1 min-w-0 outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-between",
-                            isInvalid && "aria-invalid",
+                            isInvalid && "aria-invalid"
                           )}
                           aria-invalid={isInvalid}
                         >
                           <span
                             className={cn(
                               displayText === "Select status codes" &&
-                                "text-muted-foreground",
+                                "text-muted-foreground"
                             )}
                           >
                             {displayText}
@@ -327,7 +330,7 @@ export function NewHttpMonitorForm() {
                             <FieldGroup>
                               {STATUS_CODE_OPTIONS.map((option) => {
                                 const isSelected = selectedOptions.includes(
-                                  option.value,
+                                  option.value
                                 );
                                 return (
                                   <Field
@@ -340,7 +343,7 @@ export function NewHttpMonitorForm() {
                                       onCheckedChange={(checked) => {
                                         const currentOptions =
                                           getSelectedOptions(
-                                            field.state.value || [],
+                                            field.state.value || []
                                           );
                                         let newOptions: string[];
                                         if (checked) {
@@ -350,7 +353,7 @@ export function NewHttpMonitorForm() {
                                           ];
                                         } else {
                                           newOptions = currentOptions.filter(
-                                            (v) => v !== option.value,
+                                            (v) => v !== option.value
                                           );
                                         }
                                         const newCodes =
@@ -449,7 +452,7 @@ export function NewHttpMonitorForm() {
                               } else {
                                 const currentValue = field.state.value;
                                 const newValue = currentValue.filter(
-                                  (loc) => loc !== location.id,
+                                  (loc) => loc !== location.id
                                 );
                                 field.handleChange(newValue);
                               }
@@ -825,11 +828,12 @@ export function NewHttpMonitorForm() {
             variant="destructive"
             size={"sm"}
             onClick={() => form.reset()}
+            disabled={createMonitor.isPending}
           >
             Reset
           </Button>
-          <Button type="submit" size={"sm"}>
-            Create Monitor
+          <Button type="submit" size={"sm"} disabled={createMonitor.isPending}>
+            {createMonitor.isPending ? "Creating..." : "Create Monitor"}
           </Button>
         </div>
       </FieldGroup>

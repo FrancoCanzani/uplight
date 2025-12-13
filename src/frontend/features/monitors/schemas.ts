@@ -38,7 +38,7 @@ export const HttpMonitorSchema = z.object({
   expectedStatusCodes: z.array(z.int().min(100).max(599)).default([200]),
   followRedirects: z.boolean().default(true),
   verifySSL: z.boolean().default(true),
-  checkDNS: z.boolean().default(false),
+  checkDNS: z.boolean().default(true),
   contentCheck: ContentCheckSchema.optional(),
 });
 
@@ -67,6 +67,43 @@ export const UpdateMonitorSchema = z.discriminatedUnion("type", [
   TcpMonitorSchema.partial().extend({ type: z.literal("tcp") }),
 ]);
 
+export const MonitorStatusSchema = z.enum([
+  "up",
+  "down",
+  "downgraded",
+  "maintenance",
+  "paused",
+  "initializing",
+]);
+
+export const MonitorResponseSchema = z.object({
+  id: z.number(),
+  teamId: z.number(),
+  type: z.enum(["http", "tcp"]),
+  name: z.string(),
+  interval: z.number(),
+  timeout: z.number(),
+  locations: z.string(),
+  contentCheck: z.string().nullable(),
+  url: z.string().nullable(),
+  method: z
+    .enum(["get", "post", "head", "put", "patch", "delete", "options"])
+    .nullable(),
+  headers: z.string().nullable(),
+  body: z.string().nullable(),
+  username: z.string().nullable(),
+  password: z.string().nullable(),
+  expectedStatusCodes: z.string().nullable(),
+  followRedirects: z.boolean(),
+  verifySSL: z.boolean(),
+  checkDNS: z.boolean(),
+  host: z.string().nullable(),
+  port: z.number().nullable(),
+  status: MonitorStatusSchema,
+  createdAt: z.number(),
+  updatedAt: z.number(),
+});
+
 export type Location = z.infer<typeof LocationSchema>;
 export type ContentCheck = z.infer<typeof ContentCheckSchema>;
 
@@ -79,3 +116,5 @@ export type TcpMonitorInput = z.input<typeof TcpMonitorSchema>;
 export type Monitor = z.infer<typeof MonitorSchema>;
 export type CreateMonitor = z.infer<typeof CreateMonitorSchema>;
 export type UpdateMonitor = z.infer<typeof UpdateMonitorSchema>;
+export type MonitorStatus = z.infer<typeof MonitorStatusSchema>;
+export type MonitorResponse = z.infer<typeof MonitorResponseSchema>;

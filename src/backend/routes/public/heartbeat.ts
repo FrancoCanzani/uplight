@@ -1,7 +1,8 @@
-import { Hono } from "hono";
-import { z } from "zod";
+import { OpenAPIHono } from "@hono/zod-openapi";
+import { z } from "@hono/zod-openapi";
+import type { AppEnv } from "../../types";
 
-const heartbeat = new Hono<{ Bindings: Env }>();
+const heartbeat = new OpenAPIHono<AppEnv>();
 
 const HeartbeatSchema = z.object({
   monitorId: z.string(),

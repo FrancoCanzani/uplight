@@ -1,10 +1,19 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { useSession } from "./lib/auth/client";
 import "./index.css";
-
+import { useSession } from "./lib/auth/client";
 import { routeTree } from "./routeTree.gen";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60,
+      retry: 1,
+    },
+  },
+});
 
 const router = createRouter({
   routeTree,
@@ -22,7 +31,11 @@ declare module "@tanstack/react-router" {
 function InnerApp() {
   const auth = useSession();
 
-  return <RouterProvider router={router} context={{ auth }} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} context={{ auth }} />
+    </QueryClientProvider>
+  );
 }
 
 const rootElement = document.getElementById("root")!;
