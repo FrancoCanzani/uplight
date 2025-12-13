@@ -1,11 +1,24 @@
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router";
+import { useSession } from "@/lib/auth/client";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayoutComponent,
   beforeLoad: ({ context, location }) => {
-    if (!context.auth.isPending && !context.auth.data?.user) {
+    const { auth } = context;
+
+    if (auth.isPending) {
+      return;
+    }
+
+    if (!auth.data?.user || auth.error) {
       throw redirect({
         to: "/login",
         search: {
@@ -17,6 +30,32 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardLayoutComponent() {
+  const navigate = useNavigate();
+  const { data: session, isPending, error } = useSession();
+
+  useEffect(() => {
+    if (!isPending && (!session?.user || error)) {
+      navigate({
+        to: "/login",
+        search: {
+          redirect: window.location.href,
+        },
+      });
+    }
+  }, [isPending, session, error, navigate]);
+
+  if (isPending) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!session?.user || error) {
+    return null;
+  }
+
   return (
     <SidebarProvider>
       <DashboardSidebar />

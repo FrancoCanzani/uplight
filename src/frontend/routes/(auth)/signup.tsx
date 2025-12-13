@@ -8,19 +8,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldContent,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { signUp, useSession } from "@/lib/auth/client";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const signUpSchema = z
@@ -35,8 +33,6 @@ const signUpSchema = z
     path: ["confirmPassword"],
   });
 
-type SignUpFormValues = z.infer<typeof signUpSchema>;
-
 export const Route = createFileRoute("/(auth)/signup")({
   component: SignUp,
 });
@@ -47,13 +43,39 @@ function SignUp() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<SignUpFormValues>({
-    resolver: zodResolver(signUpSchema),
+  const form = useForm({
     defaultValues: {
       name: "",
       email: "",
       password: "",
       confirmPassword: "",
+    },
+    validators: {
+      onChange: signUpSchema,
+    },
+    onSubmit: async ({ value }) => {
+      setError(null);
+      setIsLoading(true);
+
+      try {
+        const result = await signUp.email({
+          email: value.email,
+          password: value.password,
+          name: value.name,
+        });
+
+        if (result.error) {
+          setError(result.error.message || "Failed to create account");
+        } else {
+          navigate({ to: "/" });
+        }
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "An unexpected error occurred",
+        );
+      } finally {
+        setIsLoading(false);
+      }
     },
   });
 
@@ -61,31 +83,6 @@ function SignUp() {
     navigate({ to: "/" });
     return null;
   }
-
-  const onSubmit = async (data: SignUpFormValues) => {
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const result = await signUp.email({
-        email: data.email,
-        password: data.password,
-        name: data.name,
-      });
-
-      if (result.error) {
-        setError(result.error.message || "Failed to create account");
-      } else {
-        navigate({ to: "/" });
-      }
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "An unexpected error occurred",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
@@ -97,88 +94,119 @@ function SignUp() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              form.handleSubmit();
+            }}
+          >
+            <FieldGroup className="space-y-4">
               {error && (
                 <Alert variant="destructive">
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
 
-              <FormField
-                control={form.control}
+              <form.Field
                 name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="John Doe"
-                        autoComplete="name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          type="text"
+                          placeholder="John Doe"
+                          autoComplete="name"
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  );
+                }}
               />
 
-              <FormField
-                control={form.control}
+              <form.Field
                 name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="you@example.com"
-                        autoComplete="email"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          type="email"
+                          placeholder="you@example.com"
+                          autoComplete="email"
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  );
+                }}
               />
 
-              <FormField
-                control={form.control}
+              <form.Field
                 name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        autoComplete="new-password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          type="password"
+                          placeholder="••••••••"
+                          autoComplete="new-password"
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  );
+                }}
               />
 
-              <FormField
-                control={form.control}
+              <form.Field
                 name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        autoComplete="new-password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>
+                        Confirm Password
+                      </FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          type="password"
+                          placeholder="••••••••"
+                          autoComplete="new-password"
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  );
+                }}
               />
 
               <Button type="submit" className="w-full" disabled={isLoading}>
@@ -191,8 +219,8 @@ function SignUp() {
                   Sign in
                 </Link>
               </div>
-            </form>
-          </Form>
+            </FieldGroup>
+          </form>
         </CardContent>
       </Card>
     </div>

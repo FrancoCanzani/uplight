@@ -171,7 +171,7 @@ export function NewTcpMonitorForm() {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 const selectedInterval = INTERVALS.find(
-                  (interval) => interval.value === field.state.value,
+                  (interval) => interval.value === field.state.value
                 );
                 return (
                   <Field data-invalid={isInvalid}>
@@ -283,7 +283,7 @@ export function NewTcpMonitorForm() {
                               } else {
                                 const currentValue = field.state.value;
                                 const newValue = currentValue.filter(
-                                  (loc) => loc !== location.id,
+                                  (loc) => loc !== location.id
                                 );
                                 field.handleChange(newValue);
                               }
@@ -445,11 +445,14 @@ export function NewTcpMonitorForm() {
           <Button
             type="button"
             variant="destructive"
+            size={"sm"}
             onClick={() => form.reset()}
           >
             Reset
           </Button>
-          <Button type="submit">Create Monitor</Button>
+          <Button type="submit" size={"sm"}>
+            Create Monitor
+          </Button>
         </div>
       </div>
     </form>

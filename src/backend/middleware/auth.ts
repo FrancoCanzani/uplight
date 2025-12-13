@@ -30,4 +30,3 @@ export async function requireAuth(c: Context, next: Next) {
 
   await next();
 }
-

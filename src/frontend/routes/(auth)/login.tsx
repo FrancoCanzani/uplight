@@ -1,23 +1,5 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-  useRouter,
-} from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { signIn, useSession } from "@/lib/auth/client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import {
   Card,
   CardContent,
@@ -25,8 +7,24 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Field,
+  FieldContent,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { signIn, useSession } from "@/lib/auth/client";
+import { useForm } from "@tanstack/react-form";
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
 import { useState } from "react";
+import { z } from "zod";
 
 const loginSchema = z.object({
   email: z.email("Please enter a valid email address"),
@@ -36,8 +34,6 @@ const loginSchema = z.object({
 const searchSchema = z.object({
   redirect: z.string().optional(),
 });
-
-type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const Route = createFileRoute("/(auth)/login")({
   component: Login,
@@ -52,11 +48,40 @@ function Login() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm({
     defaultValues: {
       email: "",
       password: "",
+    },
+    validators: {
+      onChange: loginSchema,
+    },
+    onSubmit: async ({ value }) => {
+      setError(null);
+      setIsLoading(true);
+
+      try {
+        const result = await signIn.email({
+          email: value.email,
+          password: value.password,
+        });
+
+        if (result.error) {
+          setError(result.error.message || "Failed to sign in");
+        } else {
+          if (search.redirect) {
+            router.history.push(search.redirect);
+          } else {
+            navigate({ to: "/" });
+          }
+        }
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "An unexpected error occurred",
+        );
+      } finally {
+        setIsLoading(false);
+      }
     },
   });
 
@@ -64,34 +89,6 @@ function Login() {
     navigate({ to: "/" });
     return null;
   }
-
-  const onSubmit = async (data: LoginFormValues) => {
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const result = await signIn.email({
-        email: data.email,
-        password: data.password,
-      });
-
-      if (result.error) {
-        setError(result.error.message || "Failed to sign in");
-      } else {
-        if (search.redirect) {
-          router.history.push(search.redirect);
-        } else {
-          navigate({ to: "/" });
-        }
-      }
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "An unexpected error occurred"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
@@ -103,50 +100,67 @@ function Login() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              form.handleSubmit();
+            }}
+          >
+            <FieldGroup className="space-y-4">
               {error && (
                 <Alert variant="destructive">
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
 
-              <FormField
-                control={form.control}
+              <form.Field
                 name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="you@example.com"
-                        autoComplete="email"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          type="email"
+                          placeholder="you@example.com"
+                          autoComplete="email"
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  );
+                }}
               />
 
-              <FormField
-                control={form.control}
+              <form.Field
                 name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        autoComplete="current-password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          type="password"
+                          placeholder="••••••••"
+                          autoComplete="current-password"
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  );
+                }}
               />
 
               <Button type="submit" className="w-full" disabled={isLoading}>
@@ -159,8 +173,8 @@ function Login() {
                   Sign up
                 </Link>
               </div>
-            </form>
-          </Form>
+            </FieldGroup>
+          </form>
         </CardContent>
       </Card>
     </div>

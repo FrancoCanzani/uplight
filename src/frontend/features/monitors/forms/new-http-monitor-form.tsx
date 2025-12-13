@@ -1,4 +1,4 @@
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -622,10 +622,11 @@ export function NewHttpMonitorForm() {
               Optional HTTP Basic Authentication credentials
             </FieldDescription>
             <Alert variant="informative">
+              <AlertTitle>Credentials are encrypted</AlertTitle>
               <AlertDescription>
-                Credentials are encrypted using AES-GCM before storage and only
-                decrypted when needed for monitoring checks. Your credentials
-                are never stored in plain text.
+                We use AES-GCM before storage and only decrypted when needed for
+                monitoring checks. Your credentials are never stored in plain
+                text.
               </AlertDescription>
             </Alert>
           </div>
@@ -822,12 +823,12 @@ export function NewHttpMonitorForm() {
           <Button
             type="button"
             variant="destructive"
-            size="lg"
+            size={"sm"}
             onClick={() => form.reset()}
           >
             Reset
           </Button>
-          <Button type="submit" size="lg">
+          <Button type="submit" size={"sm"}>
             Create Monitor
           </Button>
         </div>

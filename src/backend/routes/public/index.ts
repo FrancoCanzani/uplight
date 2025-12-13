@@ -8,4 +8,3 @@ publicRouter.route("/health", health);
 publicRouter.route("/heartbeat", heartbeat);
 
 export { publicRouter };
-

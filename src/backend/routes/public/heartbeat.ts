@@ -16,10 +16,13 @@ heartbeat.post("/", async (c) => {
   const result = HeartbeatSchema.safeParse(body);
 
   if (!result.success) {
-    return c.json({ error: "Invalid request", issues: result.error.issues }, 400);
+    return c.json(
+      { error: "Invalid request", issues: result.error.issues },
+      400
+    );
   }
 
-  const { monitorId, status, responseTime, message } = result.data;
+  const { monitorId, status } = result.data;
 
   if (!c.env.DB) {
     return c.json({ error: "Database not available" }, 500);
@@ -33,4 +36,3 @@ heartbeat.post("/", async (c) => {
 });
 
 export { heartbeat };
-
