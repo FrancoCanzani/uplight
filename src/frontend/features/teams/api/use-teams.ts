@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { TeamResponse } from "../schemas";
 
-async function fetchTeams(): Promise<TeamResponse[]> {
+export async function fetchTeams(): Promise<TeamResponse[]> {
   const response = await fetch("/api/teams");
 
   if (!response.ok) {

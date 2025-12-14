@@ -30,6 +30,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@lib/utils";
 import { useForm } from "@tanstack/react-form";
+import { useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { useCreateMonitor } from "../api/use-create-monitor";
 import {
@@ -62,18 +63,19 @@ const defaultValues: HttpMonitorInput = {
   contentCheck: undefined,
 };
 
-export function NewHttpMonitorForm({ teamId }: { teamId: number }) {
+export function NewHttpMonitorForm() {
+  const { teamId } = useParams({ from: "/(dashboard)/$teamId" });
   const [contentCheckEnabled, setContentCheckEnabled] = useState(false);
   const createMonitor = useCreateMonitor();
 
   const form = useForm({
     defaultValues,
     validators: {
-      onChange: HttpMonitorSchema,
+      onSubmit: HttpMonitorSchema,
     },
     onSubmit: async ({ value }) => {
       const parsed = HttpMonitorSchema.parse(value);
-      createMonitor.mutate({ teamId, data: parsed });
+      createMonitor.mutate({ teamId: Number(teamId), data: parsed });
     },
   });
 

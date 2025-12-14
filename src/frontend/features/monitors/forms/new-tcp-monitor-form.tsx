@@ -22,6 +22,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "@tanstack/react-form";
+import { useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { useCreateMonitor } from "../api/use-create-monitor";
 import { INTERVALS, LOCATIONS } from "../constants";
@@ -38,7 +39,8 @@ const defaultValues: TcpMonitorInput = {
   contentCheck: undefined,
 };
 
-export function NewTcpMonitorForm({ teamId }: { teamId: number }) {
+export function NewTcpMonitorForm() {
+  const { teamId } = useParams({ from: "/(dashboard)/$teamId" });
   const [contentCheckEnabled, setContentCheckEnabled] = useState(false);
   const createMonitor = useCreateMonitor();
 
@@ -49,7 +51,7 @@ export function NewTcpMonitorForm({ teamId }: { teamId: number }) {
     },
     onSubmit: async ({ value }) => {
       const parsed = TcpMonitorSchema.parse(value);
-      createMonitor.mutate({ teamId, data: parsed });
+      createMonitor.mutate({ teamId: Number(teamId), data: parsed });
     },
   });
 

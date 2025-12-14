@@ -6,7 +6,7 @@ import { team, teamMember } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { TeamResponseSchema } from "./schemas";
 
-const getTeamsRoute = createRoute({
+const route = createRoute({
   method: "get",
   path: "/",
   tags: ["teams"],
@@ -24,36 +24,34 @@ const getTeamsRoute = createRoute({
   },
 });
 
-const getAll = new OpenAPIHono<AppEnv>();
+export function registerGetAllTeams(api: OpenAPIHono<AppEnv>) {
+  return api.openapi(route, async (c) => {
+    const user = c.get("user");
 
-getAll.openapi(getTeamsRoute, async (c) => {
-  const user = c.get("user");
+    if (!user) {
+      throw new HTTPException(401, { message: "Unauthorized" });
+    }
 
-  if (!user) {
-    throw new HTTPException(401, { message: "Unauthorized" });
-  }
+    const db = drizzle(c.env.DB);
 
-  const db = drizzle(c.env.DB);
+    const memberships = await db
+      .select({
+        team: team,
+        role: teamMember.role,
+      })
+      .from(teamMember)
+      .innerJoin(team, eq(teamMember.teamId, team.id))
+      .where(eq(teamMember.userId, user.id));
 
-  const memberships = await db
-    .select({
-      team: team,
-      role: teamMember.role,
-    })
-    .from(teamMember)
-    .innerJoin(team, eq(teamMember.teamId, team.id))
-    .where(eq(teamMember.userId, user.id));
+    const teams = memberships.map((m) => ({
+      id: m.team.id,
+      name: m.team.name,
+      personal: m.team.personal,
+      role: m.role,
+      createdAt: m.team.createdAt,
+      updatedAt: m.team.updatedAt,
+    }));
 
-  const teams = memberships.map((m) => ({
-    id: m.team.id,
-    name: m.team.name,
-    personal: m.team.personal,
-    role: m.role,
-    createdAt: m.team.createdAt.getTime(),
-    updatedAt: m.team.updatedAt.getTime(),
-  }));
-
-  return c.json(teams, 200);
-});
-
-export { getAll };
+    return c.json(teams, 200);
+  });
+}

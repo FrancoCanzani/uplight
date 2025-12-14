@@ -12,15 +12,18 @@ import {
 } from "@/components/ui/sidebar";
 import { TeamSwitcher } from "@/features/teams/components/team-switcher";
 import { signOut } from "@/lib/auth/client";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { Activity, LayoutDashboard, LogOut } from "lucide-react";
+import { getRouteApi, Link, useNavigate } from "@tanstack/react-router";
+
+const routeApi = getRouteApi("/(dashboard)/$teamId");
 
 export function DashboardSidebar() {
+  const { currentTeam } = routeApi.useLoaderData();
   const navigate = useNavigate();
+  const teamId = currentTeam.id.toString();
 
   const handleSignOut = async () => {
     await signOut();
-    navigate({ to: "/login" });
+    navigate({ to: "/" });
   };
 
   return (
@@ -35,17 +38,15 @@ export function DashboardSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton>
-                  <Link to="/dashboard">
-                    <LayoutDashboard className="h-4 w-4" />
-                    Dashboard
+                  <Link to="/$teamId/monitors" params={{ teamId }}>
+                    Monitors
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton>
-                  <Link to="/dashboard/monitors/new">
-                    <Activity className="h-4 w-4" />
-                    Monitors
+                  <Link to="/$teamId/monitors/new" params={{ teamId }}>
+                    New Monitor
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -57,7 +58,6 @@ export function DashboardSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton onClick={handleSignOut}>
-              <LogOut className="h-4 w-4" />
               Sign out
             </SidebarMenuButton>
           </SidebarMenuItem>

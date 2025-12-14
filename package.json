@@ -76,6 +76,7 @@
     "cf-typegen": "wrangler types",
     "check": "tsc && vite build && wrangler deploy --dry-run --env production",
     "auth:generate": "@better-auth/cli generate",
+    "db:studio:dev": "export LOCAL_DB_PATH=$(find .wrangler/state/v3/d1/miniflare-D1DatabaseObject -type f -name '*.sqlite' -print0 | xargs -0 ls -t | head -1) && drizzle-kit studio --config=drizzle.config.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate:dev": "wrangler d1 migrations apply uplight-dev --local --env dev",
     "db:migrate:prod": "wrangler d1 migrations apply uplight-prod --remote --env production",

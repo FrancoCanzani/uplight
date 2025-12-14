@@ -5,7 +5,7 @@ import { team, teamMember } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { CreateTeamSchema, TeamResponseSchema } from "./schemas";
 
-const createTeamRoute = createRoute({
+const route = createRoute({
   method: "post",
   path: "/",
   tags: ["teams"],
@@ -32,43 +32,41 @@ const createTeamRoute = createRoute({
   },
 });
 
-const post = new OpenAPIHono<AppEnv>();
+export function registerPostTeam(api: OpenAPIHono<AppEnv>) {
+  return api.openapi(route, async (c) => {
+    const user = c.get("user");
 
-post.openapi(createTeamRoute, async (c) => {
-  const user = c.get("user");
+    if (!user) {
+      throw new HTTPException(401, { message: "Unauthorized" });
+    }
 
-  if (!user) {
-    throw new HTTPException(401, { message: "Unauthorized" });
-  }
+    const data = c.req.valid("json");
+    const db = drizzle(c.env.DB);
 
-  const data = c.req.valid("json");
-  const db = drizzle(c.env.DB);
+    const [createdTeam] = await db
+      .insert(team)
+      .values({
+        name: data.name,
+        personal: false,
+      })
+      .returning();
 
-  const [createdTeam] = await db
-    .insert(team)
-    .values({
-      name: data.name,
-      personal: false,
-    })
-    .returning();
+    await db.insert(teamMember).values({
+      teamId: createdTeam.id,
+      userId: user.id,
+      role: "owner",
+    });
 
-  await db.insert(teamMember).values({
-    teamId: createdTeam.id,
-    userId: user.id,
-    role: "owner",
+    return c.json(
+      {
+        id: createdTeam.id,
+        name: createdTeam.name,
+        personal: createdTeam.personal,
+        role: "owner" as const,
+        createdAt: createdTeam.createdAt,
+        updatedAt: createdTeam.updatedAt,
+      },
+      201
+    );
   });
-
-  return c.json(
-    {
-      id: createdTeam.id,
-      name: createdTeam.name,
-      personal: createdTeam.personal,
-      role: "owner" as const,
-      createdAt: createdTeam.createdAt.getTime(),
-      updatedAt: createdTeam.updatedAt.getTime(),
-    },
-    201
-  );
-});
-
-export { post };
+}

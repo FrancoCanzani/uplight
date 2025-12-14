@@ -1,7 +1,7 @@
 import { NewMonitorForm } from "@/features/monitors/forms/new-monitor-form";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/dashboard/monitors/new")({
+export const Route = createFileRoute("/(dashboard)/$teamId/monitors/new")({
   component: RouteComponent,
 });
 

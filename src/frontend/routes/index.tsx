@@ -27,9 +27,6 @@ function Index() {
           <Link to="/" className="[&.active]:font-bold">
             Home
           </Link>
-          <Link to="/about" className="[&.active]:font-bold">
-            About
-          </Link>
         </div>
         <div className="flex gap-2 items-center">
           {session?.user ? (

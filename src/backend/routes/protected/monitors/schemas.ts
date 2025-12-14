@@ -108,8 +108,8 @@ export const MonitorResponseSchema = z
     host: z.string().nullable(),
     port: z.number().int().nullable(),
     status: MonitorStatusSchema,
-    createdAt: z.number().int(),
-    updatedAt: z.number().int(),
+    createdAt: z.iso.datetime(),
+    updatedAt: z.iso.datetime(),
   })
   .openapi("MonitorResponse");
 

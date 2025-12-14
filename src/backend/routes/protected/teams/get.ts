@@ -6,7 +6,7 @@ import { team, teamMember } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { TeamResponseSchema } from "./schemas";
 
-const getTeamRoute = createRoute({
+const route = createRoute({
   method: "get",
   path: "/:teamId",
   tags: ["teams"],
@@ -29,47 +29,48 @@ const getTeamRoute = createRoute({
   },
 });
 
-const get = new OpenAPIHono<AppEnv>();
+export function registerGetTeam(api: OpenAPIHono<AppEnv>) {
+  return api.openapi(route, async (c) => {
+    const user = c.get("user");
 
-get.openapi(getTeamRoute, async (c) => {
-  const user = c.get("user");
+    if (!user) {
+      throw new HTTPException(401, { message: "Unauthorized" });
+    }
 
-  if (!user) {
-    throw new HTTPException(401, { message: "Unauthorized" });
-  }
+    const { teamId } = c.req.valid("param");
+    const db = drizzle(c.env.DB);
 
-  const { teamId } = c.req.valid("param");
-  const db = drizzle(c.env.DB);
+    const membership = await db
+      .select({
+        team: team,
+        role: teamMember.role,
+      })
+      .from(teamMember)
+      .innerJoin(team, eq(teamMember.teamId, team.id))
+      .where(
+        and(
+          eq(teamMember.teamId, Number(teamId)),
+          eq(teamMember.userId, user.id)
+        )
+      )
+      .limit(1);
 
-  const membership = await db
-    .select({
-      team: team,
-      role: teamMember.role,
-    })
-    .from(teamMember)
-    .innerJoin(team, eq(teamMember.teamId, team.id))
-    .where(
-      and(eq(teamMember.teamId, Number(teamId)), eq(teamMember.userId, user.id))
-    )
-    .limit(1);
+    if (membership.length === 0) {
+      throw new HTTPException(404, { message: "Team not found" });
+    }
 
-  if (membership.length === 0) {
-    throw new HTTPException(404, { message: "Team not found" });
-  }
+    const m = membership[0];
 
-  const m = membership[0];
-
-  return c.json(
-    {
-      id: m.team.id,
-      name: m.team.name,
-      personal: m.team.personal,
-      role: m.role,
-      createdAt: m.team.createdAt.getTime(),
-      updatedAt: m.team.updatedAt.getTime(),
-    },
-    200
-  );
-});
-
-export { get };
+    return c.json(
+      {
+        id: m.team.id,
+        name: m.team.name,
+        personal: m.team.personal,
+        role: m.role,
+        createdAt: m.team.createdAt,
+        updatedAt: m.team.updatedAt,
+      },
+      200
+    );
+  });
+}

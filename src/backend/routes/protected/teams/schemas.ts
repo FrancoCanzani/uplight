@@ -20,8 +20,8 @@ export const TeamResponseSchema = z
     name: z.string(),
     personal: z.boolean(),
     role: TeamRoleSchema,
-    createdAt: z.number().int(),
-    updatedAt: z.number().int(),
+    createdAt: z.iso.datetime(),
+    updatedAt: z.iso.datetime(),
   })
   .openapi("TeamResponse");
 
@@ -31,7 +31,7 @@ export const TeamMemberResponseSchema = z
     name: z.string(),
     email: z.string(),
     role: TeamRoleSchema,
-    createdAt: z.number().int(),
+    createdAt: z.iso.datetime(),
   })
   .openapi("TeamMemberResponse");
 

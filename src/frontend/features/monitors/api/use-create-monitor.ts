@@ -12,7 +12,7 @@ async function createMonitor({
   teamId,
   data,
 }: CreateMonitorParams): Promise<MonitorResponse> {
-  const response = await fetch(`/api/teams/${teamId}/monitors`, {
+  const response = await fetch(`/api/monitors/${teamId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -39,7 +39,7 @@ export function useCreateMonitor() {
         description: `${data.name} is now being monitored`,
       });
       queryClient.invalidateQueries({ queryKey: ["monitors", data.teamId] });
-      navigate({ to: "/dashboard" });
+      navigate({ to: "/$teamId", params: { teamId: String(data.teamId) } });
     },
     onError: (error) => {
       toast.error("Failed to create monitor", {

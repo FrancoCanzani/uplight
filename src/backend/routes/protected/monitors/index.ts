@@ -1,9 +1,17 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
+import { requireTeamMember } from "../../../middleware/team";
 import type { AppEnv } from "../../../types";
-import { post } from "./post";
+import { registerGetMonitor } from "./get";
+import { registerGetAllMonitors } from "./get-all";
+import { registerPostMonitor } from "./post";
 
 const monitors = new OpenAPIHono<AppEnv>();
 
-monitors.route("/", post);
+monitors.use("/:teamId", requireTeamMember());
+monitors.use("/:teamId/*", requireTeamMember());
+
+registerGetMonitor(monitors);
+registerGetAllMonitors(monitors);
+registerPostMonitor(monitors);
 
 export { monitors };

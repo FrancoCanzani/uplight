@@ -8,22 +8,22 @@ This document outlines the design, responsibilities, and interactions of the age
 
 ### **Frontend**
 
-* **Framework:** React + TanStack Router
-* **Forms:** TanStack Form
-* **Validation:** Zod v4
-* **Styling:** TailwindCSS
-* **UI Components:** shadcn/ui (kept minimal, basic design)
-* **File naming:** `snakecase` → `this-component.tsx`
-* **Structure:** Aligned with *Bulletproof React* principles
+- **Framework:** React + TanStack Router
+- **Forms:** TanStack Form
+- **Validation:** Zod v4
+- **Styling:** TailwindCSS
+- **UI Components:** shadcn/ui (kept minimal, basic design)
+- **File naming:** `snakecase` → `this-component.tsx`
+- **Structure:** Aligned with _Bulletproof React_ principles
 
 ### **Backend**
 
-* **Runtime:** Cloudflare Workers
-* **Framework:** Hono
-* **Validation:** Zod v4 (shared schemas)
-* **Database:** D1
-* **Queues / CRON:** Cloudflare Queues + Scheduled Workers
-* **Email:** Resend
+- **Runtime:** Cloudflare Workers
+- **Framework:** Hono
+- **Validation:** Zod v4 (shared schemas)
+- **Database:** D1
+- **Queues / CRON:** Cloudflare Queues + Scheduled Workers
+- **Email:** Resend
 
 ---
 
@@ -83,17 +83,60 @@ project/
 
 ## 4. Conventions
 
-### **No Comments Rule
+### **No Comments Rule**
 
-* Avoid unnecessary comments ("no comment bullshit").
-* Code should be self-explanatory through naming and structure.
-* Comments allowed only for complex logic, edge cases, or architectural notes.
+- Avoid unnecessary comments ("no comment bullshit").
+- Code should be self-explanatory through naming and structure.
+- Comments allowed only for complex logic, edge cases, or architectural notes.
+
+### **Inline Props Rule**
+
+- If a component has 2 or fewer props, define them inline.
+- Only create a separate interface/type for 3+ props.
+
+```tsx
+// Good - 2 or fewer props inline
+function Button({ label, onClick }: { label: string; onClick: () => void }) {}
+
+// Bad - unnecessary interface for simple props
+interface ButtonProps {
+  label: string;
+}
+function Button({ label }: ButtonProps) {}
+
+// Good - 3+ props use interface
+interface CardProps {
+  title: string;
+  description: string;
+  onClick: () => void;
+}
+function Card({ title, description, onClick }: CardProps) {}
+```
+
+### **Route Params Rule**
+
+- Never pass route params (like `teamId`) as props through components.
+- Each component that needs route params should get them directly using TanStack Router hooks.
+
+```tsx
+// Bad - prop drilling route params
+function Parent() {
+  const { teamId } = useParams({ from: "/$teamId" });
+  return <Child teamId={teamId} />;
+}
+
+// Good - each component gets what it needs
+function Child() {
+  const { teamId } = useParams({ from: "/$teamId" });
+  // use teamId directly
+}
+```
 
 ### **REST Body & Headers Rule**
 
-* Request/response **body contains only the entity** being created, updated, or returned.
-* **Headers carry meta information** (pagination, rate limits, trace IDs, auth context, etc.).
-* This keeps the API predictable, clean, and aligned with standard REST patterns.
+- Request/response **body contains only the entity** being created, updated, or returned.
+- **Headers carry meta information** (pagination, rate limits, trace IDs, auth context, etc.).
+- This keeps the API predictable, clean, and aligned with standard REST patterns.
 
 ---
 
@@ -131,12 +174,12 @@ Mutations in this architecture belong **inside each feature**, mirroring the Bul
 
 ### **Frontend (React + TanStack Query)**
 
-* **All data fetching MUST use TanStack Query.**
-* **All mutations MUST use TanStack Query mutations.**
-* No raw `fetch` calls inside components.
-* Each feature (e.g., `monitors`) contains its own `api/` folder with query + mutation hooks.
-* Each feature (e.g., `monitors`) contains its own `mutations/` directory.
-* Example:
+- **All data fetching MUST use TanStack Query.**
+- **All mutations MUST use TanStack Query mutations.**
+- No raw `fetch` calls inside components.
+- Each feature (e.g., `monitors`) contains its own `api/` folder with query + mutation hooks.
+- Each feature (e.g., `monitors`) contains its own `mutations/` directory.
+- Example:
 
   ```
   src/features/monitors/api/
@@ -145,15 +188,15 @@ Mutations in this architecture belong **inside each feature**, mirroring the Bul
   ├─ use-delete-monitor.ts
   └─ use-toggle-status.ts
   ```
-* Mutations:
 
-  * Always call a backend route defined in `backend/src/routes/...`
-  * Use Zod v4 to validate both the request body and the response
-  * Are colocated with the feature, *never* global
+- Mutations:
+  - Always call a backend route defined in `backend/src/routes/...`
+  - Use Zod v4 to validate both the request body and the response
+  - Are colocated with the feature, _never_ global
 
 ### **Backend (Hono)**
 
-* Mutations map directly to HTTP method files:
+- Mutations map directly to HTTP method files:
 
   ```
   backend/src/routes/monitors/
@@ -161,12 +204,12 @@ Mutations in this architecture belong **inside each feature**, mirroring the Bul
   ├── put.ts       # update monitor
   ├── delete.ts    # delete monitor
   ```
-* Each mutation file:
 
-  * Validates input with Zod v4
-  * Executes a D1 prepared statement
-  * Returns an entity-only JSON body
-  * Sends meta through headers
+- Each mutation file:
+  - Validates input with Zod v4
+  - Executes a D1 prepared statement
+  - Returns an entity-only JSON body
+  - Sends meta through headers
 
 ---
 
@@ -174,27 +217,27 @@ Mutations in this architecture belong **inside each feature**, mirroring the Bul
 
 ### **No Comments Rule**
 
-* Avoid unnecessary comments ("no comment bullshit").
-* Code should be self-explanatory through naming and structure.
-* Comments allowed only for complex logic, edge cases, or architectural notes.
+- Avoid unnecessary comments ("no comment bullshit").
+- Code should be self-explanatory through naming and structure.
+- Comments allowed only for complex logic, edge cases, or architectural notes.
 
 ### **Naming Rules**
 
-* Components: `snakecase` → `monitor-form.tsx`
-* Routes: `monitor-routes.ts`
-* Backend: `monitor-handler.ts`
-* Schemas: `monitor-schema.ts`
+- Components: `snakecase` → `monitor-form.tsx`
+- Routes: `monitor-routes.ts`
+- Backend: `monitor-handler.ts`
+- Schemas: `monitor-schema.ts`
 
 ### **Validation Rules**
 
-* All forms must be validated with TanStack Form + Zod
-* All backend endpoints must validate:
+- All forms must be validated with TanStack Form + Zod
+- All backend endpoints must validate:
+  - `params`
+  - `query`
+  - `json body`
+  - `response`
 
-  * `params`
-  * `query`
-  * `json body`
-  * `response`
-* Shared schemas must be the single source of truth
+- Shared schemas must be the single source of truth
 
 ---
 
