@@ -39,7 +39,10 @@ export function useCreateMonitor() {
         description: `${data.name} is now being monitored`,
       });
       queryClient.invalidateQueries({ queryKey: ["monitors", data.teamId] });
-      navigate({ to: "/$teamId", params: { teamId: String(data.teamId) } });
+      navigate({
+        to: "/$teamId/monitors",
+        params: { teamId: String(data.teamId) },
+      });
     },
     onError: (error) => {
       toast.error("Failed to create monitor", {

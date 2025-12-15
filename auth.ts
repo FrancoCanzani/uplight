@@ -5,14 +5,17 @@ import * as authSchema from "./src/backend/db/auth-schema";
 import { team, teamMember } from "./src/backend/db/schema";
 
 function createAuth(env?: Env) {
-  const db = env?.DB ? drizzle(env.DB) : null;
+  const db = env?.DB ? drizzle(env.DB, { casing: "snake_case" }) : null;
 
   return betterAuth({
     database: env?.DB
-      ? drizzleAdapter(drizzle(env.DB, { schema: authSchema }), {
-          provider: "sqlite",
-          schema: authSchema,
-        })
+      ? drizzleAdapter(
+          drizzle(env.DB, { schema: authSchema, casing: "snake_case" }),
+          {
+            provider: "sqlite",
+            schema: authSchema,
+          }
+        )
       : drizzleAdapter({} as D1Database, {
           provider: "sqlite",
           schema: authSchema,

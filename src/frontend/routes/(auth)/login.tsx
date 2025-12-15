@@ -15,11 +15,13 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { signIn, useSession } from "@/lib/auth/client";
+import { fetchTeams } from "@/features/teams/api/use-teams";
+import { signIn } from "@/lib/auth/client";
 import { useForm } from "@tanstack/react-form";
 import {
   createFileRoute,
   Link,
+  redirect,
   useNavigate,
   useRouter,
 } from "@tanstack/react-router";
@@ -38,13 +40,24 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/(auth)/login")({
   component: Login,
   validateSearch: searchSchema,
+  beforeLoad: async ({ context }) => {
+    const { auth } = context;
+    if (auth.data?.user) {
+      const teams = await fetchTeams();
+      if (teams.length > 0) {
+        throw redirect({
+          to: "/$teamId/monitors",
+          params: { teamId: String(teams[0].id) },
+        });
+      }
+    }
+  },
 });
 
 function Login() {
   const router = useRouter();
   const navigate = useNavigate();
   const search = Route.useSearch();
-  const { data: session } = useSession();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -72,23 +85,26 @@ function Login() {
           if (search.redirect) {
             router.history.push(search.redirect);
           } else {
-            navigate({ to: "/" });
+            const teams = await fetchTeams();
+            if (teams.length > 0) {
+              navigate({
+                to: "/$teamId/monitors",
+                params: { teamId: String(teams[0].id) },
+              });
+            } else {
+              navigate({ to: "/" });
+            }
           }
         }
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "An unexpected error occurred",
+          err instanceof Error ? err.message : "An unexpected error occurred"
         );
       } finally {
         setIsLoading(false);
       }
     },
   });
-
-  if (session?.user) {
-    navigate({ to: "/" });
-    return null;
-  }
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">

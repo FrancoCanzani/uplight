@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   sqliteTable,
   text,
@@ -101,10 +101,81 @@ export const teamMemberRelations = relations(teamMember, ({ one }) => ({
   }),
 }));
 
-export const monitorRelations = relations(monitor, ({ one }) => ({
+export const monitorRelations = relations(monitor, ({ one, many }) => ({
   team: one(team, {
     fields: [monitor.teamId],
     references: [team.id],
+  }),
+  checkResults: many(checkResult),
+  incidents: many(incident),
+}));
+
+export const checkResult = sqliteTable(
+  "check_result",
+  {
+    id: integer().primaryKey({ autoIncrement: true }),
+    monitorId: integer()
+      .notNull()
+      .references(() => monitor.id, { onDelete: "cascade" }),
+    location: text().notNull(),
+    status: text({
+      enum: ["success", "failure", "timeout", "error"],
+    }).notNull(),
+    responseTime: integer().notNull(),
+    statusCode: integer(),
+    errorMessage: text(),
+    responseHeaders: text(),
+    responseBody: text(),
+    retryCount: integer().default(0).notNull(),
+    checkedAt: integer({ mode: "timestamp_ms" }).notNull(),
+    createdAt: integer({ mode: "timestamp_ms" })
+      .default(sql`(unixepoch() * 1000)`)
+      .notNull(),
+  },
+  (table) => [
+    index("check_result_monitor_idx").on(table.monitorId),
+    index("check_result_checked_at_idx").on(table.checkedAt),
+    index("check_result_monitor_checked_idx").on(
+      table.monitorId,
+      table.checkedAt
+    ),
+  ]
+);
+
+export const checkResultRelations = relations(checkResult, ({ one }) => ({
+  monitor: one(monitor, {
+    fields: [checkResult.monitorId],
+    references: [monitor.id],
+  }),
+}));
+
+export const incident = sqliteTable(
+  "incident",
+  {
+    id: integer().primaryKey({ autoIncrement: true }),
+    monitorId: integer()
+      .notNull()
+      .references(() => monitor.id, { onDelete: "cascade" }),
+    cause: text().notNull(),
+    status: text({ enum: ["ongoing", "resolved"] })
+      .default("ongoing")
+      .notNull(),
+    startedAt: integer({ mode: "timestamp_ms" }).notNull(),
+    resolvedAt: integer({ mode: "timestamp_ms" }),
+    createdAt: integer({ mode: "timestamp_ms" })
+      .default(sql`(unixepoch() * 1000)`)
+      .notNull(),
+  },
+  (table) => [
+    index("incident_monitor_idx").on(table.monitorId),
+    index("incident_monitor_status_idx").on(table.monitorId, table.status),
+  ]
+);
+
+export const incidentRelations = relations(incident, ({ one }) => ({
+  monitor: one(monitor, {
+    fields: [incident.monitorId],
+    references: [monitor.id],
   }),
 }));
 
@@ -113,4 +184,6 @@ export const schema = {
   team,
   teamMember,
   monitor,
+  checkResult,
+  incident,
 } as const;

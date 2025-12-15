@@ -7,6 +7,7 @@ export default defineConfig({
   out: "./drizzle",
   schema: "./src/backend/db/schema.ts",
   dialect: "sqlite",
+  casing: "snake_case",
   ...(LOCAL_DB_PATH
     ? {
         dbCredentials: {

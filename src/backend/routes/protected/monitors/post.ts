@@ -1,6 +1,6 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { drizzle } from "drizzle-orm/d1";
 import { HTTPException } from "hono/http-exception";
+import { createDb } from "../../../db";
 import { monitor } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { CreateMonitorSchema, MonitorResponseSchema } from "./schemas";
@@ -41,7 +41,7 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
     }
 
     const data = c.req.valid("json");
-    const db = drizzle(c.env.DB);
+    const db = createDb(c.env.DB);
 
     const baseData = {
       teamId: teamContext.teamId,

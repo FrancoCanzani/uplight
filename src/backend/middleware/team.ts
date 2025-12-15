@@ -1,7 +1,7 @@
 import { Context, Next } from "hono";
-import { drizzle } from "drizzle-orm/d1";
 import { eq, and } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
+import { createDb } from "../db";
 import { team, teamMember } from "../db/schema";
 import type { TeamRole, AppEnv } from "../types";
 
@@ -22,7 +22,7 @@ export function requireTeamMember(allowedRoles?: TeamRole[]) {
       throw new HTTPException(400, { message: "Invalid team ID" });
     }
 
-    const db = drizzle(c.env.DB);
+    const db = createDb(c.env.DB);
 
     const membership = await db
       .select({

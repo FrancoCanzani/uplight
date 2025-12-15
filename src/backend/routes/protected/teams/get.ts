@@ -1,7 +1,7 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { drizzle } from "drizzle-orm/d1";
 import { eq, and } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
+import { createDb } from "../../../db";
 import { team, teamMember } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { TeamResponseSchema } from "./schemas";
@@ -38,7 +38,7 @@ export function registerGetTeam(api: OpenAPIHono<AppEnv>) {
     }
 
     const { teamId } = c.req.valid("param");
-    const db = drizzle(c.env.DB);
+    const db = createDb(c.env.DB);
 
     const membership = await db
       .select({

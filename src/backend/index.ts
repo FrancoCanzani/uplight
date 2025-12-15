@@ -8,7 +8,10 @@ import { createAuth } from "../../auth";
 import { authMiddleware, requireAuth } from "./middleware/auth";
 import { publicRouter } from "./routes/public";
 import { protectedRouter } from "./routes/protected";
+import { handleScheduled } from "./checkers/cron";
 import type { AppEnv } from "./types";
+
+export { CheckerDO } from "./checkers/durable-object";
 
 const app = new OpenAPIHono<AppEnv>();
 
@@ -49,4 +52,13 @@ app.doc("/api/openapi", {
   },
 });
 
-export default app;
+export default {
+  fetch: app.fetch,
+  async scheduled(
+    controller: ScheduledController,
+    env: Env,
+    ctx: ExecutionContext
+  ) {
+    ctx.waitUntil(handleScheduled(env));
+  },
+};

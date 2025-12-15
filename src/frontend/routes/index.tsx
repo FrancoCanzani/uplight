@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useTeams } from "@/features/teams/api/use-teams";
 import { signOut, useSession } from "@/lib/auth/client";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
@@ -19,6 +20,8 @@ function Index() {
   const [count, setCount] = useState(0);
   const [name, setName] = useState("unknown");
   const { data: session } = useSession();
+  const { data: teams } = useTeams();
+  const firstTeamId = teams?.[0]?.id;
 
   return (
     <div className="container mx-auto p-4 space-y-6">
@@ -69,7 +72,7 @@ function Index() {
               You are successfully authenticated.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="space-y-2">
               <p className="text-sm">
                 <strong>Email:</strong> {session.user.email}
@@ -80,6 +83,14 @@ function Index() {
                 </p>
               )}
             </div>
+            {firstTeamId && (
+              <Link
+                to="/$teamId/monitors"
+                params={{ teamId: String(firstTeamId) }}
+              >
+                <Button>Go to Dashboard</Button>
+              </Link>
+            )}
           </CardContent>
         </Card>
       ) : (

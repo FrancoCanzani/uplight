@@ -1,7 +1,7 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/d1";
 import { HTTPException } from "hono/http-exception";
+import { createDb } from "../../../db";
 import { monitor } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { MonitorResponseSchema } from "./schemas";
@@ -32,7 +32,7 @@ export function registerGetAllMonitors(api: OpenAPIHono<AppEnv>) {
       throw new HTTPException(401, { message: "Unauthorized" });
     }
 
-    const db = drizzle(c.env.DB);
+    const db = createDb(c.env.DB);
 
     const reuslt = await db
       .select()

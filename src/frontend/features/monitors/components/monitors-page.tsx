@@ -37,13 +37,16 @@ export default function MonitorsPage() {
                 {monitor.type}
               </span>
 
-              <h1 className="font-medium text-lg">{monitor.name}</h1>
+              <h1 className="font-medium">{monitor.name}</h1>
             </div>
             <div className="flex items-center justify-end gap-x-1.5">
-              <p className="font-mono text-xs font-medium tracking-tight uppercase text-blue-800 leading-0">
+              <p className="font-mono text-xs font-medium tracking-tight uppercase text-blue-800">
                 {monitor.status}
               </p>
-              <ArrowRight className="size-3.5 -translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
+              <ArrowRight
+                size={16}
+                className="-translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200"
+              />
             </div>
           </Link>
         ))}
