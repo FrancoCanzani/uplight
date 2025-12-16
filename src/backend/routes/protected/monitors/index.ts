@@ -4,6 +4,9 @@ import type { AppEnv } from "../../../types";
 import { registerGetMonitor } from "./get";
 import { registerGetAllMonitors } from "./get-all";
 import { registerPostMonitor } from "./post";
+import { registerGetStats } from "./get-stats";
+import { registerGetChecks } from "./get-checks";
+import { registerGetIncidents } from "./get-incidents";
 
 const monitors = new OpenAPIHono<AppEnv>();
 
@@ -13,5 +16,8 @@ monitors.use("/:teamId/*", requireTeamMember());
 registerGetMonitor(monitors);
 registerGetAllMonitors(monitors);
 registerPostMonitor(monitors);
+registerGetStats(monitors);
+registerGetChecks(monitors);
+registerGetIncidents(monitors);
 
 export { monitors };

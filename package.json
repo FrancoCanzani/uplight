@@ -83,7 +83,8 @@
     "deploy": "wrangler deploy --env production --config wrangler.jsonc",
     "dev": "vite",
     "lint": "eslint .",
-    "preview": "npm run build && vite preview"
+    "preview": "npm run build && vite preview",
+    "scheduler": "while true; do curl -s http://localhost:5173/cdn-cgi/handler/scheduled && echo ' - '$(date); sleep 60; done"
   },
   "type": "module"
 }

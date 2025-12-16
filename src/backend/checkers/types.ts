@@ -9,7 +9,7 @@ export type Location =
   | "afr"
   | "me";
 
-export type CheckStatus = "success" | "failure" | "timeout" | "error";
+export type CheckStatus = "success" | "failure" | "timeout" | "error" | "maintenance";
 
 export type IncidentCause =
   | "http_5xx"

@@ -45,8 +45,8 @@ export function DashboardSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton>
-                  <Link to="/$teamId/monitors/new" params={{ teamId }}>
-                    New Monitor
+                  <Link to="/$teamId/incidents" params={{ teamId }}>
+                    Incidents
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

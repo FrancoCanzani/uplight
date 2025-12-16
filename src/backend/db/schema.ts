@@ -108,6 +108,7 @@ export const monitorRelations = relations(monitor, ({ one, many }) => ({
   }),
   checkResults: many(checkResult),
   incidents: many(incident),
+  maintenances: many(maintenance),
 }));
 
 export const checkResult = sqliteTable(
@@ -119,7 +120,7 @@ export const checkResult = sqliteTable(
       .references(() => monitor.id, { onDelete: "cascade" }),
     location: text().notNull(),
     status: text({
-      enum: ["success", "failure", "timeout", "error"],
+      enum: ["success", "failure", "timeout", "error", "maintenance"],
     }).notNull(),
     responseTime: integer().notNull(),
     statusCode: integer(),
@@ -179,6 +180,33 @@ export const incidentRelations = relations(incident, ({ one }) => ({
   }),
 }));
 
+export const maintenance = sqliteTable(
+  "maintenance",
+  {
+    id: integer().primaryKey({ autoIncrement: true }),
+    monitorId: integer()
+      .notNull()
+      .references(() => monitor.id, { onDelete: "cascade" }),
+    reason: text(),
+    startsAt: integer({ mode: "timestamp_ms" }).notNull(),
+    endsAt: integer({ mode: "timestamp_ms" }).notNull(),
+    createdAt: integer({ mode: "timestamp_ms" })
+      .default(sql`(unixepoch() * 1000)`)
+      .notNull(),
+  },
+  (table) => [
+    index("maintenance_monitor_idx").on(table.monitorId),
+    index("maintenance_active_idx").on(table.startsAt, table.endsAt),
+  ]
+);
+
+export const maintenanceRelations = relations(maintenance, ({ one }) => ({
+  monitor: one(monitor, {
+    fields: [maintenance.monitorId],
+    references: [monitor.id],
+  }),
+}));
+
 export const schema = {
   ...authSchema,
   team,
@@ -186,4 +214,5 @@ export const schema = {
   monitor,
   checkResult,
   incident,
+  maintenance,
 } as const;
