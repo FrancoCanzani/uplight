@@ -2,19 +2,19 @@ export default function getStatusColor(status: string) {
   switch (status) {
     case "up":
     case "success":
-      return "bg-emerald-500";
+      return "bg-green-700";
     case "down":
     case "failure":
-      return "bg-red-500";
+      return "bg-red-700";
     case "degraded":
-      return "bg-amber-500";
+      return "bg-amber-700";
     case "timeout":
-      return "bg-orange-500";
+      return "bg-orange-700";
     case "maintenance":
-      return "bg-blue-500";
+      return "bg-blue-700";
     case "initializing":
-      return "bg-slate-400";
+      return "bg-slate-700";
     default:
-      return "bg-slate-500";
+      return "bg-slate-700";
   }
 }

@@ -7,6 +7,7 @@ import { registerPostMonitor } from "./post";
 import { registerGetStats } from "./get-stats";
 import { registerGetChecks } from "./get-checks";
 import { registerGetIncidents } from "./get-incidents";
+import { registerPatchMonitorStatus } from "./patch";
 
 const monitors = new OpenAPIHono<AppEnv>();
 
@@ -19,5 +20,6 @@ registerPostMonitor(monitors);
 registerGetStats(monitors);
 registerGetChecks(monitors);
 registerGetIncidents(monitors);
+registerPatchMonitorStatus(monitors);
 
 export { monitors };
