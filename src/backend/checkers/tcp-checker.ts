@@ -19,7 +19,7 @@ export async function performTcpCheck(
     if (connectTime > timeout) {
       socket.close();
       return {
-        status: "timeout",
+        result: "timeout",
         responseTime: connectTime,
         errorMessage: `Connection took ${connectTime}ms, exceeding timeout of ${timeout}ms`,
         cause: "timeout",
@@ -29,7 +29,7 @@ export async function performTcpCheck(
     socket.close();
 
     return {
-      status: "success",
+      result: "success",
       responseTime: connectTime,
     };
   } catch (error) {
@@ -40,7 +40,7 @@ export async function performTcpCheck(
 
       if (msg.includes("timed out") || msg.includes("etimedout")) {
         return {
-          status: "timeout",
+          result: "timeout",
           responseTime,
           errorMessage: `TCP connection timed out: ${error.message}`,
           cause: "timeout",
@@ -49,7 +49,7 @@ export async function performTcpCheck(
 
       if (msg.includes("refused") || msg.includes("econnrefused")) {
         return {
-          status: "error",
+          result: "error",
           responseTime,
           errorMessage: `Connection refused: ${error.message}`,
           cause: "connection_refused",
@@ -57,7 +57,7 @@ export async function performTcpCheck(
       }
 
       return {
-        status: "error",
+        result: "error",
         responseTime,
         errorMessage: error.message,
         cause: "tcp_failure",
@@ -65,7 +65,7 @@ export async function performTcpCheck(
     }
 
     return {
-      status: "error",
+      result: "error",
       responseTime,
       errorMessage: "Unknown TCP error",
       cause: "tcp_failure",

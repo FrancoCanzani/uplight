@@ -20,7 +20,7 @@ export async function manageIncidents(
   const now = Date.now();
 
   const failedResults = results.filter(
-    (r) => r.status !== "success" && r.cause
+    (r) => r.result !== "success" && r.cause
   );
   const currentCauses = new Set(
     failedResults

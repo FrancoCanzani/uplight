@@ -35,7 +35,7 @@ export class CheckerDO extends DurableObject<Env> {
         return {
           monitorId: request.monitorId,
           location: request.location,
-          status: "error",
+          result: "error",
           responseTime: Math.round(performance.now() - startTime),
           errorMessage: `DNS resolution failed for ${hostname}`,
           cause: "dns_failure",

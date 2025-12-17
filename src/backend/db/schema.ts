@@ -1,10 +1,10 @@
 import { relations, sql } from "drizzle-orm";
 import {
+  index,
+  integer,
+  primaryKey,
   sqliteTable,
   text,
-  integer,
-  index,
-  primaryKey,
 } from "drizzle-orm/sqlite-core";
 import * as authSchema from "./auth-schema";
 import { timestamps } from "./utils";
@@ -34,7 +34,7 @@ export const teamMember = sqliteTable(
     primaryKey({ columns: [table.teamId, table.userId] }),
     index("team_member_userId_idx").on(table.userId),
     index("team_member_teamId_idx").on(table.teamId),
-  ]
+  ],
 );
 
 export const monitor = sqliteTable(
@@ -82,7 +82,7 @@ export const monitor = sqliteTable(
     index("monitor_teamId_idx").on(table.teamId),
     index("monitor_type_idx").on(table.type),
     index("monitor_status_idx").on(table.status),
-  ]
+  ],
 );
 
 export const teamRelations = relations(team, ({ many }) => ({
@@ -119,7 +119,7 @@ export const checkResult = sqliteTable(
       .notNull()
       .references(() => monitor.id, { onDelete: "cascade" }),
     location: text().notNull(),
-    status: text({
+    result: text({
       enum: ["success", "failure", "timeout", "error", "maintenance"],
     }).notNull(),
     responseTime: integer().notNull(),
@@ -138,9 +138,9 @@ export const checkResult = sqliteTable(
     index("check_result_checked_at_idx").on(table.checkedAt),
     index("check_result_monitor_checked_idx").on(
       table.monitorId,
-      table.checkedAt
+      table.checkedAt,
     ),
-  ]
+  ],
 );
 
 export const checkResultRelations = relations(checkResult, ({ one }) => ({
@@ -170,7 +170,7 @@ export const incident = sqliteTable(
   (table) => [
     index("incident_monitor_idx").on(table.monitorId),
     index("incident_monitor_status_idx").on(table.monitorId, table.status),
-  ]
+  ],
 );
 
 export const incidentRelations = relations(incident, ({ one }) => ({
@@ -197,7 +197,7 @@ export const maintenance = sqliteTable(
   (table) => [
     index("maintenance_monitor_idx").on(table.monitorId),
     index("maintenance_active_idx").on(table.startsAt, table.endsAt),
-  ]
+  ],
 );
 
 export const maintenanceRelations = relations(maintenance, ({ one }) => ({

@@ -16,7 +16,7 @@ type MonitorStatus =
 function resolveStatus(results: CheckResult[]): MonitorStatus {
   if (results.length === 0) return "initializing";
 
-  const successCount = results.filter((r) => r.status === "success").length;
+  const successCount = results.filter((r) => r.result === "success").length;
 
   if (successCount === results.length) return "up";
   if (successCount === 0) return "down";
@@ -44,15 +44,15 @@ export async function processResults(
   const insertValues = results.map((r) => ({
     monitorId: r.monitorId,
     location: r.location,
-    status: r.status,
+    result: r.result,
     responseTime: r.responseTime,
     statusCode: r.statusCode ?? null,
     errorMessage: r.errorMessage ?? null,
     responseHeaders:
-      r.status !== "success" && r.responseHeaders
+      r.result !== "success" && r.responseHeaders
         ? JSON.stringify(r.responseHeaders)
         : null,
-    responseBody: r.status !== "success" ? (r.responseBody ?? null) : null,
+    responseBody: r.result !== "success" ? (r.responseBody ?? null) : null,
     retryCount: r.retryCount,
     checkedAt: new Date(r.checkedAt),
   }));

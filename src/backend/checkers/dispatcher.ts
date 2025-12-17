@@ -85,7 +85,7 @@ export async function dispatchChecks(
         dispatchToLocation(request, location, env).catch((error) => ({
           monitorId: mon.id,
           location,
-          status: "error" as const,
+          result: "error" as const,
           responseTime: 0,
           errorMessage:
             error instanceof Error ? error.message : "Dispatch failed",

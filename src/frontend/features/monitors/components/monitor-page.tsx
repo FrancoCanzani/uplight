@@ -1,3 +1,4 @@
+import AnimatedNumber from "@/components/motion/animated-number";
 import {
   Card,
   CardDescription,
@@ -24,7 +25,7 @@ export default function MonitorPage() {
     : checks;
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
       <div className="flex flex-col gap-4">
         <MonitorHeader
           monitor={monitor}
@@ -34,58 +35,63 @@ export default function MonitorPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card size="sm">
+        <Card size="xs">
           <CardHeader>
             <CardDescription>Uptime (30d)</CardDescription>
-            <CardTitle className="text-2xl tabular-nums">
-              {stats.uptimePercentage.toFixed(2)}%
+            <CardTitle className="text-lg">
+              <AnimatedNumber
+                value={stats.uptimePercentage}
+                decimals={2}
+                suffix="%"
+              />
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card size="sm">
+        <Card size="xs">
           <CardHeader>
             <CardDescription>Avg Response</CardDescription>
-            <CardTitle className="text-2xl tabular-nums">
-              {stats.avgResponseTime}ms
+            <CardTitle className="text-lg">
+              <AnimatedNumber value={stats.avgResponseTime} suffix="ms" />
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card size="sm">
+        <Card size="xs">
           <CardHeader>
             <CardDescription>Total Checks</CardDescription>
-            <CardTitle className="text-2xl tabular-nums">
-              {stats.totalChecks.toLocaleString()}
+            <CardTitle className="text-lg">
+              <AnimatedNumber value={stats.totalChecks} />
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card size="sm">
+        <Card size="xs">
           <CardHeader>
             <CardDescription>Last Check</CardDescription>
             <CardTitle className="text-lg">
-              {stats.lastCheckAt ? formatDate(stats.lastCheckAt) : "Never"}
+              {stats.lastCheckAt ? formatDate(stats.lastCheckAt) : "-"}
             </CardTitle>
           </CardHeader>
         </Card>
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold">Response Time</h2>
+        <div className="flex items-center justify-between">
+          <h3 className="font-medium">Response Time</h3>
+          <ResponseTimeStats checks={filteredChecks} />
+        </div>
         <ResponseTimeChart checks={filteredChecks} />
-        <ResponseTimeStats checks={filteredChecks} />
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-4">
-          <h2 className="text-lg font-semibold">Recent Checks</h2>
-          <RecentChecksTable checks={filteredChecks} />
-        </div>
-        <div>
-          <LatestIncident
-            incident={latestIncident}
-            teamId={teamId}
-            monitorId={monitorId}
-          />
-        </div>
+      <div className="lg:col-span-2 space-y-4">
+        <h3 className="font-medium">Recent Checks</h3>
+        <RecentChecksTable checks={filteredChecks} />
+      </div>
+
+      <div>
+        <LatestIncident
+          incident={latestIncident}
+          teamId={teamId}
+          monitorId={monitorId}
+        />
       </div>
     </div>
   );

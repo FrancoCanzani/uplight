@@ -4,93 +4,144 @@ import {
   Line,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
+  ReferenceLine,
 } from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import type { CheckResult } from "../api/fetch-checks";
 import { format } from "date-fns";
+import getLocationLabel from "../utils/get-location-label";
 
 interface ResponseTimeChartProps {
   checks: CheckResult[];
 }
 
 export default function ResponseTimeChart({ checks }: ResponseTimeChartProps) {
-  const chartData = useMemo(() => {
-    const sorted = [...checks].sort((a, b) => a.checkedAt - b.checkedAt);
+  const { chartData, avgResponseTime, regions, chartConfig } = useMemo(() => {
+    const validChecks = checks.filter((c) => c.responseTime > 0);
+    const sorted = [...validChecks].sort((a, b) => a.checkedAt - b.checkedAt);
+    const uniqueRegions = [...new Set(validChecks.map((c) => c.location))];
 
-    const grouped = sorted.reduce(
-      (acc, check) => {
-        const hour = new Date(check.checkedAt).toISOString().slice(0, 13);
-        if (!acc[hour]) {
-          acc[hour] = { times: [], timestamp: check.checkedAt };
-        }
-        acc[hour].times.push(check.responseTime);
-        return acc;
-      },
-      {} as Record<string, { times: number[]; timestamp: number }>
-    );
+    const grouped: Record<
+      string,
+      { timestamp: number; byRegion: Record<string, number[]> }
+    > = {};
 
-    return Object.entries(grouped)
-      .map(([, data]) => ({
-        time: data.timestamp,
-        responseTime: Math.round(
-          data.times.reduce((a, b) => a + b, 0) / data.times.length
-        ),
-      }))
+    sorted.forEach((check) => {
+      const hour = new Date(check.checkedAt).toISOString().slice(0, 13);
+      if (!grouped[hour]) {
+        grouped[hour] = { timestamp: check.checkedAt, byRegion: {} };
+      }
+      if (!grouped[hour].byRegion[check.location]) {
+        grouped[hour].byRegion[check.location] = [];
+      }
+      grouped[hour].byRegion[check.location].push(check.responseTime);
+    });
+
+    const data = Object.entries(grouped)
+      .map(([, d]) => {
+        const point: Record<string, number> = { time: d.timestamp };
+        uniqueRegions.forEach((region) => {
+          const times = d.byRegion[region];
+          if (times && times.length > 0) {
+            point[region] = Math.round(
+              times.reduce((a, b) => a + b, 0) / times.length
+            );
+          }
+        });
+        return point;
+      })
       .sort((a, b) => a.time - b.time);
+
+    const allValues = data.flatMap((d) =>
+      uniqueRegions.map((r) => d[r]).filter((v) => v !== undefined)
+    );
+    const avg =
+      allValues.length > 0
+        ? Math.round(allValues.reduce((a, b) => a + b, 0) / allValues.length)
+        : 0;
+
+    const config: ChartConfig = {};
+    uniqueRegions.forEach((region, i) => {
+      config[region] = {
+        label: getLocationLabel(region),
+        color: `var(--chart-${(i % 5) + 1})`,
+      };
+    });
+
+    return {
+      chartData: data,
+      avgResponseTime: avg,
+      regions: uniqueRegions,
+      chartConfig: config,
+    };
   }, [checks]);
 
   if (chartData.length === 0) {
     return (
-      <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
+      <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">
         No data available
       </div>
     );
   }
 
   return (
-    <div className="h-32 w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={chartData}
-          margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
-        >
-          <XAxis
-            dataKey="time"
-            tickFormatter={(val) => format(val, "HH:mm")}
-            tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
-            tickLine={false}
-            axisLine={false}
-            minTickGap={40}
-          />
-          <YAxis
-            tickFormatter={(val) => `${val}ms`}
-            tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
-            tickLine={false}
-            axisLine={false}
-            width={45}
-          />
-          <Tooltip
-            contentStyle={{
-              background: "hsl(var(--popover))",
-              border: "1px solid hsl(var(--border))",
-              borderRadius: "6px",
-              fontSize: "12px",
-            }}
-            labelFormatter={(val) => format(val, "MMM d, h:mm a")}
-            formatter={(value: number) => [`${value}ms`, "Response time"]}
-          />
+    <ChartContainer config={chartConfig} className="h-40 w-full">
+      <LineChart
+        accessibilityLayer
+        data={chartData}
+        margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
+      >
+        <XAxis
+          dataKey="time"
+          tickFormatter={(val) => format(val, "MMM d, h a")}
+          tick={{ fontSize: 10 }}
+          tickLine={false}
+          axisLine={false}
+          minTickGap={60}
+        />
+        <YAxis
+          tickFormatter={(val) => `${val}ms`}
+          tick={{ fontSize: 10 }}
+          tickLine={false}
+          axisLine={false}
+          width={50}
+        />
+        <ChartTooltip
+          content={
+            <ChartTooltipContent
+              labelFormatter={(_, payload) => {
+                if (payload?.[0]?.payload?.time) {
+                  return format(payload[0].payload.time, "MMMM d 'at' h:mm a");
+                }
+                return "";
+              }}
+            />
+          }
+        />
+        <ReferenceLine
+          y={avgResponseTime}
+          stroke="var(--color-muted-foreground)"
+          strokeDasharray="4 4"
+          strokeOpacity={0.5}
+        />
+        {regions.map((region) => (
           <Line
+            key={region}
             type="monotone"
-            dataKey="responseTime"
-            stroke="#10b981"
+            dataKey={region}
+            stroke={`var(--color-${region})`}
             strokeWidth={1.5}
             dot={false}
-            activeDot={{ r: 4, strokeWidth: 0, fill: "#10b981" }}
-            isAnimationActive={false}
+            activeDot={{ r: 3, strokeWidth: 0 }}
+            connectNulls
           />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+        ))}
+      </LineChart>
+    </ChartContainer>
   );
 }

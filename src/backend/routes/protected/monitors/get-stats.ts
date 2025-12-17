@@ -82,13 +82,13 @@ export function registerGetStats(api: OpenAPIHono<AppEnv>) {
 
     const totalChecks = checks.length;
     const successfulChecks = checks.filter(
-      (c) => c.status === "success" || c.status === "maintenance"
+      (c) => c.result === "success" || c.result === "maintenance"
     ).length;
     const uptimePercentage =
       totalChecks > 0 ? (successfulChecks / totalChecks) * 100 : 100;
 
     const responseChecks = checks.filter(
-      (c) => c.status === "success" && c.responseTime > 0
+      (c) => c.result === "success" && c.responseTime > 0
     );
     const avgResponseTime =
       responseChecks.length > 0
@@ -106,7 +106,7 @@ export function registerGetStats(api: OpenAPIHono<AppEnv>) {
     for (const check of checks) {
       if (!locationMap.has(check.location)) {
         locationMap.set(check.location, {
-          status: check.status,
+          status: check.result,
           responseTime: check.responseTime,
           lastCheckAt: check.checkedAt.getTime(),
         });
@@ -133,4 +133,3 @@ export function registerGetStats(api: OpenAPIHono<AppEnv>) {
     );
   });
 }
-

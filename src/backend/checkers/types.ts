@@ -64,7 +64,7 @@ export interface CheckConfig {
 }
 
 export interface RawCheckResult {
-  status: CheckStatus;
+  result: CheckStatus;
   responseTime: number;
   statusCode?: number;
   errorMessage?: string;

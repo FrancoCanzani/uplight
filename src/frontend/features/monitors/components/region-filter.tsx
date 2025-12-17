@@ -31,7 +31,7 @@ export default function RegionFilter({
   };
 
   const filteredLocations = LOCATIONS.filter((loc) =>
-    availableRegions.includes(loc.id)
+    availableRegions.includes(loc.id),
   );
 
   const currentLabel = currentRegion
@@ -41,7 +41,7 @@ export default function RegionFilter({
 
   return (
     <Select value={currentRegion || "all"} onValueChange={handleChange}>
-      <SelectTrigger>
+      <SelectTrigger size="xs">
         <SelectValue>{currentLabel}</SelectValue>
       </SelectTrigger>
       <SelectContent>

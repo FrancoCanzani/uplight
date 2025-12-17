@@ -9,7 +9,7 @@ import type { AppEnv } from "../../../types";
 const CheckResultSchema = z.object({
   id: z.number(),
   location: z.string(),
-  status: z.string(),
+  result: z.string(),
   responseTime: z.number(),
   statusCode: z.number().nullable(),
   errorMessage: z.string().nullable(),
@@ -72,7 +72,7 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
       .select({
         id: checkResult.id,
         location: checkResult.location,
-        status: checkResult.status,
+        result: checkResult.result,
         responseTime: checkResult.responseTime,
         statusCode: checkResult.statusCode,
         errorMessage: checkResult.errorMessage,

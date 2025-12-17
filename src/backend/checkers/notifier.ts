@@ -16,7 +16,7 @@ export async function sendNotifications(
   ctx: NotificationContext
 ): Promise<void> {
   const failedLocations = ctx.results
-    .filter((r) => r.status !== "success")
+    .filter((r) => r.result !== "success")
     .map((r) => r.location);
 
   for (const event of ctx.incidentEvents) {
@@ -29,7 +29,7 @@ export async function sendNotifications(
           incidentId: event.incidentId,
           cause: event.cause,
           affectedLocations: failedLocations,
-          firstError: ctx.results.find((r) => r.status !== "success")
+          firstError: ctx.results.find((r) => r.result !== "success")
             ?.errorMessage,
         },
       });

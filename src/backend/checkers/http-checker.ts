@@ -58,7 +58,7 @@ export async function performHttpCheck(
     if (!request.expectedStatusCodes.includes(response.status)) {
       const bodyText = await response.text().catch(() => "");
       return {
-        status: "failure",
+        result: "failure",
         responseTime,
         statusCode: response.status,
         errorMessage: `Expected status ${request.expectedStatusCodes.join(", ")}, got ${response.status}`,
@@ -76,7 +76,7 @@ export async function performHttpCheck(
 
       if (contains !== shouldContain) {
         return {
-          status: "failure",
+          result: "failure",
           responseTime,
           statusCode: response.status,
           errorMessage: `Content check failed: ${request.contentCheck.mode} "${request.contentCheck.content}"`,
@@ -88,7 +88,7 @@ export async function performHttpCheck(
     }
 
     return {
-      status: "success",
+      result: "success",
       responseTime,
       statusCode: response.status,
     };
@@ -98,7 +98,7 @@ export async function performHttpCheck(
     if (error instanceof Error) {
       if (error.name === "AbortError") {
         return {
-          status: "timeout",
+          result: "timeout",
           responseTime,
           errorMessage: `Request timed out after ${timeout}ms`,
           cause: "timeout",
@@ -110,7 +110,7 @@ export async function performHttpCheck(
           ? ""
           : " (note: Workers cannot bypass SSL checks)";
         return {
-          status: "error",
+          result: "error",
           responseTime,
           errorMessage: `SSL error: ${error.message}${sslNote}`,
           cause: "ssl_error",
@@ -119,7 +119,7 @@ export async function performHttpCheck(
 
       if (error.message.includes("ECONNREFUSED")) {
         return {
-          status: "error",
+          result: "error",
           responseTime,
           errorMessage: `Connection refused: ${error.message}`,
           cause: "connection_refused",
@@ -127,14 +127,14 @@ export async function performHttpCheck(
       }
 
       return {
-        status: "error",
+        result: "error",
         responseTime,
         errorMessage: error.message,
       };
     }
 
     return {
-      status: "error",
+      result: "error",
       responseTime,
       errorMessage: "Unknown error",
     };

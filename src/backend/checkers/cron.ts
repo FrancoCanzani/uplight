@@ -18,7 +18,9 @@ export async function handleScheduled(env: Env): Promise<void> {
   const activeMaintenances = await db
     .select()
     .from(maintenance)
-    .where(and(lte(maintenance.startsAt, nowDate), gt(maintenance.endsAt, nowDate)));
+    .where(
+      and(lte(maintenance.startsAt, nowDate), gt(maintenance.endsAt, nowDate))
+    );
 
   const maintenanceByMonitor = new Map<number, boolean>();
   for (const m of activeMaintenances) {
@@ -57,7 +59,7 @@ export async function handleScheduled(env: Env): Promise<void> {
     const maintenanceResults = locations.map((location) => ({
       monitorId: mon.id,
       location,
-      status: "maintenance" as const,
+      result: "maintenance" as const,
       responseTime: 0,
       retryCount: 0,
       checkedAt: nowDate,
@@ -76,7 +78,9 @@ export async function handleScheduled(env: Env): Promise<void> {
 
   if (monitorsToCheck.length === 0) {
     if (monitorsInMaintenance.length > 0) {
-      console.log(`[CRON] ${monitorsInMaintenance.length} monitors in maintenance`);
+      console.log(
+        `[CRON] ${monitorsInMaintenance.length} monitors in maintenance`
+      );
     }
     return;
   }

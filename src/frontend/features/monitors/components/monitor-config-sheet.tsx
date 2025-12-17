@@ -25,7 +25,13 @@ export default function MonitorConfigSheet({
 
   return (
     <Sheet>
-      <SheetTrigger render={<Button variant="outline">Info</Button>} />
+      <SheetTrigger
+        render={
+          <Button variant="outline" size={"xs"}>
+            Info
+          </Button>
+        }
+      />
       <SheetContent side="right">
         <SheetHeader>
           <SheetTitle>{monitor.name}</SheetTitle>

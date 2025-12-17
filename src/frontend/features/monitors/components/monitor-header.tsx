@@ -1,11 +1,8 @@
-import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { getRouteApi, Link } from "@tanstack/react-router";
 import { Pause, Play } from "lucide-react";
 import { useToggleMonitorStatus } from "../api/use-toggle-monitor-status";
 import type { MonitorResponse } from "../schemas";
-import getStatusColor from "../utils/get-status-color";
 import MonitorConfigSheet from "./monitor-config-sheet";
 import RegionFilter from "./region-filter";
 
@@ -39,11 +36,15 @@ export default function MonitorHeader({
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-3">
-        <h1 className="text-xl font-medium">{monitor.name}</h1>
-        <Badge className={cn("capitalize", getStatusColor(monitor.status))}>
-          {monitor.status}
-        </Badge>
+      <div className="flex flex-col items-start">
+        <div className="flex items-center justify-start gap-x-2">
+          <h1 className="text-lg font-medium">{monitor.name}</h1>
+        </div>
+        <h2 className="text-xs text-muted-foreground">
+          {monitor.type === "http"
+            ? monitor.url
+            : `${monitor.host}:${monitor.port}`}
+        </h2>
       </div>
       <div className="flex gap-2">
         {showRegionFilter && (
@@ -56,6 +57,7 @@ export default function MonitorHeader({
         )}
         <Button
           variant="outline"
+          size={"xs"}
           onClick={handleTogglePause}
           disabled={toggleStatus.isPending}
         >
@@ -75,7 +77,7 @@ export default function MonitorHeader({
         <Link
           to="/$teamId/monitors/$monitorId/maintenance"
           params={{ teamId, monitorId }}
-          className={buttonVariants({ variant: "outline" })}
+          className={buttonVariants({ variant: "outline", size: "xs" })}
         >
           Maintenance
         </Link>

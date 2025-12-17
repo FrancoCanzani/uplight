@@ -15,6 +15,13 @@
       "when": 1765913750020,
       "tag": "0001_crazy_selene",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1766004893011,
+      "tag": "0002_hard_callisto",
+      "breakpoints": true
     }
   ]
 }

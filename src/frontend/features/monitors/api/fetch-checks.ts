@@ -1,7 +1,7 @@
 export interface CheckResult {
   id: number;
   location: string;
-  status: string;
+  result: string;
   responseTime: number;
   statusCode: number | null;
   errorMessage: string | null;

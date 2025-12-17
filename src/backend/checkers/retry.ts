@@ -10,8 +10,8 @@ const RETRIABLE_ERRORS = [
 ];
 
 function isRetriable(result: RawCheckResult): boolean {
-  if (result.status === "timeout") return true;
-  if (result.status === "error" && result.errorMessage) {
+  if (result.result === "timeout") return true;
+  if (result.result === "error" && result.errorMessage) {
     const msg = result.errorMessage.toLowerCase();
     return RETRIABLE_ERRORS.some((e) => msg.includes(e));
   }
@@ -39,7 +39,7 @@ export async function withRetry(
 
     lastResult = await checkFn();
 
-    if (lastResult.status === "success") {
+    if (lastResult.result === "success") {
       return { ...lastResult, retryCount };
     }
 
