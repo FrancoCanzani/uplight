@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/table";
 import { formatDate } from "@lib/utils";
 import type { CheckResult } from "../api/fetch-checks";
+import CheckResultIcon from "./check-result-icon";
 import getLocationLabel from "../utils/get-location-label";
-import getStatusColor from "../utils/get-status-color";
 
 export default function RecentChecksTable({
   checks,
@@ -39,9 +39,7 @@ export default function RecentChecksTable({
           <TableRow key={check.id}>
             <TableCell>
               <div className="flex items-center gap-2">
-                <div
-                  className={`w-2 h-2 rounded-full ${getStatusColor(check.result)}`}
-                />
+                <CheckResultIcon result={check.result} />
                 <span className="capitalize">{check.result}</span>
               </div>
             </TableCell>

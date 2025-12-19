@@ -29,6 +29,11 @@ const route = createRoute({
   path: "/:teamId/:monitorId/stats",
   tags: ["monitors"],
   summary: "Get monitor stats",
+  request: {
+    query: z.object({
+      days: z.string().optional().default("14"),
+    }),
+  },
   responses: {
     200: {
       content: {
@@ -45,6 +50,7 @@ export function registerGetStats(api: OpenAPIHono<AppEnv>) {
   return api.openapi(route, async (c) => {
     const teamContext = c.get("team");
     const { monitorId } = c.req.param();
+    const { days } = c.req.valid("query");
 
     if (!teamContext) {
       throw new HTTPException(401, { message: "Unauthorized" });
@@ -67,7 +73,7 @@ export function registerGetStats(api: OpenAPIHono<AppEnv>) {
       throw new HTTPException(404, { message: "Monitor not found" });
     }
 
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const daysAgo = new Date(Date.now() - Number(days) * 24 * 60 * 60 * 1000);
 
     const checks = await db
       .select()
@@ -75,7 +81,7 @@ export function registerGetStats(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(checkResult.monitorId, Number(monitorId)),
-          gte(checkResult.checkedAt, thirtyDaysAgo)
+          gte(checkResult.checkedAt, daysAgo)
         )
       )
       .orderBy(desc(checkResult.checkedAt));

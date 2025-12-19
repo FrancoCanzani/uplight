@@ -19,20 +19,20 @@ const route = createRoute({
   method: "get",
   path: "/:teamId/:monitorId/incidents",
   tags: ["monitors"],
-  summary: "Get incidents",
+  summary: "Get last incident",
   request: {
     query: z.object({
-      limit: z.string().optional().default("10"),
+      limit: z.string().optional().default("1"),
     }),
   },
   responses: {
     200: {
       content: {
         "application/json": {
-          schema: z.array(IncidentSchema),
+          schema: IncidentSchema.nullable(),
         },
       },
-      description: "Incidents",
+      description: "Last incident",
     },
   },
 });
@@ -41,7 +41,6 @@ export function registerGetIncidents(api: OpenAPIHono<AppEnv>) {
   return api.openapi(route, async (c) => {
     const teamContext = c.get("team");
     const { monitorId } = c.req.param();
-    const { limit } = c.req.valid("query");
 
     if (!teamContext) {
       throw new HTTPException(401, { message: "Unauthorized" });
@@ -64,24 +63,27 @@ export function registerGetIncidents(api: OpenAPIHono<AppEnv>) {
       throw new HTTPException(404, { message: "Monitor not found" });
     }
 
-    const incidents = await db
+    const [lastIncident] = await db
       .select()
       .from(incident)
       .where(eq(incident.monitorId, Number(monitorId)))
       .orderBy(desc(incident.startedAt))
-      .limit(Number(limit));
+      .limit(1);
+
+    if (!lastIncident) {
+      return c.json(null, 200);
+    }
 
     return c.json(
-      incidents.map((i) => ({
-        id: i.id,
-        cause: i.cause,
-        status: i.status,
-        startedAt: i.startedAt.getTime(),
-        resolvedAt: i.resolvedAt?.getTime() ?? null,
-        createdAt: i.createdAt.getTime(),
-      })),
+      {
+        id: lastIncident.id,
+        cause: lastIncident.cause,
+        status: lastIncident.status,
+        startedAt: lastIncident.startedAt.getTime(),
+        resolvedAt: lastIncident.resolvedAt?.getTime() ?? null,
+        createdAt: lastIncident.createdAt.getTime(),
+      },
       200
     );
   });
 }
-

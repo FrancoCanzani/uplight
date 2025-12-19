@@ -1,10 +1,9 @@
 import { Button, buttonVariants } from "@/components/ui/button";
-import { getRouteApi, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { Pause, Play } from "lucide-react";
 import { useToggleMonitorStatus } from "../api/use-toggle-monitor-status";
 import type { MonitorResponse } from "../schemas";
 import MonitorConfigSheet from "./monitor-config-sheet";
-import RegionFilter from "./region-filter";
 
 export default function MonitorHeader({
   monitor,
@@ -15,16 +14,8 @@ export default function MonitorHeader({
   teamId: string;
   monitorId: string;
 }) {
-  const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
-  const { checks } = routeApi.useLoaderData();
-
   const toggleStatus = useToggleMonitorStatus();
   const isPaused = monitor.status === "paused";
-
-  const { region } = routeApi.useSearch();
-
-  const availableRegions = [...new Set(checks.map((c) => c.location))];
-  const showRegionFilter = availableRegions.length > 1;
 
   const handleTogglePause = () => {
     toggleStatus.mutate({
@@ -47,14 +38,6 @@ export default function MonitorHeader({
         </h2>
       </div>
       <div className="flex gap-2">
-        {showRegionFilter && (
-          <RegionFilter
-            teamId={teamId}
-            monitorId={monitorId}
-            currentRegion={region}
-            availableRegions={availableRegions}
-          />
-        )}
         <Button
           variant="outline"
           size={"xs"}

@@ -1,19 +1,14 @@
-import { useMemo } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  ReferenceLine,
-} from "recharts";
+import NoDataMessage from "@/components/no-data-message";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import type { CheckResult } from "../api/fetch-checks";
 import { format } from "date-fns";
+import { useMemo } from "react";
+import { Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
+import type { CheckResult } from "../api/fetch-checks";
 import getLocationLabel from "../utils/get-location-label";
 
 interface ResponseTimeChartProps {
@@ -48,9 +43,7 @@ export default function ResponseTimeChart({ checks }: ResponseTimeChartProps) {
         uniqueRegions.forEach((region) => {
           const times = d.byRegion[region];
           if (times && times.length > 0) {
-            point[region] = Math.round(
-              times.reduce((a, b) => a + b, 0) / times.length
-            );
+            point[region] = Math.max(...times);
           }
         });
         return point;
@@ -65,11 +58,24 @@ export default function ResponseTimeChart({ checks }: ResponseTimeChartProps) {
         ? Math.round(allValues.reduce((a, b) => a + b, 0) / allValues.length)
         : 0;
 
+    const regionColors = [
+      "oklch(0.55 0.22 142)",
+      "oklch(0.55 0.22 250)",
+      "oklch(0.55 0.22 10)",
+      "oklch(0.55 0.22 280)",
+      "oklch(0.55 0.22 200)",
+      "oklch(0.55 0.22 320)",
+      "oklch(0.55 0.22 60)",
+      "oklch(0.55 0.22 180)",
+      "oklch(0.55 0.22 30)",
+      "oklch(0.55 0.22 300)",
+    ];
+
     const config: ChartConfig = {};
     uniqueRegions.forEach((region, i) => {
       config[region] = {
         label: getLocationLabel(region),
-        color: `var(--chart-${(i % 5) + 1})`,
+        color: regionColors[i % regionColors.length],
       };
     });
 
@@ -82,15 +88,11 @@ export default function ResponseTimeChart({ checks }: ResponseTimeChartProps) {
   }, [checks]);
 
   if (chartData.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">
-        No data available
-      </div>
-    );
+    return <NoDataMessage text="No data available" />;
   }
 
   return (
-    <ChartContainer config={chartConfig} className="h-40 w-full">
+    <ChartContainer config={chartConfig} className="h-60 w-full">
       <LineChart
         accessibilityLayer
         data={chartData}

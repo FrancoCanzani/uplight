@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import type { CheckResult } from "../api/fetch-checks";
 
-interface ResponseTimeStatsProps {
+export default function ResponseTimeStats({
+  checks,
+}: {
   checks: CheckResult[];
-}
-
-export default function ResponseTimeStats({ checks }: ResponseTimeStatsProps) {
+}) {
   const stats = useMemo(() => {
     const times = checks
       .filter((c) => c.responseTime > 0)
@@ -25,15 +25,15 @@ export default function ResponseTimeStats({ checks }: ResponseTimeStatsProps) {
   return (
     <div className="flex items-center gap-4 text-xs">
       <div className="flex items-center gap-1.5">
-        <span className="text-muted-foreground">avg</span>
+        <span className="text-muted-foreground">Avg</span>
         <span className="font-mono tabular-nums">{stats.avg}ms</span>
       </div>
       <div className="flex items-center gap-1.5">
-        <span className="text-muted-foreground">min</span>
+        <span className="text-muted-foreground">Min</span>
         <span className="font-mono tabular-nums">{stats.min}ms</span>
       </div>
       <div className="flex items-center gap-1.5">
-        <span className="text-muted-foreground">max</span>
+        <span className="text-muted-foreground">Max</span>
         <span className="font-mono tabular-nums">{stats.max}ms</span>
       </div>
     </div>

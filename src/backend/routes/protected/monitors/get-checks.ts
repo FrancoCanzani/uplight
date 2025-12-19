@@ -23,7 +23,7 @@ const route = createRoute({
   summary: "Get check history",
   request: {
     query: z.object({
-      hours: z.string().optional().default("24"),
+      days: z.string().optional().default("14"),
       limit: z.string().optional().default("500"),
     }),
   },
@@ -43,7 +43,7 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
   return api.openapi(route, async (c) => {
     const teamContext = c.get("team");
     const { monitorId } = c.req.param();
-    const { hours, limit } = c.req.valid("query");
+    const { days, limit } = c.req.valid("query");
 
     if (!teamContext) {
       throw new HTTPException(401, { message: "Unauthorized" });
@@ -66,7 +66,7 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
       throw new HTTPException(404, { message: "Monitor not found" });
     }
 
-    const since = new Date(Date.now() - Number(hours) * 60 * 60 * 1000);
+    const since = new Date(Date.now() - Number(days) * 24 * 60 * 60 * 1000);
 
     const checks = await db
       .select({
@@ -97,4 +97,3 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
     );
   });
 }
-

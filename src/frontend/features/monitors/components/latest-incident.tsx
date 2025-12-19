@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { Badge } from "@/components/ui/badge";
 import { formatDate, formatDuration, formatCause } from "@lib/utils";
@@ -16,13 +15,11 @@ export default function LatestIncident({
   teamId,
   monitorId,
 }: LatestIncidentProps) {
-  const duration = useMemo(() => {
-    if (!incident) return 0;
-    if (incident.resolvedAt) {
-      return incident.resolvedAt - incident.startedAt;
-    }
-    return Date.now() - incident.startedAt;
-  }, [incident]);
+  const duration = incident
+    ? incident.resolvedAt
+      ? incident.resolvedAt - incident.startedAt
+      : new Date().getTime() - incident.startedAt
+    : 0;
 
   if (!incident) {
     return (
@@ -94,4 +91,3 @@ export default function LatestIncident({
     </div>
   );
 }
-

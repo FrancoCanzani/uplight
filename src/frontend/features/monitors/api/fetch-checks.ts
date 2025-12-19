@@ -11,10 +11,10 @@ export interface CheckResult {
 export default async function fetchChecks(
   teamId: string,
   monitorId: string,
-  hours: number = 24
+  days: number = 14
 ): Promise<CheckResult[]> {
   const response = await fetch(
-    `/api/monitors/${teamId}/${monitorId}/checks?hours=${hours}`
+    `/api/monitors/${teamId}/${monitorId}/checks?days=${days}`
   );
 
   if (!response.ok) {

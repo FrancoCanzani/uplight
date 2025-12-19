@@ -91,12 +91,24 @@ project/
 
 ### **Inline Props Rule**
 
-- If a component has 2 or fewer props, define them inline.
-- Only create a separate interface/type for 3+ props.
+- If a component has fewer than 5 props, define them inline.
+- Only create a separate interface/type for 5+ props.
 
 ```tsx
-// Good - 2 or fewer props inline
+// Good - fewer than 5 props inline
 function Button({ label, onClick }: { label: string; onClick: () => void }) {}
+
+function ResponseTimeChart({ checks }: { checks: CheckResult[] }) {}
+
+function Card({
+  title,
+  description,
+  onClick,
+}: {
+  title: string;
+  description: string;
+  onClick: () => void;
+}) {}
 
 // Bad - unnecessary interface for simple props
 interface ButtonProps {
@@ -104,13 +116,21 @@ interface ButtonProps {
 }
 function Button({ label }: ButtonProps) {}
 
-// Good - 3+ props use interface
-interface CardProps {
-  title: string;
-  description: string;
-  onClick: () => void;
+// Good - 5+ props use interface
+interface ComplexComponentProps {
+  prop1: string;
+  prop2: string;
+  prop3: string;
+  prop4: string;
+  prop5: string;
 }
-function Card({ title, description, onClick }: CardProps) {}
+function ComplexComponent({
+  prop1,
+  prop2,
+  prop3,
+  prop4,
+  prop5,
+}: ComplexComponentProps) {}
 ```
 
 ### **Route Params Rule**

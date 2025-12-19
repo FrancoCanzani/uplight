@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useNavigate } from "@tanstack/react-router";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { LOCATIONS } from "../constants";
 
 export default function RegionFilter({
@@ -20,18 +20,26 @@ export default function RegionFilter({
   availableRegions: string[];
 }) {
   const navigate = useNavigate();
+  const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
+  const currentSearch = routeApi.useSearch() || {};
 
   const handleChange = (value: string | null) => {
     if (!value) return;
+    const newSearch = { ...currentSearch };
+    if (value === "all") {
+      delete newSearch.region;
+    } else {
+      newSearch.region = value;
+    }
     navigate({
       to: "/$teamId/monitors/$monitorId",
       params: { teamId, monitorId },
-      search: value === "all" ? {} : { region: value },
+      search: newSearch,
     });
   };
 
   const filteredLocations = LOCATIONS.filter((loc) =>
-    availableRegions.includes(loc.id),
+    availableRegions.includes(loc.id)
   );
 
   const currentLabel = currentRegion
