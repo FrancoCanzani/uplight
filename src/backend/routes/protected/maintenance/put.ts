@@ -8,7 +8,7 @@ import { UpdateMaintenanceSchema, MaintenanceResponseSchema } from "./schemas";
 
 const route = createRoute({
   method: "put",
-  path: "/:maintenanceId",
+  path: "/:teamId/:maintenanceId",
   tags: ["maintenance"],
   summary: "Update maintenance window",
   request: {
@@ -65,7 +65,8 @@ export function registerPutMaintenance(api: OpenAPIHono<AppEnv>) {
 
     const updateData: Record<string, Date | string | null> = {};
     if (data.reason !== undefined) updateData.reason = data.reason ?? null;
-    if (data.startsAt !== undefined) updateData.startsAt = new Date(data.startsAt);
+    if (data.startsAt !== undefined)
+      updateData.startsAt = new Date(data.startsAt);
     if (data.endsAt !== undefined) updateData.endsAt = new Date(data.endsAt);
 
     const [updated] = await db
@@ -87,4 +88,3 @@ export function registerPutMaintenance(api: OpenAPIHono<AppEnv>) {
     );
   });
 }
-

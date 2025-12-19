@@ -1,9 +1,8 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { z } from "@hono/zod-openapi";
-import { and, eq, gte, desc } from "drizzle-orm";
+import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { and, desc, eq, gte } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { monitor, checkResult } from "../../../db/schema";
+import { checkResult, monitor } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 
 const CheckResultSchema = z.object({
@@ -24,7 +23,6 @@ const route = createRoute({
   request: {
     query: z.object({
       days: z.string().optional().default("14"),
-      limit: z.string().optional().default("500"),
     }),
   },
   responses: {
@@ -43,7 +41,7 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
   return api.openapi(route, async (c) => {
     const teamContext = c.get("team");
     const { monitorId } = c.req.param();
-    const { days, limit } = c.req.valid("query");
+    const { days } = c.req.valid("query");
 
     if (!teamContext) {
       throw new HTTPException(401, { message: "Unauthorized" });
@@ -57,8 +55,8 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(monitor.teamId, teamContext.teamId),
-          eq(monitor.id, Number(monitorId))
-        )
+          eq(monitor.id, Number(monitorId)),
+        ),
       )
       .limit(1);
 
@@ -82,18 +80,17 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(checkResult.monitorId, Number(monitorId)),
-          gte(checkResult.checkedAt, since)
-        )
+          gte(checkResult.checkedAt, since),
+        ),
       )
-      .orderBy(desc(checkResult.checkedAt))
-      .limit(Number(limit));
+      .orderBy(desc(checkResult.checkedAt));
 
     return c.json(
       checks.map((c) => ({
         ...c,
         checkedAt: c.checkedAt.getTime(),
       })),
-      200
+      200,
     );
   });
 }

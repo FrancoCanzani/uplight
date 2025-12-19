@@ -7,7 +7,7 @@ import type { AppEnv } from "../../../types";
 
 const route = createRoute({
   method: "delete",
-  path: "/:maintenanceId",
+  path: "/:teamId/:maintenanceId",
   tags: ["maintenance"],
   summary: "Delete maintenance window",
   responses: {
@@ -47,9 +47,10 @@ export function registerDeleteMaintenance(api: OpenAPIHono<AppEnv>) {
       throw new HTTPException(404, { message: "Maintenance not found" });
     }
 
-    await db.delete(maintenance).where(eq(maintenance.id, Number(maintenanceId)));
+    await db
+      .delete(maintenance)
+      .where(eq(maintenance.id, Number(maintenanceId)));
 
     return c.body(null, 204);
   });
 }
-

@@ -14,11 +14,10 @@ async function updateMaintenance({
   maintenanceId,
   data,
 }: UpdateMaintenanceParams): Promise<Maintenance> {
-  const response = await fetch(`/api/maintenance/${maintenanceId}`, {
+  const response = await fetch(`/api/maintenance/${teamId}/${maintenanceId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      "x-team-id": teamId,
     },
     body: JSON.stringify(data),
   });
@@ -39,7 +38,7 @@ export function useUpdateMaintenance() {
     onSuccess: (_, variables) => {
       toast.success("Maintenance updated");
       queryClient.invalidateQueries({
-        queryKey: ["maintenance", variables.monitorId],
+        queryKey: ["maintenance", variables.teamId, variables.monitorId],
       });
     },
     onError: (error) => {
@@ -49,4 +48,3 @@ export function useUpdateMaintenance() {
     },
   });
 }
-

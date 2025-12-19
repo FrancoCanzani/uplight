@@ -1,4 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 interface ToggleStatusParams {
@@ -29,19 +30,14 @@ async function toggleMonitorStatus({
 }
 
 export function useToggleMonitorStatus() {
-  const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: toggleMonitorStatus,
-    onSuccess: (data, variables) => {
+    onSuccess: (data) => {
       const action = data.status === "paused" ? "paused" : "resumed";
       toast.success(`Monitor ${action}`);
-      queryClient.invalidateQueries({
-        queryKey: ["monitor", variables.teamId, variables.monitorId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["monitors", variables.teamId],
-      });
+      router.invalidate();
     },
     onError: (error) => {
       toast.error("Failed to update monitor", {
@@ -50,4 +46,3 @@ export function useToggleMonitorStatus() {
     },
   });
 }
-

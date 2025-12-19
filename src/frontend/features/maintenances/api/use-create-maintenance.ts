@@ -11,11 +11,10 @@ async function createMaintenance({
   teamId,
   data,
 }: CreateMaintenanceParams): Promise<Maintenance> {
-  const response = await fetch(`/api/maintenance`, {
+  const response = await fetch(`/api/maintenance/${teamId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-team-id": teamId,
     },
     body: JSON.stringify(data),
   });
@@ -33,10 +32,10 @@ export function useCreateMaintenance() {
 
   return useMutation({
     mutationFn: createMaintenance,
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       toast.success("Maintenance scheduled");
       queryClient.invalidateQueries({
-        queryKey: ["maintenance", data.monitorId],
+        queryKey: ["maintenance", variables.teamId, data.monitorId],
       });
     },
     onError: (error) => {
@@ -46,4 +45,3 @@ export function useCreateMaintenance() {
     },
   });
 }
-

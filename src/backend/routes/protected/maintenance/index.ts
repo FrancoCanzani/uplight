@@ -8,7 +8,8 @@ import { registerDeleteMaintenance } from "./delete";
 
 const maintenance = new OpenAPIHono<AppEnv>();
 
-maintenance.use("/*", requireTeamMember());
+maintenance.use("/:teamId", requireTeamMember());
+maintenance.use("/:teamId/*", requireTeamMember());
 
 registerPostMaintenance(maintenance);
 registerGetAllMaintenance(maintenance);

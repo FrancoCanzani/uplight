@@ -9,7 +9,7 @@ import { MaintenanceResponseSchema } from "./schemas";
 
 const route = createRoute({
   method: "get",
-  path: "/:monitorId",
+  path: "/:teamId/:monitorId",
   tags: ["maintenance"],
   summary: "List maintenance windows",
   responses: {
@@ -68,4 +68,3 @@ export function registerGetAllMaintenance(api: OpenAPIHono<AppEnv>) {
     );
   });
 }
-

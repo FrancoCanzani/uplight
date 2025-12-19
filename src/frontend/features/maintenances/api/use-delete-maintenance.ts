@@ -11,11 +11,8 @@ async function deleteMaintenance({
   teamId,
   maintenanceId,
 }: DeleteMaintenanceParams): Promise<void> {
-  const response = await fetch(`/api/maintenance/${maintenanceId}`, {
+  const response = await fetch(`/api/maintenance/${teamId}/${maintenanceId}`, {
     method: "DELETE",
-    headers: {
-      "x-team-id": teamId,
-    },
   });
 
   if (!response.ok) {
@@ -32,7 +29,7 @@ export function useDeleteMaintenance() {
     onSuccess: (_, variables) => {
       toast.success("Maintenance deleted");
       queryClient.invalidateQueries({
-        queryKey: ["maintenance", variables.monitorId],
+        queryKey: ["maintenance", variables.teamId, variables.monitorId],
       });
     },
     onError: (error) => {
@@ -42,4 +39,3 @@ export function useDeleteMaintenance() {
     },
   });
 }
-

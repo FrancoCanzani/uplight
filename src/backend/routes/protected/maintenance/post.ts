@@ -8,7 +8,7 @@ import { CreateMaintenanceSchema, MaintenanceResponseSchema } from "./schemas";
 
 const route = createRoute({
   method: "post",
-  path: "/",
+  path: "/:teamId",
   tags: ["maintenance"],
   summary: "Schedule maintenance",
   request: {
@@ -81,4 +81,3 @@ export function registerPostMaintenance(api: OpenAPIHono<AppEnv>) {
     );
   });
 }
-
