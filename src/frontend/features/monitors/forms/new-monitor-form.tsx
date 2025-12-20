@@ -10,8 +10,8 @@ import {
   FieldTitle,
 } from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { NewHttpMonitorForm } from "./new-http-monitor-form";
-import { NewTcpMonitorForm } from "./new-tcp-monitor-form";
+import { HttpMonitorForm } from "./http-monitor-form";
+import { TcpMonitorForm } from "./tcp-monitor-form";
 
 type MonitorType = "http" | "tcp";
 
@@ -64,11 +64,7 @@ export function NewMonitorForm() {
       </div>
 
       <div>
-        {monitorType === "http" ? (
-          <NewHttpMonitorForm />
-        ) : (
-          <NewTcpMonitorForm />
-        )}
+        {monitorType === "http" ? <HttpMonitorForm /> : <TcpMonitorForm />}
       </div>
     </div>
   );

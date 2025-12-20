@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/card";
 import { formatDate } from "@lib/utils";
 import { getRouteApi, Link } from "@tanstack/react-router";
+import getLocationLabel from "../utils/get-location-label";
 import LatestIncident from "./latest-incident";
 import MonitorHeader from "./monitor-header";
 import RecentChecksTable from "./recent-checks-table";
@@ -14,7 +15,6 @@ import RegionFilter from "./region-filter";
 import ResponseTimeChart from "./response-time-chart";
 import ResponseTimeStats from "./response-time-stats";
 import TimePeriodFilter from "./time-period-filter";
-import getLocationLabel from "../utils/get-location-label";
 
 export default function MonitorPage() {
   const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
@@ -50,7 +50,7 @@ export default function MonitorPage() {
       </div>
 
       <div className="flex items-center justify-start gap-x-1.5">
-        Data for
+        Data from
         <TimePeriodFilter
           teamId={teamId}
           monitorId={monitorId}
@@ -69,7 +69,10 @@ export default function MonitorPage() {
         ) : (
           availableRegions[0] && (
             <>
-              in <span className="text-muted-foreground">{getLocationLabel(availableRegions[0])}</span>
+              in{" "}
+              <span className="text-muted-foreground">
+                {getLocationLabel(availableRegions[0])}
+              </span>
             </>
           )
         )}

@@ -33,6 +33,7 @@ import { useForm } from "@tanstack/react-form";
 import { useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { useCreateMonitor } from "../api/use-create-monitor";
+import { useUpdateMonitor } from "../api/use-update-monitor";
 import {
   HTTP_METHODS,
   INTERVALS,
@@ -40,11 +41,15 @@ import {
   STATUS_CODE_OPTIONS,
   type HttpMethod,
 } from "../constants";
-import { HttpMonitorSchema, type HttpMonitorInput } from "../schemas";
+import {
+  HttpMonitorSchema,
+  type HttpMonitorInput,
+  type MonitorResponse,
+} from "../schemas";
 import { expandStatusCodes } from "../utils/expand-status-codes";
 import { getSelectedOptions } from "../utils/get-selected-options";
 
-const defaultValues: HttpMonitorInput = {
+const emptyValues: HttpMonitorInput = {
   type: "http",
   name: "",
   url: "",
@@ -63,10 +68,48 @@ const defaultValues: HttpMonitorInput = {
   contentCheck: undefined,
 };
 
-export function NewHttpMonitorForm() {
+function monitorToFormValues(monitor: MonitorResponse): HttpMonitorInput {
+  const locations = monitor.locations ? JSON.parse(monitor.locations) : [];
+  const contentCheck = monitor.contentCheck
+    ? JSON.parse(monitor.contentCheck)
+    : undefined;
+  const expectedStatusCodes = monitor.expectedStatusCodes
+    ? JSON.parse(monitor.expectedStatusCodes)
+    : [200];
+  const headers = monitor.headers ? JSON.parse(monitor.headers) : {};
+
+  return {
+    type: "http",
+    name: monitor.name,
+    url: monitor.url ?? "",
+    method: (monitor.method ?? "get") as HttpMethod,
+    interval: monitor.interval,
+    timeout: monitor.timeout,
+    locations,
+    headers,
+    body: monitor.body ?? "",
+    username: monitor.username ?? "",
+    password: monitor.password ?? "",
+    expectedStatusCodes,
+    followRedirects: monitor.followRedirects,
+    verifySSL: monitor.verifySSL,
+    checkDNS: monitor.checkDNS,
+    contentCheck,
+  };
+}
+
+export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
   const { teamId } = useParams({ from: "/(dashboard)/$teamId" });
-  const [contentCheckEnabled, setContentCheckEnabled] = useState(false);
+  const isEditing = !!monitor;
+  const defaultValues = monitor ? monitorToFormValues(monitor) : emptyValues;
+  const [contentCheckEnabled, setContentCheckEnabled] = useState(
+    !!defaultValues.contentCheck,
+  );
   const createMonitor = useCreateMonitor();
+  const updateMonitor = useUpdateMonitor();
+  const isPending = isEditing
+    ? updateMonitor.isPending
+    : createMonitor.isPending;
 
   const form = useForm({
     defaultValues,
@@ -75,7 +118,15 @@ export function NewHttpMonitorForm() {
     },
     onSubmit: async ({ value }) => {
       const parsed = HttpMonitorSchema.parse(value);
-      createMonitor.mutate({ teamId: Number(teamId), data: parsed });
+      if (isEditing) {
+        updateMonitor.mutate({
+          teamId: Number(teamId),
+          monitorId: monitor.id,
+          data: parsed,
+        });
+      } else {
+        createMonitor.mutate({ teamId: Number(teamId), data: parsed });
+      }
     },
   });
 
@@ -203,7 +254,7 @@ export function NewHttpMonitorForm() {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 const selectedInterval = INTERVALS.find(
-                  (interval) => interval.value === field.state.value
+                  (interval) => interval.value === field.state.value,
                 );
                 return (
                   <Field data-invalid={isInvalid}>
@@ -284,7 +335,7 @@ export function NewHttpMonitorForm() {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 const selectedOptions = getSelectedOptions(
-                  field.state.value || []
+                  field.state.value || [],
                 );
                 const displayText =
                   selectedOptions.length > 0
@@ -300,15 +351,15 @@ export function NewHttpMonitorForm() {
                       <Popover>
                         <PopoverTrigger
                           className={cn(
-                            "bg-input/20 dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 h-9 rounded-sm border px-2 py-0.5 text-sm transition-colors focus-visible:ring-[2px] aria-invalid:ring-[2px] md:text-xs/relaxed text-left flex-1 min-w-0 outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-between",
-                            isInvalid && "aria-invalid"
+                            "bg-input/20 dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 h-9 rounded-sm border px-2 py-0.5 text-sm transition-colors focus-visible:ring-2 aria-invalid:ring-2 md:text-xs/relaxed text-left flex-1 min-w-0 outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-between",
+                            isInvalid && "aria-invalid",
                           )}
                           aria-invalid={isInvalid}
                         >
                           <span
                             className={cn(
                               displayText === "Select status codes" &&
-                                "text-muted-foreground"
+                                "text-muted-foreground",
                             )}
                           >
                             {displayText}
@@ -332,7 +383,7 @@ export function NewHttpMonitorForm() {
                             <FieldGroup>
                               {STATUS_CODE_OPTIONS.map((option) => {
                                 const isSelected = selectedOptions.includes(
-                                  option.value
+                                  option.value,
                                 );
                                 return (
                                   <Field
@@ -345,7 +396,7 @@ export function NewHttpMonitorForm() {
                                       onCheckedChange={(checked) => {
                                         const currentOptions =
                                           getSelectedOptions(
-                                            field.state.value || []
+                                            field.state.value || [],
                                           );
                                         let newOptions: string[];
                                         if (checked) {
@@ -355,7 +406,7 @@ export function NewHttpMonitorForm() {
                                           ];
                                         } else {
                                           newOptions = currentOptions.filter(
-                                            (v) => v !== option.value
+                                            (v) => v !== option.value,
                                           );
                                         }
                                         const newCodes =
@@ -454,7 +505,7 @@ export function NewHttpMonitorForm() {
                               } else {
                                 const currentValue = field.state.value;
                                 const newValue = currentValue.filter(
-                                  (loc) => loc !== location.id
+                                  (loc) => loc !== location.id,
                                 );
                                 field.handleChange(newValue);
                               }
@@ -822,20 +873,24 @@ export function NewHttpMonitorForm() {
           )}
         </div>
 
-        <Separator />
-
         <div className="flex justify-end w-full gap-3 pt-4">
           <Button
             type="button"
             variant="destructive"
-            size={"sm"}
+            size={"xs"}
             onClick={() => form.reset()}
-            disabled={createMonitor.isPending}
+            disabled={isPending}
           >
             Reset
           </Button>
-          <Button type="submit" size={"sm"} disabled={createMonitor.isPending}>
-            {createMonitor.isPending ? "Creating..." : "Create Monitor"}
+          <Button type="submit" size={"xs"} disabled={isPending}>
+            {isPending
+              ? isEditing
+                ? "Saving..."
+                : "Creating..."
+              : isEditing
+                ? "Save Changes"
+                : "Create Monitor"}
           </Button>
         </div>
       </FieldGroup>

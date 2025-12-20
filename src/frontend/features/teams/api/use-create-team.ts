@@ -1,4 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import type { CreateTeam, TeamResponse } from "../schemas";
 
@@ -20,7 +21,7 @@ async function createTeam(data: CreateTeam): Promise<TeamResponse> {
 }
 
 export function useCreateTeam() {
-  const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: createTeam,
@@ -28,7 +29,7 @@ export function useCreateTeam() {
       toast.success("Team created", {
         description: `${data.name} is ready to use`,
       });
-      queryClient.invalidateQueries({ queryKey: ["teams"] });
+      router.invalidate();
     },
     onError: (error) => {
       toast.error("Failed to create team", {

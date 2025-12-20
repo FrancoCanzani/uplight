@@ -1,4 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 interface DeleteMaintenanceParams {
@@ -22,15 +23,13 @@ async function deleteMaintenance({
 }
 
 export function useDeleteMaintenance() {
-  const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: deleteMaintenance,
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       toast.success("Maintenance deleted");
-      queryClient.invalidateQueries({
-        queryKey: ["maintenance", variables.teamId, variables.monitorId],
-      });
+      router.invalidate();
     },
     onError: (error) => {
       toast.error("Failed to delete maintenance", {

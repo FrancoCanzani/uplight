@@ -25,10 +25,15 @@ import { useForm } from "@tanstack/react-form";
 import { useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { useCreateMonitor } from "../api/use-create-monitor";
+import { useUpdateMonitor } from "../api/use-update-monitor";
 import { INTERVALS, LOCATIONS } from "../constants";
-import { TcpMonitorSchema, type TcpMonitorInput } from "../schemas";
+import {
+  TcpMonitorSchema,
+  type MonitorResponse,
+  type TcpMonitorInput,
+} from "../schemas";
 
-const defaultValues: TcpMonitorInput = {
+const emptyValues: TcpMonitorInput = {
   type: "tcp",
   name: "",
   host: "",
@@ -39,10 +44,36 @@ const defaultValues: TcpMonitorInput = {
   contentCheck: undefined,
 };
 
-export function NewTcpMonitorForm() {
+function monitorToFormValues(monitor: MonitorResponse): TcpMonitorInput {
+  const locations = monitor.locations ? JSON.parse(monitor.locations) : [];
+  const contentCheck = monitor.contentCheck
+    ? JSON.parse(monitor.contentCheck)
+    : undefined;
+
+  return {
+    type: "tcp",
+    name: monitor.name,
+    host: monitor.host ?? "",
+    port: monitor.port ?? 443,
+    interval: monitor.interval,
+    timeout: monitor.timeout,
+    locations,
+    contentCheck,
+  };
+}
+
+export function TcpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
   const { teamId } = useParams({ from: "/(dashboard)/$teamId" });
-  const [contentCheckEnabled, setContentCheckEnabled] = useState(false);
+  const isEditing = !!monitor;
+  const defaultValues = monitor ? monitorToFormValues(monitor) : emptyValues;
+  const [contentCheckEnabled, setContentCheckEnabled] = useState(
+    !!defaultValues.contentCheck,
+  );
   const createMonitor = useCreateMonitor();
+  const updateMonitor = useUpdateMonitor();
+  const isPending = isEditing
+    ? updateMonitor.isPending
+    : createMonitor.isPending;
 
   const form = useForm({
     defaultValues,
@@ -51,7 +82,15 @@ export function NewTcpMonitorForm() {
     },
     onSubmit: async ({ value }) => {
       const parsed = TcpMonitorSchema.parse(value);
-      createMonitor.mutate({ teamId: Number(teamId), data: parsed });
+      if (isEditing) {
+        updateMonitor.mutate({
+          teamId: Number(teamId),
+          monitorId: monitor.id,
+          data: parsed,
+        });
+      } else {
+        createMonitor.mutate({ teamId: Number(teamId), data: parsed });
+      }
     },
   });
 
@@ -176,7 +215,7 @@ export function NewTcpMonitorForm() {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 const selectedInterval = INTERVALS.find(
-                  (interval) => interval.value === field.state.value
+                  (interval) => interval.value === field.state.value,
                 );
                 return (
                   <Field data-invalid={isInvalid}>
@@ -288,7 +327,7 @@ export function NewTcpMonitorForm() {
                               } else {
                                 const currentValue = field.state.value;
                                 const newValue = currentValue.filter(
-                                  (loc) => loc !== location.id
+                                  (loc) => loc !== location.id,
                                 );
                                 field.handleChange(newValue);
                               }
@@ -427,7 +466,7 @@ export function NewTcpMonitorForm() {
                         onChange={(e) => field.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
                         placeholder='"status": "ok"'
-                        className="min-h-[80px] font-mono text-sm"
+                        className="min-h-20 font-mono text-sm"
                       />
                       <FieldDescription>
                         The text to search for in the response body (max 1000
@@ -444,20 +483,24 @@ export function NewTcpMonitorForm() {
           )}
         </div>
 
-        <Separator />
-
         <div className="flex justify-end w-full gap-3 pt-4">
           <Button
             type="button"
             variant="destructive"
-            size={"sm"}
+            size={"xs"}
             onClick={() => form.reset()}
-            disabled={createMonitor.isPending}
+            disabled={isPending}
           >
             Reset
           </Button>
-          <Button type="submit" size={"sm"} disabled={createMonitor.isPending}>
-            {createMonitor.isPending ? "Creating..." : "Create Monitor"}
+          <Button type="submit" size={"xs"} disabled={isPending}>
+            {isPending
+              ? isEditing
+                ? "Saving..."
+                : "Creating..."
+              : isEditing
+                ? "Save Changes"
+                : "Create Monitor"}
           </Button>
         </div>
       </div>

@@ -1,19 +1,21 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
-import type { CreateMonitor, MonitorResponse } from "../schemas";
+import type { MonitorResponse, UpdateMonitor } from "../schemas";
 
-interface CreateMonitorParams {
+interface UpdateMonitorParams {
   teamId: number;
-  data: CreateMonitor;
+  monitorId: number;
+  data: UpdateMonitor;
 }
 
-async function createMonitor({
+async function updateMonitor({
   teamId,
+  monitorId,
   data,
-}: CreateMonitorParams): Promise<MonitorResponse> {
-  const response = await fetch(`/api/monitors/${teamId}`, {
-    method: "POST",
+}: UpdateMonitorParams): Promise<MonitorResponse> {
+  const response = await fetch(`/api/monitors/${teamId}/${monitorId}`, {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
@@ -28,24 +30,24 @@ async function createMonitor({
   return response.json();
 }
 
-export function useCreateMonitor() {
+export function useUpdateMonitor() {
   const navigate = useNavigate();
   const router = useRouter();
 
   return useMutation({
-    mutationFn: createMonitor,
+    mutationFn: updateMonitor,
     onSuccess: (data) => {
-      toast.success("Monitor created", {
-        description: `${data.name} is now being monitored`,
+      toast.success("Monitor updated", {
+        description: `${data.name} has been updated`,
       });
       router.invalidate();
       navigate({
-        to: "/$teamId/monitors",
-        params: { teamId: String(data.teamId) },
+        to: "/$teamId/monitors/$monitorId",
+        params: { teamId: String(data.teamId), monitorId: String(data.id) },
       });
     },
     onError: (error) => {
-      toast.error("Failed to create monitor", {
+      toast.error("Failed to update monitor", {
         description: error.message,
       });
     },

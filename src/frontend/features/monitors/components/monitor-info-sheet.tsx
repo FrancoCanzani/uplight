@@ -8,12 +8,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { cn, formatDate } from "@lib/utils";
+import { formatDate } from "@lib/utils";
+import { Info } from "lucide-react";
 import type { MonitorResponse } from "../schemas";
 import getLocationLabel from "../utils/get-location-label";
-import getStatusColor from "../utils/get-status-color";
 
-export default function MonitorConfigSheet({
+export default function MonitorInfoSheet({
   monitor,
 }: {
   monitor: MonitorResponse;
@@ -28,6 +28,7 @@ export default function MonitorConfigSheet({
       <SheetTrigger
         render={
           <Button variant="outline" size={"xs"}>
+            <Info className="size-3" />
             Info
           </Button>
         }
@@ -44,9 +45,7 @@ export default function MonitorConfigSheet({
             <ConfigItem
               label="Status"
               value={
-                <Badge
-                  className={cn("capitalize", getStatusColor(monitor.status))}
-                >
+                <Badge variant={"outline"} className={"capitalize"}>
                   {monitor.status}
                 </Badge>
               }
@@ -126,10 +125,8 @@ function Section({
 }) {
   return (
     <div className="space-y-3">
-      <h3 className="text-xs font-medium text-muted-foreground capitalize tracking-wider">
-        {title}
-      </h3>
-      <div className="space-y-2">{children}</div>
+      <h3 className="text-xs font-medium capitalize tracking-wider">{title}</h3>
+      <div className="space-y-1.5">{children}</div>
     </div>
   );
 }

@@ -7,8 +7,8 @@ export const Route = createFileRoute("/(dashboard)/$teamId/monitors/new")({
 
 function RouteComponent() {
   return (
-    <div className="w-full">
-      <div className="mb-8">
+    <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
+      <div>
         <h1 className="font-medium text-lg tracking-tight">
           Create New Monitor
         </h1>

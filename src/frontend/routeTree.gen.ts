@@ -20,6 +20,7 @@ import { Route as dashboardTeamIdMonitorsNewRouteImport } from './routes/(dashbo
 import { Route as dashboardTeamIdIncidentsIncidentIdRouteImport } from './routes/(dashboard)/$teamId/incidents/$incidentId'
 import { Route as dashboardTeamIdMonitorsMonitorIdIndexRouteImport } from './routes/(dashboard)/$teamId/monitors/$monitorId/index'
 import { Route as dashboardTeamIdMonitorsMonitorIdMaintenanceRouteImport } from './routes/(dashboard)/$teamId/monitors/$monitorId/maintenance'
+import { Route as dashboardTeamIdMonitorsMonitorIdEditRouteImport } from './routes/(dashboard)/$teamId/monitors/$monitorId/edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -83,6 +84,12 @@ const dashboardTeamIdMonitorsMonitorIdMaintenanceRoute =
     path: '/monitors/$monitorId/maintenance',
     getParentRoute: () => dashboardTeamIdRouteRoute,
   } as any)
+const dashboardTeamIdMonitorsMonitorIdEditRoute =
+  dashboardTeamIdMonitorsMonitorIdEditRouteImport.update({
+    id: '/monitors/$monitorId/edit',
+    path: '/monitors/$monitorId/edit',
+    getParentRoute: () => dashboardTeamIdRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/$teamId/incidents': typeof dashboardTeamIdIncidentsIndexRoute
   '/$teamId/logs': typeof dashboardTeamIdLogsIndexRoute
   '/$teamId/monitors': typeof dashboardTeamIdMonitorsIndexRoute
+  '/$teamId/monitors/$monitorId/edit': typeof dashboardTeamIdMonitorsMonitorIdEditRoute
   '/$teamId/monitors/$monitorId/maintenance': typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
   '/$teamId/monitors/$monitorId': typeof dashboardTeamIdMonitorsMonitorIdIndexRoute
 }
@@ -107,6 +115,7 @@ export interface FileRoutesByTo {
   '/$teamId/incidents': typeof dashboardTeamIdIncidentsIndexRoute
   '/$teamId/logs': typeof dashboardTeamIdLogsIndexRoute
   '/$teamId/monitors': typeof dashboardTeamIdMonitorsIndexRoute
+  '/$teamId/monitors/$monitorId/edit': typeof dashboardTeamIdMonitorsMonitorIdEditRoute
   '/$teamId/monitors/$monitorId/maintenance': typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
   '/$teamId/monitors/$monitorId': typeof dashboardTeamIdMonitorsMonitorIdIndexRoute
 }
@@ -121,6 +130,7 @@ export interface FileRoutesById {
   '/(dashboard)/$teamId/incidents/': typeof dashboardTeamIdIncidentsIndexRoute
   '/(dashboard)/$teamId/logs/': typeof dashboardTeamIdLogsIndexRoute
   '/(dashboard)/$teamId/monitors/': typeof dashboardTeamIdMonitorsIndexRoute
+  '/(dashboard)/$teamId/monitors/$monitorId/edit': typeof dashboardTeamIdMonitorsMonitorIdEditRoute
   '/(dashboard)/$teamId/monitors/$monitorId/maintenance': typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
   '/(dashboard)/$teamId/monitors/$monitorId/': typeof dashboardTeamIdMonitorsMonitorIdIndexRoute
 }
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/$teamId/incidents'
     | '/$teamId/logs'
     | '/$teamId/monitors'
+    | '/$teamId/monitors/$monitorId/edit'
     | '/$teamId/monitors/$monitorId/maintenance'
     | '/$teamId/monitors/$monitorId'
   fileRoutesByTo: FileRoutesByTo
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/$teamId/incidents'
     | '/$teamId/logs'
     | '/$teamId/monitors'
+    | '/$teamId/monitors/$monitorId/edit'
     | '/$teamId/monitors/$monitorId/maintenance'
     | '/$teamId/monitors/$monitorId'
   id:
@@ -162,6 +174,7 @@ export interface FileRouteTypes {
     | '/(dashboard)/$teamId/incidents/'
     | '/(dashboard)/$teamId/logs/'
     | '/(dashboard)/$teamId/monitors/'
+    | '/(dashboard)/$teamId/monitors/$monitorId/edit'
     | '/(dashboard)/$teamId/monitors/$monitorId/maintenance'
     | '/(dashboard)/$teamId/monitors/$monitorId/'
   fileRoutesById: FileRoutesById
@@ -252,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRouteImport
       parentRoute: typeof dashboardTeamIdRouteRoute
     }
+    '/(dashboard)/$teamId/monitors/$monitorId/edit': {
+      id: '/(dashboard)/$teamId/monitors/$monitorId/edit'
+      path: '/monitors/$monitorId/edit'
+      fullPath: '/$teamId/monitors/$monitorId/edit'
+      preLoaderRoute: typeof dashboardTeamIdMonitorsMonitorIdEditRouteImport
+      parentRoute: typeof dashboardTeamIdRouteRoute
+    }
   }
 }
 
@@ -261,6 +281,7 @@ interface dashboardTeamIdRouteRouteChildren {
   dashboardTeamIdIncidentsIndexRoute: typeof dashboardTeamIdIncidentsIndexRoute
   dashboardTeamIdLogsIndexRoute: typeof dashboardTeamIdLogsIndexRoute
   dashboardTeamIdMonitorsIndexRoute: typeof dashboardTeamIdMonitorsIndexRoute
+  dashboardTeamIdMonitorsMonitorIdEditRoute: typeof dashboardTeamIdMonitorsMonitorIdEditRoute
   dashboardTeamIdMonitorsMonitorIdMaintenanceRoute: typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
   dashboardTeamIdMonitorsMonitorIdIndexRoute: typeof dashboardTeamIdMonitorsMonitorIdIndexRoute
 }
@@ -272,6 +293,8 @@ const dashboardTeamIdRouteRouteChildren: dashboardTeamIdRouteRouteChildren = {
   dashboardTeamIdIncidentsIndexRoute: dashboardTeamIdIncidentsIndexRoute,
   dashboardTeamIdLogsIndexRoute: dashboardTeamIdLogsIndexRoute,
   dashboardTeamIdMonitorsIndexRoute: dashboardTeamIdMonitorsIndexRoute,
+  dashboardTeamIdMonitorsMonitorIdEditRoute:
+    dashboardTeamIdMonitorsMonitorIdEditRoute,
   dashboardTeamIdMonitorsMonitorIdMaintenanceRoute:
     dashboardTeamIdMonitorsMonitorIdMaintenanceRoute,
   dashboardTeamIdMonitorsMonitorIdIndexRoute:

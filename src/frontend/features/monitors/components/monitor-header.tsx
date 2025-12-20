@@ -1,9 +1,9 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
-import { Pause, Play } from "lucide-react";
+import { Pause, Pencil, Play, Wrench } from "lucide-react";
 import { useToggleMonitorStatus } from "../api/use-toggle-monitor-status";
 import type { MonitorResponse } from "../schemas";
-import MonitorConfigSheet from "./monitor-config-sheet";
+import MonitorInfoSheet from "./monitor-info-sheet";
 
 export default function MonitorHeader({
   monitor,
@@ -56,13 +56,22 @@ export default function MonitorHeader({
             </>
           )}
         </Button>
-        <MonitorConfigSheet monitor={monitor} />
         <Link
           to="/$teamId/monitors/$monitorId/maintenance"
           params={{ teamId, monitorId }}
           className={buttonVariants({ variant: "outline", size: "xs" })}
         >
+          <Wrench className="size-3" />
           Maintenance
+        </Link>
+        <MonitorInfoSheet monitor={monitor} />
+        <Link
+          to="/$teamId/monitors/$monitorId/edit"
+          params={{ teamId, monitorId }}
+          className={buttonVariants({ variant: "outline", size: "xs" })}
+        >
+          <Pencil className="size-3" />
+          Edit
         </Link>
       </div>
     </div>

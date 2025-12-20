@@ -1,6 +1,7 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
-import type { UpdateMaintenance, Maintenance } from "../schemas";
+import type { Maintenance, UpdateMaintenance } from "../schemas";
 
 interface UpdateMaintenanceParams {
   teamId: string;
@@ -31,15 +32,13 @@ async function updateMaintenance({
 }
 
 export function useUpdateMaintenance() {
-  const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: updateMaintenance,
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       toast.success("Maintenance updated");
-      queryClient.invalidateQueries({
-        queryKey: ["maintenance", variables.teamId, variables.monitorId],
-      });
+      router.invalidate();
     },
     onError: (error) => {
       toast.error("Failed to update maintenance", {

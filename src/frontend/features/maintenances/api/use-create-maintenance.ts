@@ -1,4 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import type { CreateMaintenance, Maintenance } from "../schemas";
 
@@ -28,15 +29,13 @@ async function createMaintenance({
 }
 
 export function useCreateMaintenance() {
-  const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: createMaintenance,
-    onSuccess: (data, variables) => {
+    onSuccess: () => {
       toast.success("Maintenance scheduled");
-      queryClient.invalidateQueries({
-        queryKey: ["maintenance", variables.teamId, data.monitorId],
-      });
+      router.invalidate();
     },
     onError: (error) => {
       toast.error("Failed to schedule maintenance", {
