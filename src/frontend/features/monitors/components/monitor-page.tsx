@@ -93,7 +93,7 @@ export default function MonitorPage() {
         </Card>
         <Card size="xs">
           <CardHeader>
-            <CardDescription>Avg Response</CardDescription>
+            <CardDescription>Avg Response Time</CardDescription>
             <CardTitle className="text-lg">
               <AnimatedNumber value={stats.avgResponseTime} suffix="ms" />
             </CardTitle>

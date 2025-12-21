@@ -27,6 +27,9 @@ export async function performHttpCheck(
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
   const startTime = performance.now();
+  let response: Response | null = null;
+  let responseHeaders: Record<string, string> | undefined;
+  let responseBody: string | undefined;
 
   try {
     const headers = new Headers(request.headers ?? {});
@@ -51,12 +54,17 @@ export async function performHttpCheck(
       fetchOptions.body = request.body;
     }
 
-    const response = await fetch(request.url, fetchOptions);
+    response = await fetch(request.url, fetchOptions);
     const responseTime = Math.round(performance.now() - startTime);
-    const responseHeaders = headersToRecord(response.headers);
+    responseHeaders = headersToRecord(response.headers);
 
     if (!request.expectedStatusCodes.includes(response.status)) {
-      const bodyText = await response.text().catch(() => "");
+      try {
+        const bodyText = await response.text();
+        responseBody = truncate(bodyText, BODY_TRUNCATE);
+      } catch {
+        responseBody = undefined;
+      }
       return {
         result: "failure",
         responseTime,
@@ -64,25 +72,36 @@ export async function performHttpCheck(
         errorMessage: `Expected status ${request.expectedStatusCodes.join(", ")}, got ${response.status}`,
         cause: getCauseFromStatus(response.status),
         responseHeaders,
-        responseBody: truncate(bodyText, BODY_TRUNCATE),
+        responseBody,
       };
     }
 
     if (request.contentCheck?.enabled) {
-      const bodyText = await response.text();
-      const limitedBody = bodyText.slice(0, MAX_BODY_SIZE);
-      const contains = limitedBody.includes(request.contentCheck.content);
-      const shouldContain = request.contentCheck.mode === "contains";
+      try {
+        const bodyText = await response.text();
+        const limitedBody = bodyText.slice(0, MAX_BODY_SIZE);
+        const contains = limitedBody.includes(request.contentCheck.content);
+        const shouldContain = request.contentCheck.mode === "contains";
 
-      if (contains !== shouldContain) {
+        if (contains !== shouldContain) {
+          return {
+            result: "failure",
+            responseTime,
+            statusCode: response.status,
+            errorMessage: `Content check failed: ${request.contentCheck.mode} "${request.contentCheck.content}"`,
+            cause: "content_mismatch",
+            responseHeaders,
+            responseBody: truncate(limitedBody, BODY_TRUNCATE),
+          };
+        }
+      } catch (bodyError) {
         return {
-          result: "failure",
+          result: "error",
           responseTime,
           statusCode: response.status,
-          errorMessage: `Content check failed: ${request.contentCheck.mode} "${request.contentCheck.content}"`,
+          errorMessage: `Failed to read response body: ${bodyError instanceof Error ? bodyError.message : "Unknown error"}`,
           cause: "content_mismatch",
           responseHeaders,
-          responseBody: truncate(limitedBody, BODY_TRUNCATE),
         };
       }
     }
@@ -95,6 +114,15 @@ export async function performHttpCheck(
   } catch (error) {
     const responseTime = Math.round(performance.now() - startTime);
 
+    if (response && responseHeaders && !responseBody) {
+      try {
+        const bodyText = await response.text();
+        responseBody = truncate(bodyText, BODY_TRUNCATE);
+      } catch {
+        // Body reading failed, but we still have headers
+      }
+    }
+
     if (error instanceof Error) {
       if (error.name === "AbortError") {
         return {
@@ -102,6 +130,8 @@ export async function performHttpCheck(
           responseTime,
           errorMessage: `Request timed out after ${timeout}ms`,
           cause: "timeout",
+          ...(responseHeaders && { responseHeaders }),
+          ...(responseBody && { responseBody }),
         };
       }
 
@@ -114,6 +144,8 @@ export async function performHttpCheck(
           responseTime,
           errorMessage: `SSL error: ${error.message}${sslNote}`,
           cause: "ssl_error",
+          ...(responseHeaders && { responseHeaders }),
+          ...(responseBody && { responseBody }),
         };
       }
 
@@ -123,6 +155,8 @@ export async function performHttpCheck(
           responseTime,
           errorMessage: `Connection refused: ${error.message}`,
           cause: "connection_refused",
+          ...(responseHeaders && { responseHeaders }),
+          ...(responseBody && { responseBody }),
         };
       }
 
@@ -130,6 +164,8 @@ export async function performHttpCheck(
         result: "error",
         responseTime,
         errorMessage: error.message,
+        ...(responseHeaders && { responseHeaders }),
+        ...(responseBody && { responseBody }),
       };
     }
 
@@ -137,6 +173,8 @@ export async function performHttpCheck(
       result: "error",
       responseTime,
       errorMessage: "Unknown error",
+      ...(responseHeaders && { responseHeaders }),
+      ...(responseBody && { responseBody }),
     };
   } finally {
     clearTimeout(timeoutId);

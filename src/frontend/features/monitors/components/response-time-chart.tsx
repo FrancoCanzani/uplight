@@ -11,11 +11,11 @@ import { Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
 import type { CheckResult } from "../api/fetch-checks";
 import getLocationLabel from "../utils/get-location-label";
 
-interface ResponseTimeChartProps {
+export default function ResponseTimeChart({
+  checks,
+}: {
   checks: CheckResult[];
-}
-
-export default function ResponseTimeChart({ checks }: ResponseTimeChartProps) {
+}) {
   const { chartData, avgResponseTime, regions, chartConfig } = useMemo(() => {
     const validChecks = checks.filter((c) => c.responseTime > 0);
     const sorted = [...validChecks].sort((a, b) => a.checkedAt - b.checkedAt);
@@ -51,7 +51,7 @@ export default function ResponseTimeChart({ checks }: ResponseTimeChartProps) {
       .sort((a, b) => a.time - b.time);
 
     const allValues = data.flatMap((d) =>
-      uniqueRegions.map((r) => d[r]).filter((v) => v !== undefined)
+      uniqueRegions.map((r) => d[r]).filter((v) => v !== undefined),
     );
     const avg =
       allValues.length > 0
@@ -111,7 +111,6 @@ export default function ResponseTimeChart({ checks }: ResponseTimeChartProps) {
           tick={{ fontSize: 10 }}
           tickLine={false}
           axisLine={false}
-          width={50}
         />
         <ChartTooltip
           content={

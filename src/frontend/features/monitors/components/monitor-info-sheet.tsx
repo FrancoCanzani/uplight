@@ -39,7 +39,7 @@ export default function MonitorInfoSheet({
           <SheetDescription>Monitor configuration details</SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+        <div className="flex-1 overflow-y-auto px-4 space-y-4">
           <Section title="General">
             <ConfigItem label="Type" value={monitor.type.toUpperCase()} />
             <ConfigItem
