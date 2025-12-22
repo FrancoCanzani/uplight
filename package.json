@@ -3,9 +3,25 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "check-types": "turbo run check-types",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean && rm -rf node_modules/.cache .turbo",
+    "format": "turbo run format",
+    "test": "turbo run test",
+    "db:generate": "turbo run db:generate",
+    "db:migrate:dev": "turbo run db:migrate:dev",
+    "db:migrate:prod": "turbo run db:migrate:prod",
+    "deploy": "turbo run deploy",
+    "graph": "turbo run build --graph",
+    "cache:clean": "turbo run build --force"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
+  "packageManager": "bun@1.2.0",
   "workspaces": [
     "apps/*",
     "packages/*"

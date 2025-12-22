@@ -37,7 +37,7 @@ function TeamLayoutComponent() {
   return (
     <SidebarProvider className="">
       <DashboardSidebar />
-      <SidebarInset className="p-4 lg:p-6 h-screen overflow-hidden">
+      <SidebarInset className="p-4 lg:p-6 h-screen">
         <Outlet />
       </SidebarInset>
     </SidebarProvider>
