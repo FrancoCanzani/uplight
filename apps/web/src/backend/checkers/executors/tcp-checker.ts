@@ -1,5 +1,5 @@
 import { connect } from "cloudflare:sockets";
-import type { TcpCheckRequest, RawCheckResult } from "./types";
+import type { TcpCheckRequest, RawCheckResult } from "../types";
 
 export async function performTcpCheck(
   request: TcpCheckRequest,

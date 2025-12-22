@@ -1,10 +1,10 @@
 import { DurableObject } from "cloudflare:workers";
-import { performHttpCheck } from "./http-checker";
-import { performTcpCheck } from "./tcp-checker";
-import { checkDns } from "./dns-checker";
-import { withRetry } from "./retry";
-import { extractHostname } from "../lib/utils";
-import type { CheckRequest, CheckResult, CheckConfig } from "./types";
+import { performHttpCheck } from "../executors/http-checker";
+import { performTcpCheck } from "../executors/tcp-checker";
+import { checkDns } from "../executors/dns-checker";
+import { withRetry } from "../utils/retry";
+import { extractHostname } from "../../lib/utils";
+import type { CheckRequest, CheckResult, CheckConfig } from "../types";
 
 export class CheckerDO extends DurableObject<Env> {
   async fetch(request: Request): Promise<Response> {

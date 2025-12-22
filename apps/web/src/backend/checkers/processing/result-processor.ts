@@ -1,9 +1,9 @@
 import { eq } from "drizzle-orm";
-import { createDb } from "../db";
-import { checkResult, monitor } from "../db/schema";
+import { createDb } from "../../db";
+import { checkResult, monitor } from "../../db/schema";
 import { manageIncidents } from "./incident-manager";
 import { sendNotifications } from "./notifier";
-import type { CheckResult } from "./types";
+import type { CheckResult } from "../types";
 
 type MonitorStatus =
   | "up"

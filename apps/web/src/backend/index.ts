@@ -5,13 +5,12 @@ import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { secureHeaders } from "hono/secure-headers";
 import { createAuth } from "../../auth";
+import { handleScheduled } from "./checkers/entry/cron";
 import { authMiddleware, requireAuth } from "./middleware/auth";
-import { publicRouter } from "./routes/public";
 import { protectedRouter } from "./routes/protected";
-import { handleScheduled } from "./checkers/cron";
+import { publicRouter } from "./routes/public";
 import type { AppEnv } from "./types";
-
-export { CheckerDO } from "./checkers/durable-object";
+export { CheckerDO } from "./checkers/entry/durable-object";
 
 const app = new OpenAPIHono<AppEnv>();
 
@@ -54,11 +53,7 @@ app.doc("/api/openapi", {
 
 export default {
   fetch: app.fetch,
-  async scheduled(
-    controller: ScheduledController,
-    env: Env,
-    ctx: ExecutionContext
-  ) {
+  async scheduled(env: Env, ctx: ExecutionContext) {
     ctx.waitUntil(handleScheduled(env));
   },
 };

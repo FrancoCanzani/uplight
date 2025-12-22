@@ -180,16 +180,8 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-### Node Patch ###
-# Serverless Webpack directories
-.webpack/
-
-# Optional stylelint cache
-
-# SvelteKit build / generate output
-.svelte-kit
-
-# End of https://www.toptal.com/developers/gitignore/api/macos,node,git
+# turborepo
+.turbo
 
 ### Wrangler ###
 .wrangler/

@@ -1,4 +1,4 @@
-import type { CheckConfig, RawCheckResult } from "./types";
+import type { CheckConfig, RawCheckResult } from "../types";
 
 const RETRIABLE_ERRORS = [
   "econnreset",

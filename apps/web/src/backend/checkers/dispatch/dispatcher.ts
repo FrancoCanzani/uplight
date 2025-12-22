@@ -1,4 +1,4 @@
-import type { CheckRequest, CheckResult, Location, MonitorRow } from "./types";
+import type { CheckRequest, CheckResult, Location, MonitorRow } from "../types";
 
 const LOCATION_HINTS: Record<Location, DurableObjectLocationHint> = {
   wnam: "wnam",

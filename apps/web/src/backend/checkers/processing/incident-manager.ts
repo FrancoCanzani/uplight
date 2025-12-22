@@ -1,7 +1,7 @@
 import { eq, and } from "drizzle-orm";
-import { createDb } from "../db";
-import { incident } from "../db/schema";
-import type { CheckResult, IncidentCause } from "./types";
+import { createDb } from "../../db";
+import { incident } from "../../db/schema";
+import type { CheckResult, IncidentCause } from "../types";
 
 export interface IncidentEvent {
   type: "created" | "resolved";

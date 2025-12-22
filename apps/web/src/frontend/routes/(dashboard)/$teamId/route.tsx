@@ -35,9 +35,9 @@ export const Route = createFileRoute("/(dashboard)/$teamId")({
 
 function TeamLayoutComponent() {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="">
       <DashboardSidebar />
-      <SidebarInset className="p-4 lg:p-6">
+      <SidebarInset className="p-4 lg:p-6 h-screen overflow-hidden">
         <Outlet />
       </SidebarInset>
     </SidebarProvider>

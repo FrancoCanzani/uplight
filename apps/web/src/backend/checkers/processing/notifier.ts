@@ -1,6 +1,6 @@
-import type { CheckResult } from "./types";
+import type { CheckResult } from "../types";
 import type { IncidentEvent } from "./incident-manager";
-import { formatDuration } from "../lib/utils";
+import { formatDuration } from "../../lib/utils";
 
 interface NotificationContext {
   monitorId: number;

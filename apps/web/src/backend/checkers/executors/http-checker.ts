@@ -1,5 +1,5 @@
-import type { HttpCheckRequest, RawCheckResult, IncidentCause } from "./types";
-import { truncate, headersToRecord } from "../lib/utils";
+import type { HttpCheckRequest, RawCheckResult, IncidentCause } from "../types";
+import { truncate, headersToRecord } from "../../lib/utils";
 
 const MAX_BODY_SIZE = 1024 * 1024;
 const BODY_TRUNCATE = 2048;

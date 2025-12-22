@@ -5,37 +5,37 @@
   "compatibility_date": "2025-10-08",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
-    "enabled": true
+    "enabled": true,
   },
   "upload_source_maps": true,
   "assets": {
     "directory": "./dist/client",
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
   },
   "durable_objects": {
     "bindings": [
       {
         "name": "CHECKER",
-        "class_name": "CheckerDO"
-      }
-    ]
+        "class_name": "CheckerDO",
+      },
+    ],
   },
   "migrations": [
     {
       "tag": "v1",
-      "new_sqlite_classes": ["CheckerDO"]
-    }
+      "new_sqlite_classes": ["CheckerDO"],
+    },
   ],
   "triggers": {
-    "crons": ["* * * * *"]
+    "crons": ["* * * * *"],
   },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "uplight-dev",
       "database_id": "b516a049-f7df-4d70-982b-5bc3b4a33bda",
-      "migrations_dir": "drizzle"
-    }
+      "migrations_dir": "drizzle",
+    },
   ],
   "env": {
     "production": {
@@ -45,9 +45,9 @@
           "binding": "DB",
           "database_name": "uplight-prod",
           "database_id": "c03b99be-0c6c-4944-83a4-b105835ca5d3",
-          "migrations_dir": "drizzle"
-        }
-      ]
+          "migrations_dir": "drizzle",
+        },
+      ],
     },
     "dev": {
       "name": "uplight",
@@ -56,9 +56,9 @@
           "binding": "DB",
           "database_name": "uplight-dev",
           "database_id": "b516a049-f7df-4d70-982b-5bc3b4a33bda",
-          "migrations_dir": "drizzle"
-        }
-      ]
-    }
-  }
+          "migrations_dir": "drizzle",
+        },
+      ],
+    },
+  },
 }

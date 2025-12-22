@@ -1,9 +1,9 @@
 import { and, ne, eq, lte, gt } from "drizzle-orm";
-import { createDb } from "../db";
-import { monitor, maintenance, checkResult } from "../db/schema";
-import { dispatchChecks } from "./dispatcher";
-import { processResults } from "./result-processor";
-import type { Location } from "./types";
+import { createDb } from "../../db";
+import { monitor, maintenance, checkResult } from "../../db/schema";
+import { dispatchChecks } from "../dispatch/dispatcher";
+import { processResults } from "../processing/result-processor";
+import type { Location } from "../types";
 
 export async function handleScheduled(env: Env): Promise<void> {
   const db = createDb(env.DB);
