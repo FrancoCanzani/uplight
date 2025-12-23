@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/table";
 import { formatDate } from "@lib/utils";
 import type { CheckResult } from "../api/fetch-checks";
-import CheckResultIcon from "./check-result-icon";
 import getLocationLabel from "../utils/get-location-label";
+import CheckResultIcon from "./check-result-icon";
 
 export default function RecentChecksTable({
   checks,

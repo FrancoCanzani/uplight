@@ -11,6 +11,7 @@ import { protectedRouter } from "./routes/protected";
 import { publicRouter } from "./routes/public";
 import type { AppEnv } from "./types";
 export { CheckerDO } from "./checkers/entry/durable-object";
+import { waitUntil } from "cloudflare:workers";
 
 const app = new OpenAPIHono<AppEnv>();
 
@@ -53,7 +54,11 @@ app.doc("/api/openapi", {
 
 export default {
   fetch: app.fetch,
-  async scheduled(env: Env, ctx: ExecutionContext) {
-    ctx.waitUntil(handleScheduled(env));
+  async scheduled(
+    controller: ScheduledController,
+    env: Env,
+    ctx: ExecutionContext
+  ) {
+    waitUntil(handleScheduled(env));
   },
 };

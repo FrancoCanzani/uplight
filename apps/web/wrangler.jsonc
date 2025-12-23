@@ -40,6 +40,14 @@
   "env": {
     "production": {
       "name": "uplight",
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "CHECKER",
+            "class_name": "CheckerDO",
+          },
+        ],
+      },
       "d1_databases": [
         {
           "binding": "DB",
@@ -51,6 +59,14 @@
     },
     "dev": {
       "name": "uplight",
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "CHECKER",
+            "class_name": "CheckerDO",
+          },
+        ],
+      },
       "d1_databases": [
         {
           "binding": "DB",
