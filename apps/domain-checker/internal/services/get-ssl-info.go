@@ -2,6 +2,7 @@ package services
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"domain-checker/internal/helpers"
 	"fmt"
 	"log"
@@ -18,8 +19,16 @@ type SSLInfo struct {
 func GetSSLInfo(domain string) (*SSLInfo, error) {
 	log.Printf("[INFO] Checking SSL certificate for domain: %s", domain)
 
+	// Load system certificate pool for proper certificate verification
+	rootCAs, err := x509.SystemCertPool()
+	if err != nil {
+		log.Printf("[WARN] Failed to load system cert pool: %v, using default", err)
+		rootCAs = nil // nil means use default/embedded certificates
+	}
+
 	conf := &tls.Config{
 		InsecureSkipVerify: false, // do not allow expired/invalid certs
+		RootCAs:            rootCAs,
 	}
 
 	dialer := &net.Dialer{Timeout: 5 * time.Second}

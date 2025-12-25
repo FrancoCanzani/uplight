@@ -113,6 +113,8 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
         baseUpdates.followRedirects = data.followRedirects;
       if (data.verifySSL !== undefined) baseUpdates.verifySSL = data.verifySSL;
       if (data.checkDNS !== undefined) baseUpdates.checkDNS = data.checkDNS;
+      if (data.checkDomain !== undefined)
+        baseUpdates.checkDomain = data.checkDomain;
     } else if (data.type === "tcp") {
       if (data.host !== undefined) baseUpdates.host = data.host;
       if (data.port !== undefined) baseUpdates.port = data.port;

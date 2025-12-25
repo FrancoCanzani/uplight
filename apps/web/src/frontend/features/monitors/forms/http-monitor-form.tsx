@@ -65,6 +65,7 @@ const emptyValues: HttpMonitorInput = {
   followRedirects: true,
   verifySSL: true,
   checkDNS: true,
+  checkDomain: true,
   contentCheck: undefined,
 };
 
@@ -94,6 +95,7 @@ function monitorToFormValues(monitor: MonitorResponse): HttpMonitorInput {
     followRedirects: monitor.followRedirects,
     verifySSL: monitor.verifySSL,
     checkDNS: monitor.checkDNS,
+    checkDomain: monitor.checkDomain,
     contentCheck,
   };
 }
@@ -103,7 +105,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
   const isEditing = !!monitor;
   const defaultValues = monitor ? monitorToFormValues(monitor) : emptyValues;
   const [contentCheckEnabled, setContentCheckEnabled] = useState(
-    !!defaultValues.contentCheck,
+    !!defaultValues.contentCheck
   );
   const createMonitor = useCreateMonitor();
   const updateMonitor = useUpdateMonitor();
@@ -254,7 +256,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 const selectedInterval = INTERVALS.find(
-                  (interval) => interval.value === field.state.value,
+                  (interval) => interval.value === field.state.value
                 );
                 return (
                   <Field data-invalid={isInvalid}>
@@ -335,7 +337,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 const selectedOptions = getSelectedOptions(
-                  field.state.value || [],
+                  field.state.value || []
                 );
                 const displayText =
                   selectedOptions.length > 0
@@ -352,14 +354,14 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                         <PopoverTrigger
                           className={cn(
                             "bg-input/20 dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 h-9 rounded-sm border px-2 py-0.5 text-sm transition-colors focus-visible:ring-2 aria-invalid:ring-2 md:text-xs/relaxed text-left flex-1 min-w-0 outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-between",
-                            isInvalid && "aria-invalid",
+                            isInvalid && "aria-invalid"
                           )}
                           aria-invalid={isInvalid}
                         >
                           <span
                             className={cn(
                               displayText === "Select status codes" &&
-                                "text-muted-foreground",
+                                "text-muted-foreground"
                             )}
                           >
                             {displayText}
@@ -383,7 +385,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                             <FieldGroup>
                               {STATUS_CODE_OPTIONS.map((option) => {
                                 const isSelected = selectedOptions.includes(
-                                  option.value,
+                                  option.value
                                 );
                                 return (
                                   <Field
@@ -396,7 +398,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                                       onCheckedChange={(checked) => {
                                         const currentOptions =
                                           getSelectedOptions(
-                                            field.state.value || [],
+                                            field.state.value || []
                                           );
                                         let newOptions: string[];
                                         if (checked) {
@@ -406,7 +408,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                                           ];
                                         } else {
                                           newOptions = currentOptions.filter(
-                                            (v) => v !== option.value,
+                                            (v) => v !== option.value
                                           );
                                         }
                                         const newCodes =
@@ -505,7 +507,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                               } else {
                                 const currentValue = field.state.value;
                                 const newValue = currentValue.filter(
-                                  (loc) => loc !== location.id,
+                                  (loc) => loc !== location.id
                                 );
                                 field.handleChange(newValue);
                               }
@@ -601,6 +603,31 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                       <FieldLabel htmlFor={field.name}>Check DNS</FieldLabel>
                       <FieldDescription>
                         Verify DNS resolution before making the request
+                      </FieldDescription>
+                    </FieldContent>
+                    <Switch
+                      id={field.name}
+                      name={field.name}
+                      checked={field.state.value}
+                      onCheckedChange={field.handleChange}
+                      aria-invalid={isInvalid}
+                    />
+                  </Field>
+                );
+              }}
+            />
+
+            <form.Field
+              name="checkDomain"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field orientation="horizontal" data-invalid={isInvalid}>
+                    <FieldContent>
+                      <FieldLabel htmlFor={field.name}>Check Domain</FieldLabel>
+                      <FieldDescription>
+                        Monitor domain expiration and SSL certificate
                       </FieldDescription>
                     </FieldContent>
                     <Switch

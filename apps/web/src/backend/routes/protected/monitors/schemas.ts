@@ -46,6 +46,7 @@ export const HttpMonitorSchema = z
     followRedirects: z.boolean().default(true),
     verifySSL: z.boolean().default(true),
     checkDNS: z.boolean().default(true),
+    checkDomain: z.boolean().default(true),
     contentCheck: ContentCheckSchema.optional(),
   })
   .openapi("HttpMonitor");
@@ -83,6 +84,24 @@ export const MonitorStatusSchema = z.enum([
   "initializing",
 ]);
 
+export const DomainCheckSchema = z
+  .object({
+    id: z.number().int(),
+    domain: z.string(),
+    whoisCreatedDate: z.string().nullable(),
+    whoisUpdatedDate: z.string().nullable(),
+    whoisExpirationDate: z.string().nullable(),
+    whoisRegistrar: z.string().nullable(),
+    whoisError: z.string().nullable(),
+    sslIssuer: z.string().nullable(),
+    sslExpiry: z.number().int().nullable(),
+    sslIsSelfSigned: z.boolean().nullable(),
+    sslError: z.string().nullable(),
+    checkedAt: z.number().int(),
+  })
+  .nullable()
+  .openapi("DomainCheck");
+
 export const MonitorResponseSchema = z
   .object({
     id: z.number().int().openapi({ example: 1 }),
@@ -105,11 +124,13 @@ export const MonitorResponseSchema = z
     followRedirects: z.boolean(),
     verifySSL: z.boolean(),
     checkDNS: z.boolean(),
+    checkDomain: z.boolean(),
     host: z.string().nullable(),
     port: z.number().int().nullable(),
     status: MonitorStatusSchema,
     createdAt: z.iso.datetime(),
     updatedAt: z.iso.datetime(),
+    domainCheck: DomainCheckSchema,
   })
   .openapi("MonitorResponse");
 

@@ -34,7 +34,7 @@ export const teamMember = sqliteTable(
     primaryKey({ columns: [table.teamId, table.userId] }),
     index("team_member_userId_idx").on(table.userId),
     index("team_member_teamId_idx").on(table.teamId),
-  ],
+  ]
 );
 
 export const monitor = sqliteTable(
@@ -62,6 +62,7 @@ export const monitor = sqliteTable(
     followRedirects: integer({ mode: "boolean" }).default(true).notNull(),
     verifySSL: integer({ mode: "boolean" }).default(true).notNull(),
     checkDNS: integer({ mode: "boolean" }).default(true).notNull(),
+    checkDomain: integer({ mode: "boolean" }).default(true).notNull(),
     host: text(),
     port: integer(),
     status: text({
@@ -82,7 +83,7 @@ export const monitor = sqliteTable(
     index("monitor_teamId_idx").on(table.teamId),
     index("monitor_type_idx").on(table.type),
     index("monitor_status_idx").on(table.status),
-  ],
+  ]
 );
 
 export const teamRelations = relations(team, ({ many }) => ({
@@ -109,6 +110,7 @@ export const monitorRelations = relations(monitor, ({ one, many }) => ({
   checkResults: many(checkResult),
   incidents: many(incident),
   maintenances: many(maintenance),
+  domainCheckResults: many(domainCheckResult),
 }));
 
 export const checkResult = sqliteTable(
@@ -138,9 +140,9 @@ export const checkResult = sqliteTable(
     index("check_result_checked_at_idx").on(table.checkedAt),
     index("check_result_monitor_checked_idx").on(
       table.monitorId,
-      table.checkedAt,
+      table.checkedAt
     ),
-  ],
+  ]
 );
 
 export const checkResultRelations = relations(checkResult, ({ one }) => ({
@@ -170,7 +172,7 @@ export const incident = sqliteTable(
   (table) => [
     index("incident_monitor_idx").on(table.monitorId),
     index("incident_monitor_status_idx").on(table.monitorId, table.status),
-  ],
+  ]
 );
 
 export const incidentRelations = relations(incident, ({ one }) => ({
@@ -197,7 +199,7 @@ export const maintenance = sqliteTable(
   (table) => [
     index("maintenance_monitor_idx").on(table.monitorId),
     index("maintenance_active_idx").on(table.startsAt, table.endsAt),
-  ],
+  ]
 );
 
 export const maintenanceRelations = relations(maintenance, ({ one }) => ({
@@ -207,6 +209,42 @@ export const maintenanceRelations = relations(maintenance, ({ one }) => ({
   }),
 }));
 
+export const domainCheckResult = sqliteTable(
+  "domain_check_result",
+  {
+    id: integer().primaryKey({ autoIncrement: true }),
+    monitorId: integer()
+      .notNull()
+      .references(() => monitor.id, { onDelete: "cascade" }),
+    domain: text().notNull(),
+    whoisCreatedDate: text(),
+    whoisUpdatedDate: text(),
+    whoisExpirationDate: text(),
+    whoisRegistrar: text(),
+    whoisError: text(),
+    sslIssuer: text(),
+    sslExpiry: integer({ mode: "timestamp_ms" }),
+    sslIsSelfSigned: integer({ mode: "boolean" }),
+    sslError: text(),
+    checkedAt: integer({ mode: "timestamp_ms" }).notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    index("domain_check_monitor_idx").on(table.monitorId),
+    index("domain_check_checked_at_idx").on(table.checkedAt),
+  ]
+);
+
+export const domainCheckResultRelations = relations(
+  domainCheckResult,
+  ({ one }) => ({
+    monitor: one(monitor, {
+      fields: [domainCheckResult.monitorId],
+      references: [monitor.id],
+    }),
+  })
+);
+
 export const schema = {
   ...authSchema,
   team,
@@ -215,4 +253,5 @@ export const schema = {
   checkResult,
   incident,
   maintenance,
+  domainCheckResult,
 } as const;

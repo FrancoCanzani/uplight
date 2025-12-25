@@ -9,9 +9,12 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { formatDate } from "@lib/utils";
+import { format, parseISO } from "date-fns";
 import { Info } from "lucide-react";
 import type { MonitorResponse } from "../schemas";
 import getLocationLabel from "../utils/get-location-label";
+import { getWhoisStatus } from "../utils/get-whois-status";
+import { getSslStatus } from "../utils/get-ssl-status";
 
 export default function MonitorInfoSheet({
   monitor,
@@ -76,6 +79,10 @@ export default function MonitorInfoSheet({
                 label="Check DNS"
                 value={monitor.checkDNS ? "Yes" : "No"}
               />
+              <ConfigItem
+                label="Check Domain"
+                value={monitor.checkDomain ? "Yes" : "No"}
+              />
               {expectedStatusCodes.length > 0 && (
                 <ConfigItem
                   label="Expected Status"
@@ -105,6 +112,103 @@ export default function MonitorInfoSheet({
               ))}
             </div>
           </Section>
+
+          {monitor.domainCheck && (
+            <Section title="Domain Check">
+              <ConfigItem
+                label="Domain"
+                value={monitor.domainCheck.domain}
+                mono
+              />
+              {monitor.domainCheck.whoisRegistrar && (
+                <ConfigItem
+                  label="Registrar"
+                  value={monitor.domainCheck.whoisRegistrar}
+                />
+              )}
+              {monitor.domainCheck.whoisExpirationDate && (
+                <ConfigItem
+                  label="Expires"
+                  value={format(
+                    parseISO(monitor.domainCheck.whoisExpirationDate),
+                    "MMM d, yyyy h:mm a"
+                  )}
+                />
+              )}
+              {(() => {
+                const whoisStatus = getWhoisStatus(monitor.domainCheck);
+                return (
+                  <ConfigItem
+                    label="WHOIS Status"
+                    value={
+                      <Badge
+                        variant={
+                          whoisStatus.status === "ok"
+                            ? "secondary"
+                            : whoisStatus.status === "warn"
+                              ? "secondary"
+                              : "destructive"
+                        }
+                      >
+                        {whoisStatus.status === "ok"
+                          ? "OK"
+                          : whoisStatus.status === "warn"
+                            ? "WARN"
+                            : "ERROR"}
+                      </Badge>
+                    }
+                  />
+                );
+              })()}
+              {monitor.domainCheck.sslIssuer && (
+                <ConfigItem
+                  label="SSL Issuer"
+                  value={monitor.domainCheck.sslIssuer}
+                />
+              )}
+              {monitor.domainCheck.sslExpiry && (
+                <ConfigItem
+                  label="SSL Expires"
+                  value={format(
+                    new Date(monitor.domainCheck.sslExpiry),
+                    "MMM d, yyyy h:mm a"
+                  )}
+                />
+              )}
+              {(() => {
+                const sslStatus = getSslStatus(monitor.domainCheck);
+                return (
+                  <ConfigItem
+                    label="SSL Status"
+                    value={
+                      <Badge
+                        variant={
+                          sslStatus.status === "ok"
+                            ? "secondary"
+                            : sslStatus.status === "warn"
+                              ? "secondary"
+                              : "destructive"
+                        }
+                      >
+                        {sslStatus.status === "ok"
+                          ? "OK"
+                          : sslStatus.status === "warn"
+                            ? "WARN"
+                            : "ERROR"}
+                      </Badge>
+                    }
+                  />
+                );
+              })()}
+              <ConfigItem
+                label="Last Checked"
+                value={format(
+                  new Date(monitor.domainCheck.checkedAt),
+                  "MMM d, yyyy h:mm a"
+                )}
+              />
+            </Section>
+          )}
 
           <Section title="Timestamps">
             <ConfigItem label="Created" value={formatDate(monitor.createdAt)} />

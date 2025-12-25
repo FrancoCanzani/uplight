@@ -24,7 +24,7 @@ const route = createRoute({
     201: {
       content: {
         "application/json": {
-          schema: MonitorResponseSchema,
+          schema: MonitorResponseSchema.omit({ domainCheck: true }),
         },
       },
       description: "Monitor created successfully",
@@ -71,7 +71,8 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
             ),
             followRedirects: data.followRedirects ?? true,
             verifySSL: data.verifySSL ?? true,
-            checkDNS: data.checkDNS ?? false,
+            checkDNS: data.checkDNS ?? true,
+            checkDomain: data.checkDomain ?? true,
           }
         : {
             ...baseData,
@@ -80,6 +81,7 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
             followRedirects: false,
             verifySSL: false,
             checkDNS: false,
+            checkDomain: false,
           };
 
     const [createdMonitor] = await db

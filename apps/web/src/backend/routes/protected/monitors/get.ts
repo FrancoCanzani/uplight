@@ -1,8 +1,8 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { and, eq } from "drizzle-orm";
+import { and, eq, desc } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { monitor } from "../../../db/schema";
+import { monitor, domainCheckResult } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { MonitorResponseSchema } from "./schemas";
 
@@ -50,6 +50,33 @@ export function registerGetMonitor(api: OpenAPIHono<AppEnv>) {
       throw new HTTPException(404, { message: "Monitor not found" });
     }
 
-    return c.json(result[0], 200);
+    const [lastDomainCheck] = await db
+      .select()
+      .from(domainCheckResult)
+      .where(eq(domainCheckResult.monitorId, Number(monitorId)))
+      .orderBy(desc(domainCheckResult.checkedAt))
+      .limit(1);
+
+    const monitorWithDomainCheck = {
+      ...result[0],
+      domainCheck: lastDomainCheck
+        ? {
+            id: lastDomainCheck.id,
+            domain: lastDomainCheck.domain,
+            whoisCreatedDate: lastDomainCheck.whoisCreatedDate,
+            whoisUpdatedDate: lastDomainCheck.whoisUpdatedDate,
+            whoisExpirationDate: lastDomainCheck.whoisExpirationDate,
+            whoisRegistrar: lastDomainCheck.whoisRegistrar,
+            whoisError: lastDomainCheck.whoisError,
+            sslIssuer: lastDomainCheck.sslIssuer,
+            sslExpiry: lastDomainCheck.sslExpiry?.getTime() ?? null,
+            sslIsSelfSigned: lastDomainCheck.sslIsSelfSigned,
+            sslError: lastDomainCheck.sslError,
+            checkedAt: lastDomainCheck.checkedAt.getTime(),
+          }
+        : null,
+    };
+
+    return c.json(monitorWithDomainCheck, 200);
   });
 }

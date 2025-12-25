@@ -5,7 +5,8 @@ import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { secureHeaders } from "hono/secure-headers";
 import { createAuth } from "../../auth";
-import { handleScheduled } from "./checkers/entry/cron";
+import { handleMonitorChecks } from "./checkers/entry/checker-cron";
+import { handleDomainChecks } from "./checkers/entry/domain-cron";
 import { authMiddleware, requireAuth } from "./middleware/auth";
 import { protectedRouter } from "./routes/protected";
 import { publicRouter } from "./routes/public";
@@ -59,6 +60,7 @@ export default {
     env: Env,
     ctx: ExecutionContext
   ) {
-    waitUntil(handleScheduled(env));
+    waitUntil(handleMonitorChecks(env));
+    waitUntil(handleDomainChecks(env));
   },
 };

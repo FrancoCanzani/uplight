@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Pause, Pencil, Play, Wrench } from "lucide-react";
 import { useToggleMonitorStatus } from "../api/use-toggle-monitor-status";
 import type { MonitorResponse } from "../schemas";
+import MonitorDomainInfo from "./monitor-domain-info";
 import MonitorInfoSheet from "./monitor-info-sheet";
 
 export default function MonitorHeader({
@@ -28,14 +29,17 @@ export default function MonitorHeader({
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-col items-start">
+        <h1 className="text-lg font-medium">{monitor.name}</h1>
         <div className="flex items-center justify-start gap-x-2">
-          <h1 className="text-lg font-medium">{monitor.name}</h1>
+          <h2 className="text-xs text-muted-foreground">
+            {monitor.type === "http"
+              ? monitor.url
+              : `${monitor.host}:${monitor.port}`}
+          </h2>
+          {monitor.domainCheck && (
+            <MonitorDomainInfo domainCheck={monitor.domainCheck} />
+          )}
         </div>
-        <h2 className="text-xs text-muted-foreground">
-          {monitor.type === "http"
-            ? monitor.url
-            : `${monitor.host}:${monitor.port}`}
-        </h2>
       </div>
       <div className="flex gap-2">
         <Button

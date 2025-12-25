@@ -51,7 +51,6 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// Request timeout middleware (30 seconds)
 	router.Use(func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(c.Request.Context(), 30*time.Second)
 		defer cancel()
@@ -59,7 +58,6 @@ func main() {
 		c.Next()
 	})
 
-	// Health check endpoint
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
 	})

@@ -5,7 +5,7 @@ import { dispatchChecks } from "../dispatch/dispatcher";
 import { processResults } from "../processing/result-processor";
 import type { Location } from "../types";
 
-export async function handleScheduled(env: Env): Promise<void> {
+export async function handleMonitorChecks(env: Env): Promise<void> {
   const db = createDb(env.DB);
   const now = Date.now();
   const nowDate = new Date(now);

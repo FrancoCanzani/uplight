@@ -6,7 +6,7 @@
     "dev": "go run main.go",
     "build": "go build -o bin/domain-checker main.go",
     "check-types": "go vet ./...",
-    "lint": "go fmt ./... && go vet ./..."
+    "lint": "go fmt ./... && go vet ./...",
+    "deploy": "flyctl deploy"
   }
 }
-
