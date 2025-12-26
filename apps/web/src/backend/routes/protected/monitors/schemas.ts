@@ -67,7 +67,6 @@ export const TcpMonitorSchema = z
     locations: z
       .array(LocationSchema)
       .min(1, "Please select at least one monitoring location"),
-    contentCheck: ContentCheckSchema.optional(),
   })
   .openapi("TcpMonitor");
 
@@ -128,8 +127,8 @@ export const MonitorResponseSchema = z
     host: z.string().nullable(),
     port: z.number().int().nullable(),
     status: MonitorStatusSchema,
-    createdAt: z.iso.datetime(),
-    updatedAt: z.iso.datetime(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
     domainCheck: DomainCheckSchema,
   })
   .openapi("MonitorResponse");

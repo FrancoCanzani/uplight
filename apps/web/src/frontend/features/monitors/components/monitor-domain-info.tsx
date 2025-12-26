@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
@@ -6,27 +6,21 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
-import { AlertTriangle, Check, XCircle } from "lucide-react";
-import { DomainCheck } from "../schemas";
+import { Lock } from "lucide-react";
+import { MonitorResponse } from "../schemas";
 import { getSslStatus } from "../utils/get-ssl-status";
 import { getWhoisStatus } from "../utils/get-whois-status";
 
 export default function MonitorDomainInfo({
-  domainCheck,
+  monitor,
 }: {
-  domainCheck: NonNullable<DomainCheck>;
+  monitor: MonitorResponse;
 }) {
-  if (!domainCheck) return null;
+  if (!monitor.domainCheck) return null;
 
-  const whoisStatus = getWhoisStatus(domainCheck);
-  const sslStatus = getSslStatus(domainCheck);
+  const whoisStatus = getWhoisStatus(monitor.domainCheck);
+  const sslStatus = getSslStatus(monitor.domainCheck);
 
-  const WhoisIcon =
-    whoisStatus.status === "ok"
-      ? Check
-      : whoisStatus.status === "warn"
-        ? AlertTriangle
-        : XCircle;
   const whoisColor =
     whoisStatus.status === "ok"
       ? "text-green-700"
@@ -34,12 +28,6 @@ export default function MonitorDomainInfo({
         ? "text-amber-400"
         : "text-destructive";
 
-  const SslIcon =
-    sslStatus.status === "ok"
-      ? Check
-      : sslStatus.status === "warn"
-        ? AlertTriangle
-        : XCircle;
   const sslColor =
     sslStatus.status === "ok"
       ? "text-green-700"
@@ -48,27 +36,55 @@ export default function MonitorDomainInfo({
         : "text-destructive";
 
   return (
-    <div className="flex items-center justify-start gap-x-2">
+    <div className="flex items-center border rounded h-7 px-2 py-1.5 text-xs justify-start gap-x-2">
       <Tooltip>
-        <TooltipTrigger
-          render={
-            <Badge variant="outline">
-              <WhoisIcon className={cn("size-3", whoisColor)} />
-              SSL Cert.
-            </Badge>
-          }
-        />
-        <TooltipContent className={"max-w-72 font-mono"}>
+        <TooltipTrigger className={"flex items-center justify-start gap-x-1.5"}>
+          <Lock className={cn("size-3", sslColor)} />
+          Secure
+        </TooltipTrigger>
+
+        <TooltipContent className={"max-w-64 font-mono"}>
           <div className="space-y-0.5">
-            <p className="font-medium">Domain: {domainCheck.domain}</p>
-            {domainCheck.whoisRegistrar && (
-              <p className="text-xs">Registrar: {domainCheck.whoisRegistrar}</p>
+            <p className="font-medium">SSL Certificate</p>
+            {monitor.domainCheck.sslIssuer && (
+              <p className="text-xs">Issuer: {monitor.domainCheck.sslIssuer}</p>
             )}
-            {domainCheck.whoisExpirationDate && (
+            {monitor.domainCheck.sslExpiry && (
               <p className="text-xs">
                 Expires:{" "}
                 {format(
-                  parseISO(domainCheck.whoisExpirationDate),
+                  new Date(monitor.domainCheck.sslExpiry),
+                  "MMM d, yyyy h:mm a",
+                )}
+              </p>
+            )}
+            {monitor.domainCheck.sslIsSelfSigned && (
+              <p className="text-xs">Self-signed: Yes</p>
+            )}
+            {"message" in sslStatus && sslStatus.message && (
+              <p className="text-xs text-muted-foreground">
+                {sslStatus.message}
+              </p>
+            )}
+          </div>
+        </TooltipContent>
+      </Tooltip>
+      <Separator orientation="vertical" />
+      <Tooltip>
+        <TooltipTrigger className={whoisColor}>{monitor.url}</TooltipTrigger>
+        <TooltipContent className={"max-w-64 font-mono"}>
+          <div className="space-y-0.5">
+            <p className="font-medium">Domain: {monitor.domainCheck.domain}</p>
+            {monitor.domainCheck.whoisRegistrar && (
+              <p className="text-xs">
+                Registrar: {monitor.domainCheck.whoisRegistrar}
+              </p>
+            )}
+            {monitor.domainCheck.whoisExpirationDate && (
+              <p className="text-xs">
+                Expires:{" "}
+                {format(
+                  parseISO(monitor.domainCheck.whoisExpirationDate),
                   "MMM d, yyyy h:mm a",
                 )}
               </p>
@@ -76,39 +92,6 @@ export default function MonitorDomainInfo({
             {"message" in whoisStatus && whoisStatus.message && (
               <p className="text-xs text-muted-foreground">
                 {whoisStatus.message}
-              </p>
-            )}
-          </div>
-        </TooltipContent>
-      </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <Badge variant="outline">
-              <SslIcon className={cn("size-3", sslColor)} />
-              SSL Cert.
-            </Badge>
-          }
-        />
-        <TooltipContent className={"max-w-72 font-mono"}>
-          <div className="space-y-0.5">
-            <p className="font-medium">SSL Certificate</p>
-            {domainCheck.sslIssuer && (
-              <p className="text-xs">Issuer: {domainCheck.sslIssuer}</p>
-            )}
-            {domainCheck.sslExpiry && (
-              <p className="text-xs">
-                Expires:{" "}
-                {format(new Date(domainCheck.sslExpiry), "MMM d, yyyy h:mm a")}
-              </p>
-            )}
-            {domainCheck.sslIsSelfSigned && (
-              <p className="text-xs">Self-signed: Yes</p>
-            )}
-            {"message" in sslStatus && sslStatus.message && (
-              <p className="text-xs text-muted-foreground">
-                {sslStatus.message}
               </p>
             )}
           </div>

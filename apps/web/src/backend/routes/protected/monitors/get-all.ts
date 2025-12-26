@@ -63,6 +63,8 @@ export function registerGetAllMonitors(api: OpenAPIHono<AppEnv>) {
       const domainCheck = domainCheckMap.get(mon.id);
       return {
         ...mon,
+        createdAt: mon.createdAt.toISOString(),
+        updatedAt: mon.updatedAt.toISOString(),
         domainCheck: domainCheck
           ? {
               id: domainCheck.id,

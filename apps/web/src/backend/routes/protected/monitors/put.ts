@@ -1,8 +1,8 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { and, eq } from "drizzle-orm";
+import { and, eq, desc } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { monitor } from "../../../db/schema";
+import { monitor, domainCheckResult } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import {
   HttpMonitorSchema,
@@ -88,7 +88,11 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
     if (data.timeout !== undefined) baseUpdates.timeout = data.timeout;
     if (data.locations !== undefined)
       baseUpdates.locations = JSON.stringify(data.locations);
-    if (data.contentCheck !== undefined)
+    if (
+      data.type === "http" &&
+      "contentCheck" in data &&
+      data.contentCheck !== undefined
+    )
       baseUpdates.contentCheck = data.contentCheck
         ? JSON.stringify(data.contentCheck)
         : null;
@@ -131,6 +135,36 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
       )
       .returning();
 
-    return c.json(updatedMonitor, 200);
+    const [lastDomainCheck] = await db
+      .select()
+      .from(domainCheckResult)
+      .where(eq(domainCheckResult.monitorId, updatedMonitor.id))
+      .orderBy(desc(domainCheckResult.checkedAt))
+      .limit(1);
+
+    return c.json(
+      {
+        ...updatedMonitor,
+        createdAt: updatedMonitor.createdAt.toISOString(),
+        updatedAt: updatedMonitor.updatedAt.toISOString(),
+        domainCheck: lastDomainCheck
+          ? {
+              id: lastDomainCheck.id,
+              domain: lastDomainCheck.domain,
+              whoisCreatedDate: lastDomainCheck.whoisCreatedDate,
+              whoisUpdatedDate: lastDomainCheck.whoisUpdatedDate,
+              whoisExpirationDate: lastDomainCheck.whoisExpirationDate,
+              whoisRegistrar: lastDomainCheck.whoisRegistrar,
+              whoisError: lastDomainCheck.whoisError,
+              sslIssuer: lastDomainCheck.sslIssuer,
+              sslExpiry: lastDomainCheck.sslExpiry?.getTime() ?? null,
+              sslIsSelfSigned: lastDomainCheck.sslIsSelfSigned,
+              sslError: lastDomainCheck.sslError,
+              checkedAt: lastDomainCheck.checkedAt.getTime(),
+            }
+          : null,
+      },
+      200
+    );
   });
 }

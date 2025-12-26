@@ -53,30 +53,33 @@ export function registerGetMonitor(api: OpenAPIHono<AppEnv>) {
     const [lastDomainCheck] = await db
       .select()
       .from(domainCheckResult)
-      .where(eq(domainCheckResult.monitorId, Number(monitorId)))
+      .where(eq(domainCheckResult.monitorId, result[0].id))
       .orderBy(desc(domainCheckResult.checkedAt))
       .limit(1);
 
-    const monitorWithDomainCheck = {
-      ...result[0],
-      domainCheck: lastDomainCheck
-        ? {
-            id: lastDomainCheck.id,
-            domain: lastDomainCheck.domain,
-            whoisCreatedDate: lastDomainCheck.whoisCreatedDate,
-            whoisUpdatedDate: lastDomainCheck.whoisUpdatedDate,
-            whoisExpirationDate: lastDomainCheck.whoisExpirationDate,
-            whoisRegistrar: lastDomainCheck.whoisRegistrar,
-            whoisError: lastDomainCheck.whoisError,
-            sslIssuer: lastDomainCheck.sslIssuer,
-            sslExpiry: lastDomainCheck.sslExpiry?.getTime() ?? null,
-            sslIsSelfSigned: lastDomainCheck.sslIsSelfSigned,
-            sslError: lastDomainCheck.sslError,
-            checkedAt: lastDomainCheck.checkedAt.getTime(),
-          }
-        : null,
-    };
-
-    return c.json(monitorWithDomainCheck, 200);
+    return c.json(
+      {
+        ...result[0],
+        createdAt: result[0].createdAt.toISOString(),
+        updatedAt: result[0].updatedAt.toISOString(),
+        domainCheck: lastDomainCheck
+          ? {
+              id: lastDomainCheck.id,
+              domain: lastDomainCheck.domain,
+              whoisCreatedDate: lastDomainCheck.whoisCreatedDate,
+              whoisUpdatedDate: lastDomainCheck.whoisUpdatedDate,
+              whoisExpirationDate: lastDomainCheck.whoisExpirationDate,
+              whoisRegistrar: lastDomainCheck.whoisRegistrar,
+              whoisError: lastDomainCheck.whoisError,
+              sslIssuer: lastDomainCheck.sslIssuer,
+              sslExpiry: lastDomainCheck.sslExpiry?.getTime() ?? null,
+              sslIsSelfSigned: lastDomainCheck.sslIsSelfSigned,
+              sslError: lastDomainCheck.sslError,
+              checkedAt: lastDomainCheck.checkedAt.getTime(),
+            }
+          : null,
+      },
+      200
+    );
   });
 }

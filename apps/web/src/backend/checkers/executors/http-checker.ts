@@ -58,13 +58,20 @@ export async function performHttpCheck(
     const responseTime = Math.round(performance.now() - startTime);
     responseHeaders = headersToRecord(response.headers);
 
-    if (!request.expectedStatusCodes.includes(response.status)) {
+    let bodyText: string | null = null;
+    const needsBodyRead =
+      !request.expectedStatusCodes.includes(response.status) ||
+      request.contentCheck?.enabled;
+
+    if (needsBodyRead) {
       try {
-        const bodyText = await response.text();
-        responseBody = truncate(bodyText, BODY_TRUNCATE);
+        bodyText = await response.text();
       } catch {
-        responseBody = undefined;
+        bodyText = null;
       }
+    }
+
+    if (!request.expectedStatusCodes.includes(response.status)) {
       return {
         result: "failure",
         responseTime,
@@ -72,38 +79,37 @@ export async function performHttpCheck(
         errorMessage: `Expected status ${request.expectedStatusCodes.join(", ")}, got ${response.status}`,
         cause: getCauseFromStatus(response.status),
         responseHeaders,
-        responseBody,
+        responseBody: bodyText ? truncate(bodyText, BODY_TRUNCATE) : undefined,
       };
     }
 
-    if (request.contentCheck?.enabled) {
-      try {
-        const bodyText = await response.text();
-        const limitedBody = bodyText.slice(0, MAX_BODY_SIZE);
-        const contains = limitedBody.includes(request.contentCheck.content);
-        const shouldContain = request.contentCheck.mode === "contains";
+    if (request.contentCheck?.enabled && bodyText !== null) {
+      const limitedBody = bodyText.slice(0, MAX_BODY_SIZE);
+      const contains = limitedBody.includes(request.contentCheck.content);
+      const shouldContain = request.contentCheck.mode === "contains";
 
-        if (contains !== shouldContain) {
-          return {
-            result: "failure",
-            responseTime,
-            statusCode: response.status,
-            errorMessage: `Content check failed: ${request.contentCheck.mode} "${request.contentCheck.content}"`,
-            cause: "content_mismatch",
-            responseHeaders,
-            responseBody: truncate(limitedBody, BODY_TRUNCATE),
-          };
-        }
-      } catch (bodyError) {
+      if (contains !== shouldContain) {
         return {
-          result: "error",
+          result: "failure",
           responseTime,
           statusCode: response.status,
-          errorMessage: `Failed to read response body: ${bodyError instanceof Error ? bodyError.message : "Unknown error"}`,
+          errorMessage: `Content check failed: ${request.contentCheck.mode} "${request.contentCheck.content}"`,
           cause: "content_mismatch",
           responseHeaders,
+          responseBody: truncate(limitedBody, BODY_TRUNCATE),
         };
       }
+    }
+
+    if (request.contentCheck?.enabled && bodyText === null) {
+      return {
+        result: "error",
+        responseTime,
+        statusCode: response.status,
+        errorMessage: "Failed to read response body for content check",
+        cause: "content_mismatch",
+        responseHeaders,
+      };
     }
 
     return {

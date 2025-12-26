@@ -211,8 +211,14 @@ export default function MonitorInfoSheet({
           )}
 
           <Section title="Timestamps">
-            <ConfigItem label="Created" value={formatDate(monitor.createdAt)} />
-            <ConfigItem label="Updated" value={formatDate(monitor.updatedAt)} />
+            <ConfigItem
+              label="Created"
+              value={formatDate(new Date(monitor.createdAt).getTime())}
+            />
+            <ConfigItem
+              label="Updated"
+              value={formatDate(new Date(monitor.updatedAt).getTime())}
+            />
           </Section>
         </div>
       </SheetContent>

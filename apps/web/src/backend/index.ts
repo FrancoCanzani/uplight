@@ -1,4 +1,5 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
+import { waitUntil } from "cloudflare:workers";
 import { csrf } from "hono/csrf";
 import { HTTPException } from "hono/http-exception";
 import { logger } from "hono/logger";
@@ -12,7 +13,6 @@ import { protectedRouter } from "./routes/protected";
 import { publicRouter } from "./routes/public";
 import type { AppEnv } from "./types";
 export { CheckerDO } from "./checkers/entry/durable-object";
-import { waitUntil } from "cloudflare:workers";
 
 const app = new OpenAPIHono<AppEnv>();
 
@@ -58,9 +58,31 @@ export default {
   async scheduled(
     controller: ScheduledController,
     env: Env,
-    ctx: ExecutionContext
+    ctx: ExecutionContext,
   ) {
-    waitUntil(handleMonitorChecks(env));
-    waitUntil(handleDomainChecks(env));
+    if (!controller.cron) {
+      // Fallback: run both checks if cron is null/undefined
+      waitUntil(handleMonitorChecks(env));
+      waitUntil(handleDomainChecks(env));
+      console.log("Both checks processed (fallback - cron is null/undefined)");
+    } else {
+      switch (controller.cron) {
+        case "* * * * *":
+          waitUntil(handleMonitorChecks(env));
+          console.log("Monitors check processed");
+          break;
+        case "0 0,12 * * *":
+          waitUntil(handleDomainChecks(env));
+          console.log("Domain check processed");
+          break;
+        default:
+          // Fallback: run both checks if cron is unrecognized
+          waitUntil(handleMonitorChecks(env));
+          waitUntil(handleDomainChecks(env));
+          console.log("Both checks processed (fallback - unrecognized cron)");
+          break;
+      }
+    }
+    console.log("cron processed");
   },
 };

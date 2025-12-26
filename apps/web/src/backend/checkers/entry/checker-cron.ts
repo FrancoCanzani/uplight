@@ -38,6 +38,9 @@ export async function handleMonitorChecks(env: Env): Promise<void> {
       monitorsInMaintenance.push(mon);
     } else if (mon.status === "maintenance") {
       monitorsExitingMaintenance.push(mon);
+    } else if (mon.status === "initializing") {
+      // Monitors with "initializing" status should be checked immediately
+      monitorsToCheck.push(mon);
     } else {
       const lastCheck = mon.updatedAt?.getTime() ?? 0;
       const nextCheck = lastCheck + mon.interval;
@@ -74,6 +77,8 @@ export async function handleMonitorChecks(env: Env): Promise<void> {
       .set({ status: "initializing" })
       .where(eq(monitor.id, mon.id));
     console.log(`[CRON] Maintenance ended for monitor: ${mon.name}`);
+    // Add to check queue immediately after exiting maintenance
+    monitorsToCheck.push(mon);
   }
 
   if (monitorsToCheck.length === 0) {

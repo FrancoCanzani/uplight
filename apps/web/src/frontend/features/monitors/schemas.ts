@@ -53,7 +53,6 @@ export const TcpMonitorSchema = z.object({
   locations: z
     .array(LocationSchema)
     .min(1, "Please select at least one monitoring location"),
-  contentCheck: ContentCheckSchema.optional(),
 });
 
 export const MonitorSchema = z.discriminatedUnion("type", [
@@ -119,8 +118,8 @@ export const MonitorResponseSchema = z.object({
   host: z.string().nullable(),
   port: z.number().nullable(),
   status: MonitorStatusSchema,
-  createdAt: z.number(),
-  updatedAt: z.number(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
   domainCheck: DomainCheckSchema,
 });
 

@@ -10,7 +10,6 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -19,11 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "@tanstack/react-form";
 import { useParams } from "@tanstack/react-router";
-import { useState } from "react";
 import { useCreateMonitor } from "../api/use-create-monitor";
 import { useUpdateMonitor } from "../api/use-update-monitor";
 import { INTERVALS, LOCATIONS } from "../constants";
@@ -41,14 +37,10 @@ const emptyValues: TcpMonitorInput = {
   interval: 60000,
   timeout: 30,
   locations: [],
-  contentCheck: undefined,
 };
 
 function monitorToFormValues(monitor: MonitorResponse): TcpMonitorInput {
   const locations = monitor.locations ? JSON.parse(monitor.locations) : [];
-  const contentCheck = monitor.contentCheck
-    ? JSON.parse(monitor.contentCheck)
-    : undefined;
 
   return {
     type: "tcp",
@@ -58,7 +50,6 @@ function monitorToFormValues(monitor: MonitorResponse): TcpMonitorInput {
     interval: monitor.interval,
     timeout: monitor.timeout,
     locations,
-    contentCheck,
   };
 }
 
@@ -66,9 +57,6 @@ export function TcpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
   const { teamId } = useParams({ from: "/(dashboard)/$teamId" });
   const isEditing = !!monitor;
   const defaultValues = monitor ? monitorToFormValues(monitor) : emptyValues;
-  const [contentCheckEnabled, setContentCheckEnabled] = useState(
-    !!defaultValues.contentCheck,
-  );
   const createMonitor = useCreateMonitor();
   const updateMonitor = useUpdateMonitor();
   const isPending = isEditing
@@ -215,7 +203,7 @@ export function TcpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 const selectedInterval = INTERVALS.find(
-                  (interval) => interval.value === field.state.value,
+                  (interval) => interval.value === field.state.value
                 );
                 return (
                   <Field data-invalid={isInvalid}>
@@ -327,7 +315,7 @@ export function TcpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                               } else {
                                 const currentValue = field.state.value;
                                 const newValue = currentValue.filter(
-                                  (loc) => loc !== location.id,
+                                  (loc) => loc !== location.id
                                 );
                                 field.handleChange(newValue);
                               }
@@ -351,137 +339,6 @@ export function TcpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
         </div>
 
         <Separator />
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <FieldLabel>Content Check</FieldLabel>
-              <FieldDescription>
-                Optionally alert based on response content matching
-              </FieldDescription>
-            </div>
-            <Switch
-              checked={contentCheckEnabled}
-              onCheckedChange={(checked) => {
-                setContentCheckEnabled(checked);
-                if (!checked) {
-                  form.setFieldValue("contentCheck", undefined);
-                } else {
-                  form.setFieldValue("contentCheck", {
-                    enabled: true,
-                    mode: "contains",
-                    content: "",
-                  });
-                }
-              }}
-            />
-          </div>
-          {contentCheckEnabled && (
-            <div className="space-y-4">
-              <form.Field
-                name="contentCheck.mode"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <FieldSet>
-                      <FieldLabel>Alert Condition</FieldLabel>
-                      <FieldDescription>
-                        Choose when to trigger an alert based on content
-                        matching
-                      </FieldDescription>
-                      <RadioGroup
-                        value={field.state.value ?? "contains"}
-                        onValueChange={(v) =>
-                          field.handleChange(v as "contains" | "not_contains")
-                        }
-                      >
-                        <Field
-                          orientation="horizontal"
-                          data-invalid={isInvalid}
-                        >
-                          <RadioGroupItem
-                            value="contains"
-                            id="tcp-content-check-contains"
-                            aria-invalid={isInvalid}
-                          />
-                          <FieldContent>
-                            <FieldLabel
-                              htmlFor="tcp-content-check-contains"
-                              className="font-normal"
-                            >
-                              Alert if content is found
-                            </FieldLabel>
-                            <FieldDescription>
-                              Trigger alert when the response contains the
-                              specified content
-                            </FieldDescription>
-                          </FieldContent>
-                        </Field>
-                        <Field
-                          orientation="horizontal"
-                          data-invalid={isInvalid}
-                        >
-                          <RadioGroupItem
-                            value="not_contains"
-                            id="tcp-content-check-not-contains"
-                            aria-invalid={isInvalid}
-                          />
-                          <FieldContent>
-                            <FieldLabel
-                              htmlFor="tcp-content-check-not-contains"
-                              className="font-normal"
-                            >
-                              Alert if content is NOT found
-                            </FieldLabel>
-                            <FieldDescription>
-                              Trigger alert when the response does not contain
-                              the specified content
-                            </FieldDescription>
-                          </FieldContent>
-                        </Field>
-                      </RadioGroup>
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </FieldSet>
-                  );
-                }}
-              />
-
-              <form.Field
-                name="contentCheck.content"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor="tcp-content-check-content">
-                        Content to Search
-                      </FieldLabel>
-                      <Textarea
-                        id="tcp-content-check-content"
-                        value={field.state.value ?? ""}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        aria-invalid={isInvalid}
-                        placeholder='"status": "ok"'
-                        className="min-h-20 font-mono text-sm"
-                      />
-                      <FieldDescription>
-                        The text to search for in the response body (max 1000
-                        characters)
-                      </FieldDescription>
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  );
-                }}
-              />
-            </div>
-          )}
-        </div>
 
         <div className="flex justify-end w-full gap-3 pt-4">
           <Button
