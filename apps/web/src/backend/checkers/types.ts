@@ -9,7 +9,13 @@ export type Location =
   | "afr"
   | "me";
 
-export type CheckStatus = "success" | "failure" | "timeout" | "error" | "maintenance";
+export type CheckStatus =
+  | "success"
+  | "failure"
+  | "timeout"
+  | "error"
+  | "maintenance"
+  | "degraded";
 
 export type IncidentCause =
   | "http_5xx"
@@ -87,6 +93,7 @@ export interface MonitorRow {
   name: string;
   interval: number;
   timeout: number;
+  responseTimeThreshold: number | null;
   locations: string;
   contentCheck: string | null;
   url: string | null;

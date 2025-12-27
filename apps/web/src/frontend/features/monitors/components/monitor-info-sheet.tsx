@@ -8,13 +8,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { formatDate } from "@lib/utils";
+import { cn, formatDate } from "@lib/utils";
 import { format, parseISO } from "date-fns";
 import { Info } from "lucide-react";
 import type { MonitorResponse } from "../schemas";
 import getLocationLabel from "../utils/get-location-label";
-import { getWhoisStatus } from "../utils/get-whois-status";
+import { getSelectedOptions } from "../utils/get-selected-options";
 import { getSslStatus } from "../utils/get-ssl-status";
+import { getWhoisStatus } from "../utils/get-whois-status";
 
 export default function MonitorInfoSheet({
   monitor,
@@ -42,7 +43,7 @@ export default function MonitorInfoSheet({
           <SheetDescription>Monitor configuration details</SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
           <Section title="General">
             <ConfigItem label="Type" value={monitor.type.toUpperCase()} />
             <ConfigItem
@@ -86,7 +87,7 @@ export default function MonitorInfoSheet({
               {expectedStatusCodes.length > 0 && (
                 <ConfigItem
                   label="Expected Status"
-                  value={expectedStatusCodes.join(", ")}
+                  value={getSelectedOptions(expectedStatusCodes).join(", ")}
                   mono
                 />
               )}
@@ -142,13 +143,16 @@ export default function MonitorInfoSheet({
                     label="WHOIS Status"
                     value={
                       <Badge
-                        variant={
+                        variant={"outline"}
+                        className={cn(
+                          "capitalize",
+
                           whoisStatus.status === "ok"
-                            ? "secondary"
+                            ? "text-green-700"
                             : whoisStatus.status === "warn"
-                              ? "secondary"
-                              : "destructive"
-                        }
+                              ? "text-amber-400"
+                              : "text-destructive"
+                        )}
                       >
                         {whoisStatus.status === "ok"
                           ? "OK"
@@ -182,13 +186,16 @@ export default function MonitorInfoSheet({
                     label="SSL Status"
                     value={
                       <Badge
-                        variant={
+                        variant={"outline"}
+                        className={cn(
+                          "capitalize",
+
                           sslStatus.status === "ok"
-                            ? "secondary"
+                            ? "text-green-700"
                             : sslStatus.status === "warn"
-                              ? "secondary"
-                              : "destructive"
-                        }
+                              ? "text-amber-400"
+                              : "text-destructive"
+                        )}
                       >
                         {sslStatus.status === "ok"
                           ? "OK"

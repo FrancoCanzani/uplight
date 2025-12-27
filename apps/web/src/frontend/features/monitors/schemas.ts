@@ -28,6 +28,7 @@ export const HttpMonitorSchema = z.object({
   method: z.enum(["get", "post", "head", "put", "patch", "delete", "options"]),
   interval: z.int().min(30000).max(1800000),
   timeout: z.int().min(1).max(60).default(30),
+  responseTimeThreshold: z.int().min(1).optional(),
   locations: z
     .array(LocationSchema)
     .min(1, "Please select at least one monitoring location"),
@@ -50,6 +51,7 @@ export const TcpMonitorSchema = z.object({
   port: z.int().min(1).max(65535),
   interval: z.int().min(30000).max(1800000),
   timeout: z.int().min(1).max(60).default(30),
+  responseTimeThreshold: z.int().min(1).optional(),
   locations: z
     .array(LocationSchema)
     .min(1, "Please select at least one monitoring location"),
@@ -100,6 +102,7 @@ export const MonitorResponseSchema = z.object({
   name: z.string(),
   interval: z.number(),
   timeout: z.number(),
+  responseTimeThreshold: z.number().nullable(),
   locations: z.string(),
   contentCheck: z.string().nullable(),
   url: z.string().nullable(),

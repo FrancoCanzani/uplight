@@ -48,6 +48,7 @@ export const monitor = sqliteTable(
     name: text().notNull(),
     interval: integer().notNull(),
     timeout: integer().notNull().default(30),
+    responseTimeThreshold: integer(),
     locations: text().notNull(),
     contentCheck: text(),
     url: text(),
@@ -122,7 +123,14 @@ export const checkResult = sqliteTable(
       .references(() => monitor.id, { onDelete: "cascade" }),
     location: text().notNull(),
     result: text({
-      enum: ["success", "failure", "timeout", "error", "maintenance"],
+      enum: [
+        "success",
+        "failure",
+        "timeout",
+        "error",
+        "maintenance",
+        "degraded",
+      ],
     }).notNull(),
     responseTime: integer().notNull(),
     statusCode: integer(),

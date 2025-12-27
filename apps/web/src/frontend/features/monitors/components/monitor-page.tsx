@@ -8,8 +8,8 @@ import {
 import { formatDate } from "@lib/utils";
 import { getRouteApi, Link } from "@tanstack/react-router";
 import getLocationLabel from "../utils/get-location-label";
-import LatestIncident from "./latest-incident";
 import MonitorHeader from "./monitor-header";
+import MonitorStatusAlert from "./monitor-status-alert";
 import RecentChecksTable from "./recent-checks-table";
 import RegionFilter from "./region-filter";
 import ResponseTimeChart from "./response-time-chart";
@@ -18,7 +18,7 @@ import TimePeriodFilter from "./time-period-filter";
 
 export default function MonitorPage() {
   const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
-  const { monitor, stats, checks, incidents } = routeApi.useLoaderData();
+  const { monitor, stats, checks } = routeApi.useLoaderData();
   const { teamId, monitorId } = routeApi.useParams();
   const search = routeApi.useSearch() || {};
   const { region, period } = search;
@@ -34,7 +34,6 @@ export default function MonitorPage() {
         ? "7 days"
         : `${periodDays} days`;
 
-  const latestIncident = incidents;
   const filteredChecks = region
     ? checks.filter((c) => c.location === region)
     : checks;
@@ -48,6 +47,12 @@ export default function MonitorPage() {
           monitorId={monitorId}
         />
       </div>
+
+      {(monitor.status === "down" ||
+        monitor.status === "downgraded" ||
+        monitor.status === "maintenance") && (
+        <MonitorStatusAlert status={monitor.status} />
+      )}
 
       <div className="flex items-center justify-start gap-x-1.5">
         Data from
@@ -135,19 +140,10 @@ export default function MonitorPage() {
             }}
             className="text-xs hover:underline text-muted-foreground hover:text-primary"
           >
-            See all
+            View all
           </Link>
         </div>
         <RecentChecksTable checks={filteredChecks} />
-      </div>
-
-      <div className="space-y-4">
-        <h3 className="font-medium">Latest incident</h3>
-        <LatestIncident
-          incident={latestIncident}
-          teamId={teamId}
-          monitorId={monitorId}
-        />
       </div>
     </div>
   );

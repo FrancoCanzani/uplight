@@ -86,6 +86,8 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
     if (data.name !== undefined) baseUpdates.name = data.name;
     if (data.interval !== undefined) baseUpdates.interval = data.interval;
     if (data.timeout !== undefined) baseUpdates.timeout = data.timeout;
+    if (data.responseTimeThreshold !== undefined)
+      baseUpdates.responseTimeThreshold = data.responseTimeThreshold ?? null;
     if (data.locations !== undefined)
       baseUpdates.locations = JSON.stringify(data.locations);
     if (

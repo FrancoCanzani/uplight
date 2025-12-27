@@ -94,7 +94,7 @@ export default function MonitorHeader({
   return (
     <>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-medium">{monitor.name}</h1>
+        <h1 className="text-xl font-medium">{monitor.name}</h1>
 
         <div className="flex gap-2 items-center justify-end">
           <div className="flex items-center justify-start gap-x-2">

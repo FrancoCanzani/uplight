@@ -33,6 +33,7 @@ export const HttpMonitorSchema = z
       .max(1800000)
       .openapi({ example: 60000 }),
     timeout: z.number().int().min(1).max(60).default(30),
+    responseTimeThreshold: z.number().int().min(1).optional(),
     locations: z
       .array(LocationSchema)
       .min(1, "Please select at least one monitoring location"),
@@ -64,6 +65,7 @@ export const TcpMonitorSchema = z
       .max(1800000)
       .openapi({ example: 60000 }),
     timeout: z.number().int().min(1).max(60).default(30),
+    responseTimeThreshold: z.number().int().min(1).optional(),
     locations: z
       .array(LocationSchema)
       .min(1, "Please select at least one monitoring location"),
@@ -109,6 +111,7 @@ export const MonitorResponseSchema = z
     name: z.string(),
     interval: z.number().int(),
     timeout: z.number().int(),
+    responseTimeThreshold: z.number().int().nullable(),
     locations: z.string(),
     contentCheck: z.string().nullable(),
     url: z.string().nullable(),

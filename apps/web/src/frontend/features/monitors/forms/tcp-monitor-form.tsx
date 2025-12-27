@@ -36,6 +36,7 @@ const emptyValues: TcpMonitorInput = {
   port: 443,
   interval: 60000,
   timeout: 30,
+  responseTimeThreshold: undefined,
   locations: [],
 };
 
@@ -49,6 +50,7 @@ function monitorToFormValues(monitor: MonitorResponse): TcpMonitorInput {
     port: monitor.port ?? 443,
     interval: monitor.interval,
     timeout: monitor.timeout,
+    responseTimeThreshold: monitor.responseTimeThreshold ?? undefined,
     locations,
   };
 }
@@ -267,6 +269,45 @@ export function TcpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                     <FieldDescription>
                       Maximum time to wait for a connection before considering
                       the check failed.
+                    </FieldDescription>
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            />
+          </div>
+
+          <div className="grid gap-7 sm:grid-cols-2">
+            <form.Field
+              name="responseTimeThreshold"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>
+                      Response Time Threshold (ms)
+                    </FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      type="number"
+                      min={1}
+                      value={field.state.value ?? ""}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        field.handleChange(value ? Number(value) : undefined);
+                      }}
+                      aria-invalid={isInvalid}
+                      placeholder="Optional"
+                    />
+                    <FieldDescription>
+                      If a successful check takes longer than this threshold (in
+                      milliseconds), it will be marked as degraded instead of
+                      successful.
                     </FieldDescription>
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />

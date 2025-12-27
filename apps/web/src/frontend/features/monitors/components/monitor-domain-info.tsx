@@ -62,9 +62,7 @@ export default function MonitorDomainInfo({
               <p className="text-xs">Self-signed: Yes</p>
             )}
             {"message" in sslStatus && sslStatus.message && (
-              <p className="text-xs text-muted-foreground">
-                {sslStatus.message}
-              </p>
+              <p className="text-xs text-destructive">{sslStatus.message}</p>
             )}
           </div>
         </TooltipContent>
@@ -90,9 +88,7 @@ export default function MonitorDomainInfo({
               </p>
             )}
             {"message" in whoisStatus && whoisStatus.message && (
-              <p className="text-xs text-muted-foreground">
-                {whoisStatus.message}
-              </p>
+              <p className="text-xs text-destructive">{whoisStatus.message}</p>
             )}
           </div>
         </TooltipContent>
