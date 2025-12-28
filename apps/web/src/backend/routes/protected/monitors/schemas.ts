@@ -79,7 +79,7 @@ export const CreateMonitorSchema = z
 export const MonitorStatusSchema = z.enum([
   "up",
   "down",
-  "downgraded",
+  "degraded",
   "maintenance",
   "paused",
   "initializing",
@@ -133,6 +133,8 @@ export const MonitorResponseSchema = z
     createdAt: z.string(),
     updatedAt: z.string(),
     domainCheck: DomainCheckSchema,
+    lastCheckAt: z.number().int().nullable(),
+    lastResponseTime: z.number().int().nullable(),
   })
   .openapi("MonitorResponse");
 

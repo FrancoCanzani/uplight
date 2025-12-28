@@ -49,7 +49,7 @@ export default function MonitorPage() {
       </div>
 
       {(monitor.status === "down" ||
-        monitor.status === "downgraded" ||
+        monitor.status === "degraded" ||
         monitor.status === "maintenance") && (
         <MonitorStatusAlert status={monitor.status} />
       )}

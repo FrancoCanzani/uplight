@@ -72,7 +72,7 @@ export const UpdateMonitorSchema = z.discriminatedUnion("type", [
 export const MonitorStatusSchema = z.enum([
   "up",
   "down",
-  "downgraded",
+  "degraded",
   "maintenance",
   "paused",
   "initializing",
@@ -124,6 +124,8 @@ export const MonitorResponseSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   domainCheck: DomainCheckSchema,
+  lastCheckAt: z.number().nullable(),
+  lastResponseTime: z.number().nullable(),
 });
 
 export type Location = z.infer<typeof LocationSchema>;

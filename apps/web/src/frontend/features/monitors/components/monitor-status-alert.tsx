@@ -6,7 +6,7 @@ import { AlertTriangle, Wrench, X } from "lucide-react";
 export default function MonitorStatusAlert({
   status,
 }: {
-  status: "down" | "downgraded" | "maintenance";
+  status: "down" | "degraded" | "maintenance";
 }) {
   const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
 
@@ -41,13 +41,13 @@ export default function MonitorStatusAlert({
     );
   }
 
-  if (status === "downgraded") {
+  if (status === "degraded") {
     return (
       <Card size="xs" className="border-amber-500 bg-amber-500/10 border">
         <CardContent className="flex items-center justify-between">
           <div className="flex items-center justify-start gap-x-1">
             <AlertTriangle className="text-amber-500 size-3" />
-            Your monitor is downgraded
+            Your monitor is degraded
           </div>
           <Link
             to="/$teamId/monitors/$monitorId"

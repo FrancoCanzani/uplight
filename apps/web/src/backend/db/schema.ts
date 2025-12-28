@@ -67,14 +67,7 @@ export const monitor = sqliteTable(
     host: text(),
     port: integer(),
     status: text({
-      enum: [
-        "up",
-        "down",
-        "downgraded",
-        "maintenance",
-        "paused",
-        "initializing",
-      ],
+      enum: ["up", "down", "degraded", "maintenance", "paused", "initializing"],
     })
       .default("initializing")
       .notNull(),

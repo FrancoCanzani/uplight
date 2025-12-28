@@ -12,7 +12,7 @@ import {
 const config = {
   up: { icon: CheckCircle2, color: "text-emerald-500" },
   down: { icon: XCircle, color: "text-destructive" },
-  downgraded: { icon: AlertTriangle, color: "text-amber-500" },
+  degraded: { icon: AlertTriangle, color: "text-amber-500" },
   maintenance: { icon: Wrench, color: "text-muted-foreground" },
   paused: { icon: Pause, color: "text-muted-foreground" },
   initializing: { icon: Loader2, color: "text-muted-foreground animate-spin" },

@@ -2,7 +2,7 @@ import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
 import { eq, desc, inArray } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { monitor, domainCheckResult } from "../../../db/schema";
+import { monitor, domainCheckResult, checkResult } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { MonitorResponseSchema } from "./schemas";
 
@@ -44,6 +44,10 @@ export function registerGetAllMonitors(api: OpenAPIHono<AppEnv>) {
       number,
       typeof domainCheckResult.$inferSelect
     >();
+    const lastCheckMap = new Map<
+      number,
+      { checkedAt: number; responseTime: number }
+    >();
 
     if (monitorIds.length > 0) {
       const allDomainChecks = await db
@@ -57,10 +61,30 @@ export function registerGetAllMonitors(api: OpenAPIHono<AppEnv>) {
           domainCheckMap.set(check.monitorId, check);
         }
       }
+
+      const lastChecks = await db
+        .select({
+          monitorId: checkResult.monitorId,
+          checkedAt: checkResult.checkedAt,
+          responseTime: checkResult.responseTime,
+        })
+        .from(checkResult)
+        .where(inArray(checkResult.monitorId, monitorIds))
+        .orderBy(desc(checkResult.checkedAt));
+
+      for (const check of lastChecks) {
+        if (!lastCheckMap.has(check.monitorId)) {
+          lastCheckMap.set(check.monitorId, {
+            checkedAt: check.checkedAt.getTime(),
+            responseTime: check.responseTime,
+          });
+        }
+      }
     }
 
     const result = monitors.map((mon) => {
       const domainCheck = domainCheckMap.get(mon.id);
+      const lastCheck = lastCheckMap.get(mon.id);
       return {
         ...mon,
         createdAt: mon.createdAt.toISOString(),
@@ -81,6 +105,8 @@ export function registerGetAllMonitors(api: OpenAPIHono<AppEnv>) {
               checkedAt: domainCheck.checkedAt.getTime(),
             }
           : null,
+        lastCheckAt: lastCheck?.checkedAt ?? null,
+        lastResponseTime: lastCheck?.responseTime ?? null,
       };
     });
 

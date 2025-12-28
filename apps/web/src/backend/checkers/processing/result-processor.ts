@@ -8,7 +8,7 @@ import type { CheckResult } from "../types";
 type MonitorStatus =
   | "up"
   | "down"
-  | "downgraded"
+  | "degraded"
   | "maintenance"
   | "paused"
   | "initializing";
@@ -30,7 +30,7 @@ function resolveStatus(results: CheckResult[]): MonitorStatus {
   // All checks failed
   if (failureCount === results.length) return "down";
   // Some checks are successful/degraded, some failed, or some are degraded
-  return "downgraded";
+  return "degraded";
 }
 
 function groupByMonitor(results: CheckResult[]): Map<number, CheckResult[]> {
