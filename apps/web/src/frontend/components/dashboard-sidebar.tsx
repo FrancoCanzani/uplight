@@ -127,10 +127,10 @@ export function DashboardSidebar() {
                       "bg-sidebar-accent",
                   )}
                 >
-                  {" "}
                   <Link
                     className="w-full flex items-center gap-x-2 text-base font-light"
-                    to="/"
+                    to="/$teamId/notifications"
+                    params={{ teamId }}
                   >
                     <BellIcon />
                     Notifications

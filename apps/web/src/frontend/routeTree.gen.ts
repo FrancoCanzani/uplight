@@ -14,6 +14,7 @@ import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as dashboardTeamIdRouteRouteImport } from './routes/(dashboard)/$teamId/route'
 import { Route as dashboardTeamIdSettingsRouteImport } from './routes/(dashboard)/$teamId/settings'
+import { Route as dashboardTeamIdNotificationsIndexRouteImport } from './routes/(dashboard)/$teamId/notifications/index'
 import { Route as dashboardTeamIdMonitorsIndexRouteImport } from './routes/(dashboard)/$teamId/monitors/index'
 import { Route as dashboardTeamIdLogsIndexRouteImport } from './routes/(dashboard)/$teamId/logs/index'
 import { Route as dashboardTeamIdIncidentsIndexRouteImport } from './routes/(dashboard)/$teamId/incidents/index'
@@ -48,6 +49,12 @@ const dashboardTeamIdSettingsRoute = dashboardTeamIdSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => dashboardTeamIdRouteRoute,
 } as any)
+const dashboardTeamIdNotificationsIndexRoute =
+  dashboardTeamIdNotificationsIndexRouteImport.update({
+    id: '/notifications/',
+    path: '/notifications/',
+    getParentRoute: () => dashboardTeamIdRouteRoute,
+  } as any)
 const dashboardTeamIdMonitorsIndexRoute =
   dashboardTeamIdMonitorsIndexRouteImport.update({
     id: '/monitors/',
@@ -108,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/$teamId/incidents': typeof dashboardTeamIdIncidentsIndexRoute
   '/$teamId/logs': typeof dashboardTeamIdLogsIndexRoute
   '/$teamId/monitors': typeof dashboardTeamIdMonitorsIndexRoute
+  '/$teamId/notifications': typeof dashboardTeamIdNotificationsIndexRoute
   '/$teamId/monitors/$monitorId/edit': typeof dashboardTeamIdMonitorsMonitorIdEditRoute
   '/$teamId/monitors/$monitorId/maintenance': typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
   '/$teamId/monitors/$monitorId': typeof dashboardTeamIdMonitorsMonitorIdIndexRoute
@@ -123,6 +131,7 @@ export interface FileRoutesByTo {
   '/$teamId/incidents': typeof dashboardTeamIdIncidentsIndexRoute
   '/$teamId/logs': typeof dashboardTeamIdLogsIndexRoute
   '/$teamId/monitors': typeof dashboardTeamIdMonitorsIndexRoute
+  '/$teamId/notifications': typeof dashboardTeamIdNotificationsIndexRoute
   '/$teamId/monitors/$monitorId/edit': typeof dashboardTeamIdMonitorsMonitorIdEditRoute
   '/$teamId/monitors/$monitorId/maintenance': typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
   '/$teamId/monitors/$monitorId': typeof dashboardTeamIdMonitorsMonitorIdIndexRoute
@@ -139,6 +148,7 @@ export interface FileRoutesById {
   '/(dashboard)/$teamId/incidents/': typeof dashboardTeamIdIncidentsIndexRoute
   '/(dashboard)/$teamId/logs/': typeof dashboardTeamIdLogsIndexRoute
   '/(dashboard)/$teamId/monitors/': typeof dashboardTeamIdMonitorsIndexRoute
+  '/(dashboard)/$teamId/notifications/': typeof dashboardTeamIdNotificationsIndexRoute
   '/(dashboard)/$teamId/monitors/$monitorId/edit': typeof dashboardTeamIdMonitorsMonitorIdEditRoute
   '/(dashboard)/$teamId/monitors/$monitorId/maintenance': typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
   '/(dashboard)/$teamId/monitors/$monitorId/': typeof dashboardTeamIdMonitorsMonitorIdIndexRoute
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/$teamId/incidents'
     | '/$teamId/logs'
     | '/$teamId/monitors'
+    | '/$teamId/notifications'
     | '/$teamId/monitors/$monitorId/edit'
     | '/$teamId/monitors/$monitorId/maintenance'
     | '/$teamId/monitors/$monitorId'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/$teamId/incidents'
     | '/$teamId/logs'
     | '/$teamId/monitors'
+    | '/$teamId/notifications'
     | '/$teamId/monitors/$monitorId/edit'
     | '/$teamId/monitors/$monitorId/maintenance'
     | '/$teamId/monitors/$monitorId'
@@ -186,6 +198,7 @@ export interface FileRouteTypes {
     | '/(dashboard)/$teamId/incidents/'
     | '/(dashboard)/$teamId/logs/'
     | '/(dashboard)/$teamId/monitors/'
+    | '/(dashboard)/$teamId/notifications/'
     | '/(dashboard)/$teamId/monitors/$monitorId/edit'
     | '/(dashboard)/$teamId/monitors/$monitorId/maintenance'
     | '/(dashboard)/$teamId/monitors/$monitorId/'
@@ -233,6 +246,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/$teamId/settings'
       preLoaderRoute: typeof dashboardTeamIdSettingsRouteImport
+      parentRoute: typeof dashboardTeamIdRouteRoute
+    }
+    '/(dashboard)/$teamId/notifications/': {
+      id: '/(dashboard)/$teamId/notifications/'
+      path: '/notifications'
+      fullPath: '/$teamId/notifications'
+      preLoaderRoute: typeof dashboardTeamIdNotificationsIndexRouteImport
       parentRoute: typeof dashboardTeamIdRouteRoute
     }
     '/(dashboard)/$teamId/monitors/': {
@@ -301,6 +321,7 @@ interface dashboardTeamIdRouteRouteChildren {
   dashboardTeamIdIncidentsIndexRoute: typeof dashboardTeamIdIncidentsIndexRoute
   dashboardTeamIdLogsIndexRoute: typeof dashboardTeamIdLogsIndexRoute
   dashboardTeamIdMonitorsIndexRoute: typeof dashboardTeamIdMonitorsIndexRoute
+  dashboardTeamIdNotificationsIndexRoute: typeof dashboardTeamIdNotificationsIndexRoute
   dashboardTeamIdMonitorsMonitorIdEditRoute: typeof dashboardTeamIdMonitorsMonitorIdEditRoute
   dashboardTeamIdMonitorsMonitorIdMaintenanceRoute: typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
   dashboardTeamIdMonitorsMonitorIdIndexRoute: typeof dashboardTeamIdMonitorsMonitorIdIndexRoute
@@ -314,6 +335,8 @@ const dashboardTeamIdRouteRouteChildren: dashboardTeamIdRouteRouteChildren = {
   dashboardTeamIdIncidentsIndexRoute: dashboardTeamIdIncidentsIndexRoute,
   dashboardTeamIdLogsIndexRoute: dashboardTeamIdLogsIndexRoute,
   dashboardTeamIdMonitorsIndexRoute: dashboardTeamIdMonitorsIndexRoute,
+  dashboardTeamIdNotificationsIndexRoute:
+    dashboardTeamIdNotificationsIndexRoute,
   dashboardTeamIdMonitorsMonitorIdEditRoute:
     dashboardTeamIdMonitorsMonitorIdEditRoute,
   dashboardTeamIdMonitorsMonitorIdMaintenanceRoute:
