@@ -298,7 +298,7 @@ export default function MonitorsTable() {
         />
       </div>
 
-      <div className="rounded bg-background overflow-x-scroll">
+      <div className="rounded p-1 bg-background overflow-x-scroll">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
