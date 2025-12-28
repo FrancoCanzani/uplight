@@ -67,8 +67,8 @@ export function registerGetTeam(api: OpenAPIHono<AppEnv>) {
         name: m.team.name,
         personal: m.team.personal,
         role: m.role,
-        createdAt: m.team.createdAt,
-        updatedAt: m.team.updatedAt,
+        createdAt: m.team.createdAt.toISOString(),
+        updatedAt: m.team.updatedAt.toISOString(),
       },
       200
     );

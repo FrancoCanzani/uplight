@@ -7,6 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 import { getRouteApi, Link } from "@tanstack/react-router";
 import { ChevronsUpDown } from "lucide-react";
 
@@ -17,30 +18,25 @@ export function TeamSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button
-          variant="ghost"
-          className="w-full justify-between px-2 font-normal"
-        >
-          <div className="flex items-center gap-2 truncate">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground text-xs font-medium">
-              {currentTeam.name.charAt(0).toUpperCase()}
-            </div>
+      <DropdownMenuTrigger
+        render={
+          <Button variant="ghost" className="w-full border justify-between">
             <span className="truncate">{currentTeam.name}</span>
-          </div>
-          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-56">
+            <ChevronsUpDown className="size-3.5" />
+          </Button>
+        }
+      />
+      <DropdownMenuContent align="start">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Teams</DropdownMenuLabel>
           {teams.map((team) => (
             <DropdownMenuItem key={team.id} className="cursor-pointer">
-              <Link to="/$teamId" params={{ teamId: String(team.id) }}>
+              <Link
+                to="/$teamId"
+                params={{ teamId: String(team.id) }}
+                className="w-full"
+              >
                 <div className="flex items-center gap-2">
-                  <div className="flex h-5 w-5 items-center justify-center rounded bg-muted text-xs font-medium">
-                    {team.name.charAt(0).toUpperCase()}
-                  </div>
                   <span>{team.name}</span>
                   {team.personal && (
                     <span className="text-xs text-muted-foreground">
@@ -51,6 +47,11 @@ export function TeamSwitcher() {
               </Link>
             </DropdownMenuItem>
           ))}
+        </DropdownMenuGroup>
+        <Separator className={"my-1"} />
+        <DropdownMenuGroup>
+          <DropdownMenuItem>Team settings</DropdownMenuItem>
+          <DropdownMenuItem>New team</DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
