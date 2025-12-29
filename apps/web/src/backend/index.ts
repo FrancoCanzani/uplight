@@ -8,6 +8,7 @@ import { secureHeaders } from "hono/secure-headers";
 import { createAuth } from "../../auth";
 import { handleMonitorChecks } from "./checkers/entry/checker-cron";
 import { handleDomainChecks } from "./checkers/entry/domain-cron";
+import { handleHeartbeatChecks } from "./checkers/entry/heartbeat-cron";
 import { authMiddleware, requireAuth } from "./middleware/auth";
 import { protectedRouter } from "./routes/protected";
 import { publicRouter } from "./routes/public";
@@ -58,7 +59,7 @@ export default {
   async scheduled(
     controller: ScheduledController,
     env: Env,
-    ctx: ExecutionContext,
+    ctx: ExecutionContext
   ) {
     if (!controller.cron) {
       // Fallback: run both checks if cron is null/undefined
@@ -69,7 +70,8 @@ export default {
       switch (controller.cron) {
         case "* * * * *":
           waitUntil(handleMonitorChecks(env));
-          console.log("Monitors check processed");
+          waitUntil(handleHeartbeatChecks(env));
+          console.log("Monitors and heartbeats check processed");
           break;
         case "0 0,12 * * *":
           waitUntil(handleDomainChecks(env));

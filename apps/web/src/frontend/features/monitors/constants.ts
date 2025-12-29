@@ -25,7 +25,6 @@ export const HTTP_METHODS = [
 export type HttpMethod = (typeof HTTP_METHODS)[number];
 
 export const INTERVALS = [
-  { value: 30000, label: "30 seconds" },
   { value: 60000, label: "1 minute" },
   { value: 300000, label: "5 minutes" },
   { value: 600000, label: "10 minutes" },

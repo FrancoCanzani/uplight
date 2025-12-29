@@ -23,6 +23,7 @@ import { BadgeAlertIcon } from "./motion/icons/badge-alert";
 import { BellIcon } from "./motion/icons/bell";
 import { FileTextIcon } from "./motion/icons/file-text";
 import { GalleryVerticalEndIcon } from "./motion/icons/gallery-vertical-end";
+import { HeartIcon } from "./motion/icons/heart";
 import { LayoutPanelTopIcon } from "./motion/icons/layout-panel-top";
 import { LogoutIcon } from "./motion/icons/logout";
 import { MessageSquareIcon } from "./motion/icons/message-square";
@@ -76,10 +77,26 @@ export function DashboardSidebar() {
                 <SidebarMenuButton
                   className={cn(
                     "",
+                    locationArr.includes("heartbeats") && "bg-sidebar-accent",
+                  )}
+                >
+                  <Link
+                    className="w-full flex items-center gap-x-2 text-base font-light"
+                    to="/$teamId/heartbeats"
+                    params={{ teamId }}
+                  >
+                    <HeartIcon />
+                    Heartbeats
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  className={cn(
+                    "",
                     locationArr.includes("incidents") && "bg-sidebar-accent",
                   )}
                 >
-                  {" "}
                   <Link
                     className="w-full flex items-center gap-x-2 text-base font-light"
                     to="/$teamId/incidents"

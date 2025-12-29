@@ -29,7 +29,7 @@ export const HttpMonitorSchema = z
     interval: z
       .number()
       .int()
-      .min(30000)
+      .min(60000)
       .max(1800000)
       .openapi({ example: 60000 }),
     timeout: z.number().int().min(1).max(60).default(30),
@@ -61,7 +61,7 @@ export const TcpMonitorSchema = z
     interval: z
       .number()
       .int()
-      .min(30000)
+      .min(60000)
       .max(1800000)
       .openapi({ example: 60000 }),
     timeout: z.number().int().min(1).max(60).default(30),

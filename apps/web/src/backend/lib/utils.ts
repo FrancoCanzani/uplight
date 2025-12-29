@@ -27,3 +27,17 @@ export function formatDuration(ms: number): string {
   if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
   return `${seconds}s`;
 }
+
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 30);
+}
+
+export function generateHeartbeatSlug(name: string): string {
+  const base = slugify(name);
+  const random = crypto.randomUUID().slice(0, 8);
+  return `${base}-${random}`;
+}

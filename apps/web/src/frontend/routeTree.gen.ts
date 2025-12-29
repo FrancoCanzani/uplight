@@ -18,11 +18,15 @@ import { Route as dashboardTeamIdNotificationsIndexRouteImport } from './routes/
 import { Route as dashboardTeamIdMonitorsIndexRouteImport } from './routes/(dashboard)/$teamId/monitors/index'
 import { Route as dashboardTeamIdLogsIndexRouteImport } from './routes/(dashboard)/$teamId/logs/index'
 import { Route as dashboardTeamIdIncidentsIndexRouteImport } from './routes/(dashboard)/$teamId/incidents/index'
+import { Route as dashboardTeamIdHeartbeatsIndexRouteImport } from './routes/(dashboard)/$teamId/heartbeats/index'
 import { Route as dashboardTeamIdMonitorsNewRouteImport } from './routes/(dashboard)/$teamId/monitors/new'
 import { Route as dashboardTeamIdIncidentsIncidentIdRouteImport } from './routes/(dashboard)/$teamId/incidents/$incidentId'
+import { Route as dashboardTeamIdHeartbeatsNewRouteImport } from './routes/(dashboard)/$teamId/heartbeats/new'
 import { Route as dashboardTeamIdMonitorsMonitorIdIndexRouteImport } from './routes/(dashboard)/$teamId/monitors/$monitorId/index'
+import { Route as dashboardTeamIdHeartbeatsHeartbeatIdIndexRouteImport } from './routes/(dashboard)/$teamId/heartbeats/$heartbeatId/index'
 import { Route as dashboardTeamIdMonitorsMonitorIdMaintenanceRouteImport } from './routes/(dashboard)/$teamId/monitors/$monitorId/maintenance'
 import { Route as dashboardTeamIdMonitorsMonitorIdEditRouteImport } from './routes/(dashboard)/$teamId/monitors/$monitorId/edit'
+import { Route as dashboardTeamIdHeartbeatsHeartbeatIdEditRouteImport } from './routes/(dashboard)/$teamId/heartbeats/$heartbeatId/edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -73,6 +77,12 @@ const dashboardTeamIdIncidentsIndexRoute =
     path: '/incidents/',
     getParentRoute: () => dashboardTeamIdRouteRoute,
   } as any)
+const dashboardTeamIdHeartbeatsIndexRoute =
+  dashboardTeamIdHeartbeatsIndexRouteImport.update({
+    id: '/heartbeats/',
+    path: '/heartbeats/',
+    getParentRoute: () => dashboardTeamIdRouteRoute,
+  } as any)
 const dashboardTeamIdMonitorsNewRoute =
   dashboardTeamIdMonitorsNewRouteImport.update({
     id: '/monitors/new',
@@ -85,10 +95,22 @@ const dashboardTeamIdIncidentsIncidentIdRoute =
     path: '/incidents/$incidentId',
     getParentRoute: () => dashboardTeamIdRouteRoute,
   } as any)
+const dashboardTeamIdHeartbeatsNewRoute =
+  dashboardTeamIdHeartbeatsNewRouteImport.update({
+    id: '/heartbeats/new',
+    path: '/heartbeats/new',
+    getParentRoute: () => dashboardTeamIdRouteRoute,
+  } as any)
 const dashboardTeamIdMonitorsMonitorIdIndexRoute =
   dashboardTeamIdMonitorsMonitorIdIndexRouteImport.update({
     id: '/monitors/$monitorId/',
     path: '/monitors/$monitorId/',
+    getParentRoute: () => dashboardTeamIdRouteRoute,
+  } as any)
+const dashboardTeamIdHeartbeatsHeartbeatIdIndexRoute =
+  dashboardTeamIdHeartbeatsHeartbeatIdIndexRouteImport.update({
+    id: '/heartbeats/$heartbeatId/',
+    path: '/heartbeats/$heartbeatId/',
     getParentRoute: () => dashboardTeamIdRouteRoute,
   } as any)
 const dashboardTeamIdMonitorsMonitorIdMaintenanceRoute =
@@ -103,6 +125,12 @@ const dashboardTeamIdMonitorsMonitorIdEditRoute =
     path: '/monitors/$monitorId/edit',
     getParentRoute: () => dashboardTeamIdRouteRoute,
   } as any)
+const dashboardTeamIdHeartbeatsHeartbeatIdEditRoute =
+  dashboardTeamIdHeartbeatsHeartbeatIdEditRouteImport.update({
+    id: '/heartbeats/$heartbeatId/edit',
+    path: '/heartbeats/$heartbeatId/edit',
+    getParentRoute: () => dashboardTeamIdRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -110,14 +138,18 @@ export interface FileRoutesByFullPath {
   '/login': typeof authLoginRoute
   '/signup': typeof authSignupRoute
   '/$teamId/settings': typeof dashboardTeamIdSettingsRoute
+  '/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
   '/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
+  '/$teamId/heartbeats': typeof dashboardTeamIdHeartbeatsIndexRoute
   '/$teamId/incidents': typeof dashboardTeamIdIncidentsIndexRoute
   '/$teamId/logs': typeof dashboardTeamIdLogsIndexRoute
   '/$teamId/monitors': typeof dashboardTeamIdMonitorsIndexRoute
   '/$teamId/notifications': typeof dashboardTeamIdNotificationsIndexRoute
+  '/$teamId/heartbeats/$heartbeatId/edit': typeof dashboardTeamIdHeartbeatsHeartbeatIdEditRoute
   '/$teamId/monitors/$monitorId/edit': typeof dashboardTeamIdMonitorsMonitorIdEditRoute
   '/$teamId/monitors/$monitorId/maintenance': typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
+  '/$teamId/heartbeats/$heartbeatId': typeof dashboardTeamIdHeartbeatsHeartbeatIdIndexRoute
   '/$teamId/monitors/$monitorId': typeof dashboardTeamIdMonitorsMonitorIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -126,14 +158,18 @@ export interface FileRoutesByTo {
   '/login': typeof authLoginRoute
   '/signup': typeof authSignupRoute
   '/$teamId/settings': typeof dashboardTeamIdSettingsRoute
+  '/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
   '/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
+  '/$teamId/heartbeats': typeof dashboardTeamIdHeartbeatsIndexRoute
   '/$teamId/incidents': typeof dashboardTeamIdIncidentsIndexRoute
   '/$teamId/logs': typeof dashboardTeamIdLogsIndexRoute
   '/$teamId/monitors': typeof dashboardTeamIdMonitorsIndexRoute
   '/$teamId/notifications': typeof dashboardTeamIdNotificationsIndexRoute
+  '/$teamId/heartbeats/$heartbeatId/edit': typeof dashboardTeamIdHeartbeatsHeartbeatIdEditRoute
   '/$teamId/monitors/$monitorId/edit': typeof dashboardTeamIdMonitorsMonitorIdEditRoute
   '/$teamId/monitors/$monitorId/maintenance': typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
+  '/$teamId/heartbeats/$heartbeatId': typeof dashboardTeamIdHeartbeatsHeartbeatIdIndexRoute
   '/$teamId/monitors/$monitorId': typeof dashboardTeamIdMonitorsMonitorIdIndexRoute
 }
 export interface FileRoutesById {
@@ -143,14 +179,18 @@ export interface FileRoutesById {
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/signup': typeof authSignupRoute
   '/(dashboard)/$teamId/settings': typeof dashboardTeamIdSettingsRoute
+  '/(dashboard)/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/(dashboard)/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
   '/(dashboard)/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
+  '/(dashboard)/$teamId/heartbeats/': typeof dashboardTeamIdHeartbeatsIndexRoute
   '/(dashboard)/$teamId/incidents/': typeof dashboardTeamIdIncidentsIndexRoute
   '/(dashboard)/$teamId/logs/': typeof dashboardTeamIdLogsIndexRoute
   '/(dashboard)/$teamId/monitors/': typeof dashboardTeamIdMonitorsIndexRoute
   '/(dashboard)/$teamId/notifications/': typeof dashboardTeamIdNotificationsIndexRoute
+  '/(dashboard)/$teamId/heartbeats/$heartbeatId/edit': typeof dashboardTeamIdHeartbeatsHeartbeatIdEditRoute
   '/(dashboard)/$teamId/monitors/$monitorId/edit': typeof dashboardTeamIdMonitorsMonitorIdEditRoute
   '/(dashboard)/$teamId/monitors/$monitorId/maintenance': typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
+  '/(dashboard)/$teamId/heartbeats/$heartbeatId/': typeof dashboardTeamIdHeartbeatsHeartbeatIdIndexRoute
   '/(dashboard)/$teamId/monitors/$monitorId/': typeof dashboardTeamIdMonitorsMonitorIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -161,14 +201,18 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/$teamId/settings'
+    | '/$teamId/heartbeats/new'
     | '/$teamId/incidents/$incidentId'
     | '/$teamId/monitors/new'
+    | '/$teamId/heartbeats'
     | '/$teamId/incidents'
     | '/$teamId/logs'
     | '/$teamId/monitors'
     | '/$teamId/notifications'
+    | '/$teamId/heartbeats/$heartbeatId/edit'
     | '/$teamId/monitors/$monitorId/edit'
     | '/$teamId/monitors/$monitorId/maintenance'
+    | '/$teamId/heartbeats/$heartbeatId'
     | '/$teamId/monitors/$monitorId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -177,14 +221,18 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/$teamId/settings'
+    | '/$teamId/heartbeats/new'
     | '/$teamId/incidents/$incidentId'
     | '/$teamId/monitors/new'
+    | '/$teamId/heartbeats'
     | '/$teamId/incidents'
     | '/$teamId/logs'
     | '/$teamId/monitors'
     | '/$teamId/notifications'
+    | '/$teamId/heartbeats/$heartbeatId/edit'
     | '/$teamId/monitors/$monitorId/edit'
     | '/$teamId/monitors/$monitorId/maintenance'
+    | '/$teamId/heartbeats/$heartbeatId'
     | '/$teamId/monitors/$monitorId'
   id:
     | '__root__'
@@ -193,14 +241,18 @@ export interface FileRouteTypes {
     | '/(auth)/login'
     | '/(auth)/signup'
     | '/(dashboard)/$teamId/settings'
+    | '/(dashboard)/$teamId/heartbeats/new'
     | '/(dashboard)/$teamId/incidents/$incidentId'
     | '/(dashboard)/$teamId/monitors/new'
+    | '/(dashboard)/$teamId/heartbeats/'
     | '/(dashboard)/$teamId/incidents/'
     | '/(dashboard)/$teamId/logs/'
     | '/(dashboard)/$teamId/monitors/'
     | '/(dashboard)/$teamId/notifications/'
+    | '/(dashboard)/$teamId/heartbeats/$heartbeatId/edit'
     | '/(dashboard)/$teamId/monitors/$monitorId/edit'
     | '/(dashboard)/$teamId/monitors/$monitorId/maintenance'
+    | '/(dashboard)/$teamId/heartbeats/$heartbeatId/'
     | '/(dashboard)/$teamId/monitors/$monitorId/'
   fileRoutesById: FileRoutesById
 }
@@ -276,6 +328,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardTeamIdIncidentsIndexRouteImport
       parentRoute: typeof dashboardTeamIdRouteRoute
     }
+    '/(dashboard)/$teamId/heartbeats/': {
+      id: '/(dashboard)/$teamId/heartbeats/'
+      path: '/heartbeats'
+      fullPath: '/$teamId/heartbeats'
+      preLoaderRoute: typeof dashboardTeamIdHeartbeatsIndexRouteImport
+      parentRoute: typeof dashboardTeamIdRouteRoute
+    }
     '/(dashboard)/$teamId/monitors/new': {
       id: '/(dashboard)/$teamId/monitors/new'
       path: '/monitors/new'
@@ -290,11 +349,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardTeamIdIncidentsIncidentIdRouteImport
       parentRoute: typeof dashboardTeamIdRouteRoute
     }
+    '/(dashboard)/$teamId/heartbeats/new': {
+      id: '/(dashboard)/$teamId/heartbeats/new'
+      path: '/heartbeats/new'
+      fullPath: '/$teamId/heartbeats/new'
+      preLoaderRoute: typeof dashboardTeamIdHeartbeatsNewRouteImport
+      parentRoute: typeof dashboardTeamIdRouteRoute
+    }
     '/(dashboard)/$teamId/monitors/$monitorId/': {
       id: '/(dashboard)/$teamId/monitors/$monitorId/'
       path: '/monitors/$monitorId'
       fullPath: '/$teamId/monitors/$monitorId'
       preLoaderRoute: typeof dashboardTeamIdMonitorsMonitorIdIndexRouteImport
+      parentRoute: typeof dashboardTeamIdRouteRoute
+    }
+    '/(dashboard)/$teamId/heartbeats/$heartbeatId/': {
+      id: '/(dashboard)/$teamId/heartbeats/$heartbeatId/'
+      path: '/heartbeats/$heartbeatId'
+      fullPath: '/$teamId/heartbeats/$heartbeatId'
+      preLoaderRoute: typeof dashboardTeamIdHeartbeatsHeartbeatIdIndexRouteImport
       parentRoute: typeof dashboardTeamIdRouteRoute
     }
     '/(dashboard)/$teamId/monitors/$monitorId/maintenance': {
@@ -311,36 +384,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardTeamIdMonitorsMonitorIdEditRouteImport
       parentRoute: typeof dashboardTeamIdRouteRoute
     }
+    '/(dashboard)/$teamId/heartbeats/$heartbeatId/edit': {
+      id: '/(dashboard)/$teamId/heartbeats/$heartbeatId/edit'
+      path: '/heartbeats/$heartbeatId/edit'
+      fullPath: '/$teamId/heartbeats/$heartbeatId/edit'
+      preLoaderRoute: typeof dashboardTeamIdHeartbeatsHeartbeatIdEditRouteImport
+      parentRoute: typeof dashboardTeamIdRouteRoute
+    }
   }
 }
 
 interface dashboardTeamIdRouteRouteChildren {
   dashboardTeamIdSettingsRoute: typeof dashboardTeamIdSettingsRoute
+  dashboardTeamIdHeartbeatsNewRoute: typeof dashboardTeamIdHeartbeatsNewRoute
   dashboardTeamIdIncidentsIncidentIdRoute: typeof dashboardTeamIdIncidentsIncidentIdRoute
   dashboardTeamIdMonitorsNewRoute: typeof dashboardTeamIdMonitorsNewRoute
+  dashboardTeamIdHeartbeatsIndexRoute: typeof dashboardTeamIdHeartbeatsIndexRoute
   dashboardTeamIdIncidentsIndexRoute: typeof dashboardTeamIdIncidentsIndexRoute
   dashboardTeamIdLogsIndexRoute: typeof dashboardTeamIdLogsIndexRoute
   dashboardTeamIdMonitorsIndexRoute: typeof dashboardTeamIdMonitorsIndexRoute
   dashboardTeamIdNotificationsIndexRoute: typeof dashboardTeamIdNotificationsIndexRoute
+  dashboardTeamIdHeartbeatsHeartbeatIdEditRoute: typeof dashboardTeamIdHeartbeatsHeartbeatIdEditRoute
   dashboardTeamIdMonitorsMonitorIdEditRoute: typeof dashboardTeamIdMonitorsMonitorIdEditRoute
   dashboardTeamIdMonitorsMonitorIdMaintenanceRoute: typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
+  dashboardTeamIdHeartbeatsHeartbeatIdIndexRoute: typeof dashboardTeamIdHeartbeatsHeartbeatIdIndexRoute
   dashboardTeamIdMonitorsMonitorIdIndexRoute: typeof dashboardTeamIdMonitorsMonitorIdIndexRoute
 }
 
 const dashboardTeamIdRouteRouteChildren: dashboardTeamIdRouteRouteChildren = {
   dashboardTeamIdSettingsRoute: dashboardTeamIdSettingsRoute,
+  dashboardTeamIdHeartbeatsNewRoute: dashboardTeamIdHeartbeatsNewRoute,
   dashboardTeamIdIncidentsIncidentIdRoute:
     dashboardTeamIdIncidentsIncidentIdRoute,
   dashboardTeamIdMonitorsNewRoute: dashboardTeamIdMonitorsNewRoute,
+  dashboardTeamIdHeartbeatsIndexRoute: dashboardTeamIdHeartbeatsIndexRoute,
   dashboardTeamIdIncidentsIndexRoute: dashboardTeamIdIncidentsIndexRoute,
   dashboardTeamIdLogsIndexRoute: dashboardTeamIdLogsIndexRoute,
   dashboardTeamIdMonitorsIndexRoute: dashboardTeamIdMonitorsIndexRoute,
   dashboardTeamIdNotificationsIndexRoute:
     dashboardTeamIdNotificationsIndexRoute,
+  dashboardTeamIdHeartbeatsHeartbeatIdEditRoute:
+    dashboardTeamIdHeartbeatsHeartbeatIdEditRoute,
   dashboardTeamIdMonitorsMonitorIdEditRoute:
     dashboardTeamIdMonitorsMonitorIdEditRoute,
   dashboardTeamIdMonitorsMonitorIdMaintenanceRoute:
     dashboardTeamIdMonitorsMonitorIdMaintenanceRoute,
+  dashboardTeamIdHeartbeatsHeartbeatIdIndexRoute:
+    dashboardTeamIdHeartbeatsHeartbeatIdIndexRoute,
   dashboardTeamIdMonitorsMonitorIdIndexRoute:
     dashboardTeamIdMonitorsMonitorIdIndexRoute,
 }

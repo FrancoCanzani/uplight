@@ -26,7 +26,7 @@ export const HttpMonitorSchema = z.object({
     hostname: z.regexes.domain,
   }),
   method: z.enum(["get", "post", "head", "put", "patch", "delete", "options"]),
-  interval: z.int().min(30000).max(1800000),
+  interval: z.int().min(60000).max(1800000),
   timeout: z.int().min(1).max(60).default(30),
   responseTimeThreshold: z.int().min(1).optional(),
   locations: z
@@ -49,7 +49,7 @@ export const TcpMonitorSchema = z.object({
   name: z.string().min(1).max(50),
   host: z.string().min(1).max(255),
   port: z.int().min(1).max(65535),
-  interval: z.int().min(30000).max(1800000),
+  interval: z.int().min(60000).max(1800000),
   timeout: z.int().min(1).max(60).default(30),
   responseTimeThreshold: z.int().min(1).optional(),
   locations: z

@@ -170,6 +170,7 @@ export async function performHttpCheck(
         result: "error",
         responseTime,
         errorMessage: error.message,
+        cause: "network_error",
         ...(responseHeaders && { responseHeaders }),
         ...(responseBody && { responseBody }),
       };
@@ -179,6 +180,7 @@ export async function performHttpCheck(
       result: "error",
       responseTime,
       errorMessage: "Unknown error",
+      cause: "network_error",
       ...(responseHeaders && { responseHeaders }),
       ...(responseBody && { responseBody }),
     };

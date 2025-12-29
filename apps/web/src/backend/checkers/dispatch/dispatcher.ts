@@ -1,4 +1,5 @@
 import type { CheckRequest, CheckResult, Location, MonitorRow } from "../types";
+import { sleep } from "../utils/retry";
 
 const LOCATION_HINTS: Record<Location, DurableObjectLocationHint> = {
   wnam: "wnam",
@@ -11,6 +12,9 @@ const LOCATION_HINTS: Record<Location, DurableObjectLocationHint> = {
   afr: "afr",
   me: "me",
 };
+
+const DISPATCH_MAX_RETRIES = 2;
+const DISPATCH_INITIAL_DELAY = 500;
 
 function buildCheckRequest(mon: MonitorRow, location: Location): CheckRequest {
   const base = {
@@ -57,17 +61,32 @@ async function dispatchToLocation(
     locationHint: LOCATION_HINTS[location],
   });
 
-  const response = await stub.fetch("https://checker.internal/check", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request),
-  });
+  let lastError: Error | null = null;
 
-  if (!response.ok) {
-    throw new Error(`Check dispatch failed: ${response.status}`);
+  for (let attempt = 0; attempt <= DISPATCH_MAX_RETRIES; attempt++) {
+    if (attempt > 0) {
+      const delay = DISPATCH_INITIAL_DELAY * Math.pow(2, attempt - 1);
+      await sleep(delay);
+    }
+
+    try {
+      const response = await stub.fetch("https://checker.internal/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Check dispatch failed: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error("Unknown error");
+    }
   }
 
-  return response.json();
+  throw lastError!;
 }
 
 export async function dispatchChecks(
@@ -89,6 +108,7 @@ export async function dispatchChecks(
           responseTime: 0,
           errorMessage:
             error instanceof Error ? error.message : "Dispatch failed",
+          cause: "network_error",
           retryCount: 0,
           checkedAt: Date.now(),
         }))

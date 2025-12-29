@@ -1,37 +1,54 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { z } from "@hono/zod-openapi";
+import { eq, and } from "drizzle-orm";
+import { createDb } from "../../db";
+import { heartbeat, heartbeatIncident } from "../../db/schema";
 import type { AppEnv } from "../../types";
 
-const HeartbeatSchema = z.object({
-  monitorId: z.string(),
-  status: z.enum(["up", "down"]),
-  responseTime: z.number().int().positive().optional(),
-  message: z.string().optional(),
-});
-
 export function registerHeartbeat(api: OpenAPIHono<AppEnv>) {
-  return api.post("/heartbeat", async (c) => {
-    const body = await c.req.json();
+  return api.get("/ping/:slug", async (c) => {
+    const { slug } = c.req.param();
 
-    const result = HeartbeatSchema.safeParse(body);
+    const db = createDb(c.env.DB);
+    const now = Date.now();
 
-    if (!result.success) {
-      return c.json(
-        { error: "Invalid request", issues: result.error.issues },
-        400
-      );
+    const [hb] = await db
+      .select()
+      .from(heartbeat)
+      .where(eq(heartbeat.slug, slug));
+
+    if (!hb) {
+      return c.text("Not found", 404);
     }
 
-    const { monitorId, status } = result.data;
-
-    if (!c.env.DB) {
-      return c.json({ error: "Database not available" }, 500);
+    if (hb.status === "paused") {
+      return c.text("OK", 200);
     }
 
-    return c.json({
-      monitorId,
-      status,
-      receivedAt: new Date().toISOString(),
-    });
+    const wasDown = hb.status === "down";
+
+    await db
+      .update(heartbeat)
+      .set({
+        lastPingAt: new Date(now),
+        status: "up",
+      })
+      .where(eq(heartbeat.id, hb.id));
+
+    if (wasDown) {
+      await db
+        .update(heartbeatIncident)
+        .set({
+          status: "resolved",
+          resolvedAt: new Date(now),
+        })
+        .where(
+          and(
+            eq(heartbeatIncident.heartbeatId, hb.id),
+            eq(heartbeatIncident.status, "ongoing")
+          )
+        );
+    }
+
+    return c.text("OK", 200);
   });
 }

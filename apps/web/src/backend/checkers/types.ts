@@ -26,7 +26,8 @@ export type IncidentCause =
   | "dns_failure"
   | "ssl_error"
   | "content_mismatch"
-  | "tcp_failure";
+  | "tcp_failure"
+  | "network_error";
 
 export interface ContentCheck {
   enabled: boolean;

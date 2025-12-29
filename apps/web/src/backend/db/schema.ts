@@ -80,9 +80,58 @@ export const monitor = sqliteTable(
   ]
 );
 
+export const heartbeat = sqliteTable(
+  "heartbeat",
+  {
+    id: integer().primaryKey({ autoIncrement: true }),
+    teamId: integer()
+      .notNull()
+      .references(() => team.id, { onDelete: "cascade" }),
+    name: text().notNull(),
+    slug: text().notNull().unique(),
+    gracePeriod: integer().notNull(),
+    status: text({
+      enum: ["up", "down", "paused", "initializing"],
+    })
+      .default("initializing")
+      .notNull(),
+    lastPingAt: integer({ mode: "timestamp_ms" }),
+    ...timestamps,
+  },
+  (table) => [
+    index("heartbeat_teamId_idx").on(table.teamId),
+    index("heartbeat_slug_idx").on(table.slug),
+    index("heartbeat_status_idx").on(table.status),
+  ]
+);
+
+export const heartbeatIncident = sqliteTable(
+  "heartbeat_incident",
+  {
+    id: integer().primaryKey({ autoIncrement: true }),
+    heartbeatId: integer()
+      .notNull()
+      .references(() => heartbeat.id, { onDelete: "cascade" }),
+    cause: text().notNull(),
+    status: text({ enum: ["ongoing", "resolved"] })
+      .default("ongoing")
+      .notNull(),
+    startedAt: integer({ mode: "timestamp_ms" }).notNull(),
+    resolvedAt: integer({ mode: "timestamp_ms" }),
+    createdAt: integer({ mode: "timestamp_ms" })
+      .default(sql`(unixepoch() * 1000)`)
+      .notNull(),
+  },
+  (table) => [
+    index("heartbeat_incident_heartbeat_idx").on(table.heartbeatId),
+    index("heartbeat_incident_status_idx").on(table.heartbeatId, table.status),
+  ]
+);
+
 export const teamRelations = relations(team, ({ many }) => ({
   members: many(teamMember),
   monitors: many(monitor),
+  heartbeats: many(heartbeat),
 }));
 
 export const teamMemberRelations = relations(teamMember, ({ one }) => ({
@@ -246,6 +295,24 @@ export const domainCheckResultRelations = relations(
   })
 );
 
+export const heartbeatRelations = relations(heartbeat, ({ one, many }) => ({
+  team: one(team, {
+    fields: [heartbeat.teamId],
+    references: [team.id],
+  }),
+  incidents: many(heartbeatIncident),
+}));
+
+export const heartbeatIncidentRelations = relations(
+  heartbeatIncident,
+  ({ one }) => ({
+    heartbeat: one(heartbeat, {
+      fields: [heartbeatIncident.heartbeatId],
+      references: [heartbeat.id],
+    }),
+  })
+);
+
 export const schema = {
   ...authSchema,
   team,
@@ -255,4 +322,6 @@ export const schema = {
   incident,
   maintenance,
   domainCheckResult,
+  heartbeat,
+  heartbeatIncident,
 } as const;
