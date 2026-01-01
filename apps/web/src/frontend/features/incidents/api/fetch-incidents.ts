@@ -1,12 +1,20 @@
+export type IncidentStatus =
+  | "active"
+  | "acknowledged"
+  | "fixing"
+  | "resolved"
+  | "ongoing";
+
 export interface Incident {
   id: number;
   monitorId: number;
   monitorName: string;
   cause: string;
-  status: string;
+  status: IncidentStatus;
   startedAt: number;
+  acknowledgedAt: number | null;
+  fixingAt: number | null;
   resolvedAt: number | null;
-  createdAt: number;
 }
 
 export interface IncidentsResponse {

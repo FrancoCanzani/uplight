@@ -16,10 +16,11 @@ const IncidentWithMonitorSchema = z.object({
   monitorId: z.number(),
   monitorName: z.string(),
   cause: z.string(),
-  status: z.string(),
+  status: z.enum(["active", "acknowledged", "fixing", "resolved", "ongoing"]),
   startedAt: z.number(),
+  acknowledgedAt: z.number().nullable(),
+  fixingAt: z.number().nullable(),
   resolvedAt: z.number().nullable(),
-  createdAt: z.number(),
   type: z.enum(["monitor", "heartbeat"]),
 });
 
@@ -90,10 +91,11 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
       monitorId: number;
       monitorName: string;
       cause: string;
-      status: string;
+      status: "active" | "acknowledged" | "fixing" | "resolved" | "ongoing";
       startedAt: number;
+      acknowledgedAt: number | null;
+      fixingAt: number | null;
       resolvedAt: number | null;
-      createdAt: number;
       type: "monitor" | "heartbeat";
     };
 
@@ -132,8 +134,9 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
           cause: i.cause,
           status: i.status,
           startedAt: i.startedAt.getTime(),
+          acknowledgedAt: i.acknowledgedAt?.getTime() ?? null,
+          fixingAt: i.fixingAt?.getTime() ?? null,
           resolvedAt: i.resolvedAt?.getTime() ?? null,
-          createdAt: i.createdAt.getTime(),
           type: "monitor",
         });
       }
@@ -173,13 +176,14 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
       for (const i of hbIncidents) {
         allIncidents.push({
           id: i.id,
-          monitorId: i.heartbeatId, // Using monitorId field for heartbeatId for compatibility
+          monitorId: i.heartbeatId,
           monitorName: heartbeatMap.get(i.heartbeatId) ?? "Unknown",
           cause: i.cause,
           status: i.status,
           startedAt: i.startedAt.getTime(),
+          acknowledgedAt: null,
+          fixingAt: null,
           resolvedAt: i.resolvedAt?.getTime() ?? null,
-          createdAt: i.createdAt.getTime(),
           type: "heartbeat",
         });
       }

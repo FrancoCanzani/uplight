@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, ne } from "drizzle-orm";
 import { createDb } from "../../db";
 import { incident } from "../../db/schema";
 import type { CheckResult, IncidentCause } from "../types";
@@ -32,7 +32,7 @@ export async function manageIncidents(
     .select()
     .from(incident)
     .where(
-      and(eq(incident.monitorId, monitorId), eq(incident.status, "ongoing"))
+      and(eq(incident.monitorId, monitorId), ne(incident.status, "resolved"))
     );
 
   for (const cause of currentCauses) {
@@ -44,7 +44,7 @@ export async function manageIncidents(
         .values({
           monitorId,
           cause,
-          status: "ongoing",
+          status: "active",
           startedAt: new Date(now),
         })
         .returning({ id: incident.id });

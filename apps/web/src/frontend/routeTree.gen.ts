@@ -20,6 +20,7 @@ import { Route as dashboardTeamIdLogsIndexRouteImport } from './routes/(dashboar
 import { Route as dashboardTeamIdIncidentsIndexRouteImport } from './routes/(dashboard)/$teamId/incidents/index'
 import { Route as dashboardTeamIdHeartbeatsIndexRouteImport } from './routes/(dashboard)/$teamId/heartbeats/index'
 import { Route as dashboardTeamIdMonitorsNewRouteImport } from './routes/(dashboard)/$teamId/monitors/new'
+import { Route as dashboardTeamIdIncidentsKanbanRouteImport } from './routes/(dashboard)/$teamId/incidents/kanban'
 import { Route as dashboardTeamIdIncidentsIncidentIdRouteImport } from './routes/(dashboard)/$teamId/incidents/$incidentId'
 import { Route as dashboardTeamIdHeartbeatsNewRouteImport } from './routes/(dashboard)/$teamId/heartbeats/new'
 import { Route as dashboardTeamIdMonitorsMonitorIdIndexRouteImport } from './routes/(dashboard)/$teamId/monitors/$monitorId/index'
@@ -89,6 +90,12 @@ const dashboardTeamIdMonitorsNewRoute =
     path: '/monitors/new',
     getParentRoute: () => dashboardTeamIdRouteRoute,
   } as any)
+const dashboardTeamIdIncidentsKanbanRoute =
+  dashboardTeamIdIncidentsKanbanRouteImport.update({
+    id: '/incidents/kanban',
+    path: '/incidents/kanban',
+    getParentRoute: () => dashboardTeamIdRouteRoute,
+  } as any)
 const dashboardTeamIdIncidentsIncidentIdRoute =
   dashboardTeamIdIncidentsIncidentIdRouteImport.update({
     id: '/incidents/$incidentId',
@@ -140,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/$teamId/settings': typeof dashboardTeamIdSettingsRoute
   '/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
+  '/$teamId/incidents/kanban': typeof dashboardTeamIdIncidentsKanbanRoute
   '/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
   '/$teamId/heartbeats': typeof dashboardTeamIdHeartbeatsIndexRoute
   '/$teamId/incidents': typeof dashboardTeamIdIncidentsIndexRoute
@@ -160,6 +168,7 @@ export interface FileRoutesByTo {
   '/$teamId/settings': typeof dashboardTeamIdSettingsRoute
   '/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
+  '/$teamId/incidents/kanban': typeof dashboardTeamIdIncidentsKanbanRoute
   '/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
   '/$teamId/heartbeats': typeof dashboardTeamIdHeartbeatsIndexRoute
   '/$teamId/incidents': typeof dashboardTeamIdIncidentsIndexRoute
@@ -181,6 +190,7 @@ export interface FileRoutesById {
   '/(dashboard)/$teamId/settings': typeof dashboardTeamIdSettingsRoute
   '/(dashboard)/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/(dashboard)/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
+  '/(dashboard)/$teamId/incidents/kanban': typeof dashboardTeamIdIncidentsKanbanRoute
   '/(dashboard)/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
   '/(dashboard)/$teamId/heartbeats/': typeof dashboardTeamIdHeartbeatsIndexRoute
   '/(dashboard)/$teamId/incidents/': typeof dashboardTeamIdIncidentsIndexRoute
@@ -203,6 +213,7 @@ export interface FileRouteTypes {
     | '/$teamId/settings'
     | '/$teamId/heartbeats/new'
     | '/$teamId/incidents/$incidentId'
+    | '/$teamId/incidents/kanban'
     | '/$teamId/monitors/new'
     | '/$teamId/heartbeats'
     | '/$teamId/incidents'
@@ -223,6 +234,7 @@ export interface FileRouteTypes {
     | '/$teamId/settings'
     | '/$teamId/heartbeats/new'
     | '/$teamId/incidents/$incidentId'
+    | '/$teamId/incidents/kanban'
     | '/$teamId/monitors/new'
     | '/$teamId/heartbeats'
     | '/$teamId/incidents'
@@ -243,6 +255,7 @@ export interface FileRouteTypes {
     | '/(dashboard)/$teamId/settings'
     | '/(dashboard)/$teamId/heartbeats/new'
     | '/(dashboard)/$teamId/incidents/$incidentId'
+    | '/(dashboard)/$teamId/incidents/kanban'
     | '/(dashboard)/$teamId/monitors/new'
     | '/(dashboard)/$teamId/heartbeats/'
     | '/(dashboard)/$teamId/incidents/'
@@ -342,6 +355,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardTeamIdMonitorsNewRouteImport
       parentRoute: typeof dashboardTeamIdRouteRoute
     }
+    '/(dashboard)/$teamId/incidents/kanban': {
+      id: '/(dashboard)/$teamId/incidents/kanban'
+      path: '/incidents/kanban'
+      fullPath: '/$teamId/incidents/kanban'
+      preLoaderRoute: typeof dashboardTeamIdIncidentsKanbanRouteImport
+      parentRoute: typeof dashboardTeamIdRouteRoute
+    }
     '/(dashboard)/$teamId/incidents/$incidentId': {
       id: '/(dashboard)/$teamId/incidents/$incidentId'
       path: '/incidents/$incidentId'
@@ -398,6 +418,7 @@ interface dashboardTeamIdRouteRouteChildren {
   dashboardTeamIdSettingsRoute: typeof dashboardTeamIdSettingsRoute
   dashboardTeamIdHeartbeatsNewRoute: typeof dashboardTeamIdHeartbeatsNewRoute
   dashboardTeamIdIncidentsIncidentIdRoute: typeof dashboardTeamIdIncidentsIncidentIdRoute
+  dashboardTeamIdIncidentsKanbanRoute: typeof dashboardTeamIdIncidentsKanbanRoute
   dashboardTeamIdMonitorsNewRoute: typeof dashboardTeamIdMonitorsNewRoute
   dashboardTeamIdHeartbeatsIndexRoute: typeof dashboardTeamIdHeartbeatsIndexRoute
   dashboardTeamIdIncidentsIndexRoute: typeof dashboardTeamIdIncidentsIndexRoute
@@ -416,6 +437,7 @@ const dashboardTeamIdRouteRouteChildren: dashboardTeamIdRouteRouteChildren = {
   dashboardTeamIdHeartbeatsNewRoute: dashboardTeamIdHeartbeatsNewRoute,
   dashboardTeamIdIncidentsIncidentIdRoute:
     dashboardTeamIdIncidentsIncidentIdRoute,
+  dashboardTeamIdIncidentsKanbanRoute: dashboardTeamIdIncidentsKanbanRoute,
   dashboardTeamIdMonitorsNewRoute: dashboardTeamIdMonitorsNewRoute,
   dashboardTeamIdHeartbeatsIndexRoute: dashboardTeamIdHeartbeatsIndexRoute,
   dashboardTeamIdIncidentsIndexRoute: dashboardTeamIdIncidentsIndexRoute,

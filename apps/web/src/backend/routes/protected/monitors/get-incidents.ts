@@ -9,10 +9,11 @@ import type { AppEnv } from "../../../types";
 const IncidentSchema = z.object({
   id: z.number(),
   cause: z.string(),
-  status: z.string(),
+  status: z.enum(["active", "acknowledged", "fixing", "resolved"]),
   startedAt: z.number(),
+  acknowledgedAt: z.number().nullable(),
+  fixingAt: z.number().nullable(),
   resolvedAt: z.number().nullable(),
-  createdAt: z.number(),
 });
 
 const route = createRoute({
@@ -80,8 +81,9 @@ export function registerGetIncidents(api: OpenAPIHono<AppEnv>) {
         cause: lastIncident.cause,
         status: lastIncident.status,
         startedAt: lastIncident.startedAt.getTime(),
+        acknowledgedAt: lastIncident.acknowledgedAt?.getTime() ?? null,
+        fixingAt: lastIncident.fixingAt?.getTime() ?? null,
         resolvedAt: lastIncident.resolvedAt?.getTime() ?? null,
-        createdAt: lastIncident.createdAt.getTime(),
       },
       200
     );

@@ -210,14 +210,13 @@ export const incident = sqliteTable(
       .notNull()
       .references(() => monitor.id, { onDelete: "cascade" }),
     cause: text().notNull(),
-    status: text({ enum: ["ongoing", "resolved"] })
-      .default("ongoing")
+    status: text({ enum: ["active", "acknowledged", "fixing", "resolved"] })
+      .default("active")
       .notNull(),
     startedAt: integer({ mode: "timestamp_ms" }).notNull(),
+    acknowledgedAt: integer({ mode: "timestamp_ms" }),
+    fixingAt: integer({ mode: "timestamp_ms" }),
     resolvedAt: integer({ mode: "timestamp_ms" }),
-    createdAt: integer({ mode: "timestamp_ms" })
-      .default(sql`(unixepoch() * 1000)`)
-      .notNull(),
   },
   (table) => [
     index("incident_monitor_idx").on(table.monitorId),

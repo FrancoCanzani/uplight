@@ -99,7 +99,7 @@ export function DashboardSidebar() {
                 >
                   <Link
                     className="w-full flex items-center gap-x-2 text-base font-light"
-                    to="/$teamId/incidents"
+                    to="/$teamId/incidents/kanban"
                     params={{ teamId }}
                   >
                     <BadgeAlertIcon />

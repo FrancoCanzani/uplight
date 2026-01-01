@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,23 +33,23 @@ import {
 import type { Incident } from "../api/fetch-incidents";
 import type { MonitorResponse } from "@/features/monitors/schemas";
 
-interface IncidentRowProps {
-  incident: Incident;
-}
-
-function IncidentRow({ incident }: IncidentRowProps) {
-  const isOngoing = incident.status === "ongoing";
+function IncidentRow({ incident }: { incident: Incident }) {
+  const [now] = useState(() => Date.now());
+  const isResolved = incident.status === "resolved";
   const duration = incident.resolvedAt
     ? incident.resolvedAt - incident.startedAt
-    : Date.now() - incident.startedAt;
+    : now - incident.startedAt;
 
   return (
     <TableRow>
       <TableCell className="font-medium">{incident.monitorName}</TableCell>
       <TableCell>{formatCause(incident.cause)}</TableCell>
       <TableCell>
-        <Badge variant={isOngoing ? "destructive" : "outline"}>
-          {isOngoing ? "Ongoing" : "Resolved"}
+        <Badge
+          variant={isResolved ? "outline" : "destructive"}
+          className="capitalize"
+        >
+          {incident.status}
         </Badge>
       </TableCell>
       <TableCell className="tabular-nums">{formatDuration(duration)}</TableCell>
