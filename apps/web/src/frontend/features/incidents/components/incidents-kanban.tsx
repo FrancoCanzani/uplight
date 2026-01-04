@@ -1,10 +1,10 @@
 import { getRouteApi } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import type { KanbanIncidentStatus } from "../api/fetch-kanban-incidents";
 import { useUpdateIncidentStatus } from "../api/use-update-incident-status";
+import type { KanbanStatus } from "../types";
 import DroppableIncidentColumn from "./droppable-incident-column";
 
-const STATUSES: KanbanIncidentStatus[] = ["active", "acknowledged", "fixing"];
+const STATUSES: KanbanStatus[] = ["active", "acknowledged", "fixing"];
 
 export default function IncidentsKanban() {
   const routeApi = getRouteApi("/(dashboard)/$teamId/incidents/kanban");
@@ -17,7 +17,7 @@ export default function IncidentsKanban() {
     setLocalIncidents(kanbanIncidents);
   }, [kanbanIncidents]);
 
-  function handleDrop(incidentId: number, newStatus: KanbanIncidentStatus) {
+  function handleDrop(incidentId: number, newStatus: KanbanStatus) {
     const incident = localIncidents.find((i) => i.id === incidentId);
     if (!incident || incident.status === newStatus) return;
 

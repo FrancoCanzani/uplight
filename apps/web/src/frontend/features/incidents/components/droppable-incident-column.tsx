@@ -6,10 +6,7 @@ import { cn } from "@/lib/utils";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { useEffect, useRef, useState } from "react";
 import invariant from "tiny-invariant";
-import type {
-  KanbanIncident,
-  KanbanIncidentStatus,
-} from "../api/fetch-kanban-incidents";
+import type { Incident, KanbanStatus } from "../types";
 import DraggableIncident from "./draggable-incident";
 
 const STATUS_ICONS = {
@@ -23,9 +20,9 @@ export default function DroppableIncidentColumn({
   status,
   onDrop,
 }: {
-  incidents: KanbanIncident[];
-  status: KanbanIncidentStatus;
-  onDrop: (incidentId: number, newStatus: KanbanIncidentStatus) => void;
+  incidents: Incident[];
+  status: KanbanStatus;
+  onDrop: (incidentId: number, newStatus: KanbanStatus) => void;
 }) {
   const ref = useRef(null);
   const [isDraggedOver, setIsDraggedOver] = useState(false);
@@ -51,7 +48,7 @@ export default function DroppableIncidentColumn({
     <div
       ref={ref}
       className={cn(
-        "p-2 rounded h-full gap-2 flex flex-col",
+        "p-2 overflow-y-scroll rounded gap-2 flex flex-col",
         isDraggedOver ? "bg-surface" : "bg-surface/50",
       )}
     >
@@ -66,7 +63,10 @@ export default function DroppableIncidentColumn({
           ))}
         </div>
       ) : (
-        <NoDataMessage text={`No ${status} incidents`} className="flex-1" />
+        <NoDataMessage
+          text={`No ${status} incidents`}
+          className="flex-1 flex items-center justify-center"
+        />
       )}
     </div>
   );

@@ -23,15 +23,27 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon, XIcon } from "lucide-react";
+import { CalendarIcon, XIcon, LightbulbIcon } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   formatDate,
   formatDateShort,
   formatDuration,
   formatCause,
 } from "@lib/utils";
-import type { Incident } from "../api/fetch-incidents";
+import type { Incident } from "../types";
 import type { MonitorResponse } from "@/features/monitors/schemas";
+
+const severityColors = {
+  low: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+  medium: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
+  high: "bg-orange-500/10 text-orange-500 border-orange-500/20",
+  critical: "bg-red-500/10 text-red-500 border-red-500/20",
+} as const;
 
 function IncidentRow({ incident }: { incident: Incident }) {
   const [now] = useState(() => Date.now());
@@ -43,7 +55,28 @@ function IncidentRow({ incident }: { incident: Incident }) {
   return (
     <TableRow>
       <TableCell className="font-medium">{incident.monitorName}</TableCell>
-      <TableCell>{formatCause(incident.cause)}</TableCell>
+      <TableCell>
+        <div className="flex flex-col gap-1">
+          <span className="font-medium">
+            {incident.title ?? formatCause(incident.cause)}
+          </span>
+          {incident.description && (
+            <span className="text-xs text-muted-foreground line-clamp-1">
+              {incident.description}
+            </span>
+          )}
+        </div>
+      </TableCell>
+      <TableCell>
+        {incident.severity && (
+          <Badge
+            variant="outline"
+            className={`capitalize ${severityColors[incident.severity]}`}
+          >
+            {incident.severity}
+          </Badge>
+        )}
+      </TableCell>
       <TableCell>
         <Badge
           variant={isResolved ? "outline" : "destructive"}
@@ -53,11 +86,23 @@ function IncidentRow({ incident }: { incident: Incident }) {
         </Badge>
       </TableCell>
       <TableCell className="tabular-nums">{formatDuration(duration)}</TableCell>
-      <TableCell className="text-muted-foreground">
-        {formatDate(incident.startedAt)}
+      <TableCell>
+        {incident.hint ? (
+          <Tooltip>
+            <TooltipTrigger className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors">
+              <LightbulbIcon className="h-3.5 w-3.5" />
+              <span className="text-xs">Hint</span>
+            </TooltipTrigger>
+            <TooltipContent side="left" className="max-w-xs">
+              <p className="text-sm">{incident.hint}</p>
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )}
       </TableCell>
       <TableCell className="text-muted-foreground">
-        {incident.resolvedAt ? formatDate(incident.resolvedAt) : "—"}
+        {formatDate(incident.startedAt)}
       </TableCell>
     </TableRow>
   );
@@ -260,11 +305,12 @@ export default function IncidentsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Monitor</TableHead>
-                <TableHead>Cause</TableHead>
+                <TableHead>Issue</TableHead>
+                <TableHead>Severity</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Duration</TableHead>
+                <TableHead>Hint</TableHead>
                 <TableHead>Started</TableHead>
-                <TableHead>Resolved</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

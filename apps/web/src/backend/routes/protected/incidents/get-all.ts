@@ -16,6 +16,10 @@ const IncidentWithMonitorSchema = z.object({
   monitorId: z.number(),
   monitorName: z.string(),
   cause: z.string(),
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  hint: z.string().nullable(),
+  severity: z.enum(["low", "medium", "high", "critical"]).nullable(),
   status: z.enum(["active", "acknowledged", "fixing", "resolved", "ongoing"]),
   startedAt: z.number(),
   acknowledgedAt: z.number().nullable(),
@@ -91,6 +95,10 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
       monitorId: number;
       monitorName: string;
       cause: string;
+      title: string | null;
+      description: string | null;
+      hint: string | null;
+      severity: "low" | "medium" | "high" | "critical" | null;
       status: "active" | "acknowledged" | "fixing" | "resolved" | "ongoing";
       startedAt: number;
       acknowledgedAt: number | null;
@@ -132,6 +140,10 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
           monitorId: i.monitorId,
           monitorName: monitorMap.get(i.monitorId) ?? "Unknown",
           cause: i.cause,
+          title: i.title,
+          description: i.description,
+          hint: i.hint,
+          severity: i.severity,
           status: i.status,
           startedAt: i.startedAt.getTime(),
           acknowledgedAt: i.acknowledgedAt?.getTime() ?? null,
@@ -179,6 +191,10 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
           monitorId: i.heartbeatId,
           monitorName: heartbeatMap.get(i.heartbeatId) ?? "Unknown",
           cause: i.cause,
+          title: null,
+          description: null,
+          hint: null,
+          severity: null,
           status: i.status,
           startedAt: i.startedAt.getTime(),
           acknowledgedAt: null,

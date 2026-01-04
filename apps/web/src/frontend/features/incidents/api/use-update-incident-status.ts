@@ -1,12 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
-import type { KanbanIncidentStatus } from "./fetch-kanban-incidents";
+import type { KanbanStatus } from "../types";
 
 interface UpdateIncidentStatusParams {
   teamId: number;
   incidentId: number;
-  status: KanbanIncidentStatus;
+  status: KanbanStatus;
 }
 
 interface UpdateIncidentStatusResponse {

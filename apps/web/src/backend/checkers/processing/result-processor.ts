@@ -61,6 +61,7 @@ export async function processResults(
         name: monitor.name,
         teamId: monitor.teamId,
         responseTimeThreshold: monitor.responseTimeThreshold,
+        url: monitor.url,
       })
       .from(monitor)
       .where(eq(monitor.id, monitorId))
@@ -118,6 +119,7 @@ export async function processResults(
     const incidentEvents = await manageIncidents(
       monitorId,
       processedResults,
+      { name: currentMonitor.name, url: currentMonitor.url ?? undefined },
       env
     );
 

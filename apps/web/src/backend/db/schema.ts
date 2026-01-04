@@ -210,6 +210,10 @@ export const incident = sqliteTable(
       .notNull()
       .references(() => monitor.id, { onDelete: "cascade" }),
     cause: text().notNull(),
+    title: text(),
+    description: text(),
+    hint: text(),
+    severity: text({ enum: ["low", "medium", "high", "critical"] }),
     status: text({ enum: ["active", "acknowledged", "fixing", "resolved"] })
       .default("active")
       .notNull(),

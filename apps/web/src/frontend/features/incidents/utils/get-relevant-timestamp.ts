@@ -1,6 +1,6 @@
-import type { KanbanIncident } from "../api/fetch-kanban-incidents";
+import type { Incident } from "../types";
 
-export function getRelevantTimestamp(incident: KanbanIncident): number {
+export function getRelevantTimestamp(incident: Incident): number {
   switch (incident.status) {
     case "fixing":
       return incident.fixingAt ?? incident.startedAt;

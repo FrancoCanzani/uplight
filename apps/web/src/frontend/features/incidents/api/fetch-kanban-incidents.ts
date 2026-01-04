@@ -1,20 +1,12 @@
-export type KanbanIncidentStatus = "active" | "acknowledged" | "fixing";
-
-export interface KanbanIncident {
-  id: number;
-  monitorId: number;
-  monitorName: string;
-  status: KanbanIncidentStatus;
-  cause: string;
-  startedAt: number;
-  acknowledgedAt: number | null;
-  fixingAt: number | null;
-}
+import type { Incident } from "../types";
 
 export default async function fetchKanbanIncidents(
   teamId: string
-): Promise<KanbanIncident[]> {
-  const response = await fetch(`/api/incidents/${teamId}`);
+): Promise<Incident[]> {
+  const params = new URLSearchParams();
+  params.set("status", "active,acknowledged,fixing");
+
+  const response = await fetch(`/api/incidents/${teamId}?${params.toString()}`);
 
   if (!response.ok) {
     const { error } = await response.json();
