@@ -45,7 +45,7 @@ const CAUSE_SOLUTIONS: Record<IncidentCause, string> = {
 };
 
 export async function parseIncidentWithAI(
-  ctx: IncidentContext,
+  ctx: IncidentContext
 ): Promise<ParsedIncident> {
   const { output } = await generateText({
     model: "openai/gpt-5-mini",
@@ -66,7 +66,6 @@ function buildPrompt(ctx: IncidentContext): string {
     ctx.statusCode && `HTTP status: ${ctx.statusCode}`,
     ctx.errorMessage && `Error: ${ctx.errorMessage}`,
     ctx.responseTime && `Response time: ${ctx.responseTime}ms`,
-    ctx.location && `Region: ${ctx.location}`,
   ]
     .filter(Boolean)
     .join("\n");
@@ -81,5 +80,5 @@ ${details}
 POSSIBLE SOLUTIONS FOR THIS CAUSE:
 ${solutions}
 
-Generate a concise title, clear description, and a specific actionable hint. The hint should be the most likely solution based on the error details provided.`;
+Generate a brief title, short description, and a concise actionable hint. Keep all responses brief and to the point.`;
 }

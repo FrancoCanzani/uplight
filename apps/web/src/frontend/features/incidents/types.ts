@@ -19,6 +19,8 @@ export interface Incident {
   hint: string | null;
   severity: IncidentSeverity | null;
   status: IncidentStatus;
+  postMortemTitle: string | null;
+  postMortemContent: string | null;
   startedAt: number;
   acknowledgedAt: number | null;
   fixingAt: number | null;

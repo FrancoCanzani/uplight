@@ -1,5 +1,6 @@
 import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { cn, formatCause } from "@lib/utils";
+import { getRouteApi, Link } from "@tanstack/react-router";
 import { formatDistanceToNowStrict } from "date-fns";
 import { useEffect, useRef } from "react";
 import invariant from "tiny-invariant";
@@ -12,6 +13,9 @@ export default function DraggableIncident({
   incident: Incident;
 }) {
   const ref = useRef(null);
+  const routeApi = getRouteApi("/(dashboard)/$teamId/incidents/kanban");
+
+  const { teamId } = routeApi.useParams();
 
   useEffect(() => {
     const el = ref.current;
@@ -26,7 +30,9 @@ export default function DraggableIncident({
   const timestamp = getRelevantTimestamp(incident);
 
   return (
-    <div
+    <Link
+      to="/$teamId/incidents/$incidentId"
+      params={{ teamId: teamId, incidentId: incident.id.toString() }}
       ref={ref}
       className={cn(
         "p-1.5 rounded bg-background cursor-grab gap-2 flex flex-col",
@@ -50,6 +56,6 @@ export default function DraggableIncident({
       <p className="text-sm font-light">
         {incident.description ?? formatCause(incident.cause)}
       </p>
-    </div>
+    </Link>
   );
 }

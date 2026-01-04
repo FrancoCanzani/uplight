@@ -217,6 +217,8 @@ export const incident = sqliteTable(
     status: text({ enum: ["active", "acknowledged", "fixing", "resolved"] })
       .default("active")
       .notNull(),
+    postMortemTitle: text(),
+    postMortemContent: text(),
     startedAt: integer({ mode: "timestamp_ms" }).notNull(),
     acknowledgedAt: integer({ mode: "timestamp_ms" }),
     fixingAt: integer({ mode: "timestamp_ms" }),

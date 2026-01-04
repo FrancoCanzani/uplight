@@ -21,6 +21,8 @@ const IncidentWithMonitorSchema = z.object({
   hint: z.string().nullable(),
   severity: z.enum(["low", "medium", "high", "critical"]).nullable(),
   status: z.enum(["active", "acknowledged", "fixing", "resolved", "ongoing"]),
+  postMortemTitle: z.string().nullable(),
+  postMortemContent: z.string().nullable(),
   startedAt: z.number(),
   acknowledgedAt: z.number().nullable(),
   fixingAt: z.number().nullable(),
@@ -100,6 +102,8 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
       hint: string | null;
       severity: "low" | "medium" | "high" | "critical" | null;
       status: "active" | "acknowledged" | "fixing" | "resolved" | "ongoing";
+      postMortemTitle: string | null;
+      postMortemContent: string | null;
       startedAt: number;
       acknowledgedAt: number | null;
       fixingAt: number | null;
@@ -145,6 +149,8 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
           hint: i.hint,
           severity: i.severity,
           status: i.status,
+          postMortemTitle: i.postMortemTitle,
+          postMortemContent: i.postMortemContent,
           startedAt: i.startedAt.getTime(),
           acknowledgedAt: i.acknowledgedAt?.getTime() ?? null,
           fixingAt: i.fixingAt?.getTime() ?? null,
@@ -196,6 +202,8 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
           hint: null,
           severity: null,
           status: i.status,
+          postMortemTitle: null,
+          postMortemContent: null,
           startedAt: i.startedAt.getTime(),
           acknowledgedAt: null,
           fixingAt: null,

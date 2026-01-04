@@ -57,6 +57,13 @@
       "when": 1767452301401,
       "tag": "0007_modern_silver_surfer",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1767529111316,
+      "tag": "0008_faithful_stark_industries",
+      "breakpoints": true
     }
   ]
 }
