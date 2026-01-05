@@ -40,8 +40,6 @@ export function DashboardSidebar() {
 
   const locationArr = location.pathname.split("/");
 
-  console.log(locationArr.includes("monitors"));
-
   const handleSignOut = async () => {
     await signOut();
     navigate({ to: "/" });

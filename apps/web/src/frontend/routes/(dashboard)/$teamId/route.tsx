@@ -1,4 +1,5 @@
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import FloatingMenu from "@/components/floating-menu";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { fetchTeams } from "@/features/teams/api/use-teams";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
@@ -39,6 +40,7 @@ function TeamLayoutComponent() {
       <DashboardSidebar />
       <SidebarInset className="p-4 lg:p-6 h-screen overflow-x-hidden">
         <Outlet />
+        <FloatingMenu />
       </SidebarInset>
     </SidebarProvider>
   );

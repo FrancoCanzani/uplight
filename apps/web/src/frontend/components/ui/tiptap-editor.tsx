@@ -118,7 +118,7 @@ export default function TiptapEditor({
           "[&_p.is-editor-empty:first-child::before]:text-muted-foreground",
           "[&_p.is-editor-empty:first-child::before]:float-left",
           "[&_p.is-editor-empty:first-child::before]:pointer-events-none",
-          "[&_p.is-editor-empty:first-child::before]:h-0",
+          "[&_p.is-editor-empty:first-child::before]:h-0"
         ),
         "data-placeholder": placeholder,
       },
