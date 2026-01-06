@@ -327,12 +327,11 @@ export default function IncidentsPage() {
 
   return (
     <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
-      <header className="w-full flex items-center justify-between">
-        <h1 className="text-2xl tracking-tight text-balance">Incidents</h1>
+      <div className="w-full flex items-center justify-end">
         <p className="text-muted-foreground text-sm">
           {total} incident{total !== 1 ? "s" : ""} recorded
         </p>
-      </header>
+      </div>
 
       <div className="flex flex-wrap items-end gap-4 pb-4 border-b border-border">
         <div className="flex flex-col gap-1.5">

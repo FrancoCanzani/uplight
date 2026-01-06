@@ -63,7 +63,7 @@ export default function MonitorsPage() {
         onError: () => {
           setError(null);
         },
-      },
+      }
     );
   };
 
@@ -71,9 +71,8 @@ export default function MonitorsPage() {
 
   return (
     <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
-      <header className="w-full">
-        <div className="flex items-center justify-between gap-4">
-          <h1 className="text-2xl tracking-tight text-balance">Monitors</h1>
+      <div className="w-full">
+        <div className="flex items-center justify-end gap-4">
           <div className="flex items-center gap-2 flex-1 justify-end max-w-2xl">
             <Button
               variant="secondary"
@@ -136,7 +135,7 @@ export default function MonitorsPage() {
             </AnimatePresence>
           </div>
         </div>
-      </header>
+      </div>
       <MonitorsTable />
     </div>
   );

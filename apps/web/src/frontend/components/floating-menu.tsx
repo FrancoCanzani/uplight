@@ -59,7 +59,7 @@ export default function FloatingMenu() {
             className={cn(
               "cursor-pointer p-2 rounded-full text-muted-foreground  z-10",
               hoveredIndex === index && "bg-purple-50 text-foreground",
-              isActive && "bg-sidebar-accent text-foreground"
+              isActive && "bg-surface text-foreground",
             )}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}

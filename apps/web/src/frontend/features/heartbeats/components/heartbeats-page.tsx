@@ -8,8 +8,7 @@ export default function HeartbeatsPage() {
 
   return (
     <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
-      <header className="w-full flex items-center justify-between">
-        <h1 className="text-2xl tracking-tight text-balance">Heartbeats</h1>
+      <div className="w-full flex items-center justify-end">
         <Button
           variant={"secondary"}
           size={"xs"}
@@ -19,7 +18,7 @@ export default function HeartbeatsPage() {
             </Link>
           }
         />
-      </header>
+      </div>
       <HeartbeatsTable />
     </div>
   );
