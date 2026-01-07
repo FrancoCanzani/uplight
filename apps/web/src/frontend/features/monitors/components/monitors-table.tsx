@@ -127,14 +127,18 @@ export default function MonitorsTable() {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className={"text-muted-foreground font-normal"}
           >
-            URL / Host
+            URL / Host:Port
             <ChevronsUpDown className="size-3" />
           </Button>
         );
       },
       cell: ({ row }) => {
         const monitor = row.original;
-        const value = monitor.type === "http" ? monitor.url : monitor.host;
+        const value =
+          monitor.type === "http"
+            ? monitor.url
+            : `${monitor.host}:${monitor.port}`;
+
         return (
           <span className="text-muted-foreground text-xs">{value || "—"}</span>
         );

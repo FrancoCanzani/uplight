@@ -100,7 +100,7 @@ export default function MonitorHeader({
           <div className="flex items-center justify-start gap-x-2">
             {monitor.type === "tcp" ? (
               <h2 className="text-xs text-muted-foreground">
-                `${monitor.host}:${monitor.port}`
+                {`${monitor.host}:${monitor.port}`}
               </h2>
             ) : monitor.domainCheck ? (
               <MonitorDomainInfo monitor={monitor} />
