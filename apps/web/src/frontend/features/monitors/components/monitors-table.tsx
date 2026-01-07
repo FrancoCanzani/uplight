@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useIsMobile } from "@hooks/use-mobile";
 import { cn } from "@lib/utils";
 import { getRouteApi, Link } from "@tanstack/react-router";
 import {
@@ -17,23 +18,32 @@ import {
   useReactTable,
   type ColumnDef,
   type SortingState,
+  type VisibilityState,
 } from "@tanstack/react-table";
 import { formatDistanceToNowStrict } from "date-fns";
 import { ChevronsUpDown } from "lucide-react";
-import { useMemo, useState } from "react";
-import type { MonitorResponse } from "../schemas";
-import { getTextStatusColor } from "../utils/get-status-color";
+import { useEffect, useMemo, useState } from "react";
+import type { MonitorResponse, MonitorStatus } from "../schemas";
+import MonitorStatusIndicator from "./monitor-status-indicator";
 
 export default function MonitorsTable() {
   const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/");
   const monitors = routeApi.useLoaderData();
   const { teamId } = routeApi.useParams();
+  const isMobile = useIsMobile();
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [nameFilter, setNameFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "up" | "down" | "degraded" | "all"
   >("all");
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  useEffect(() => {
+    setColumnVisibility({
+      lastCheckAt: !isMobile,
+    });
+  }, [isMobile]);
 
   const statusCounts = useMemo(() => {
     const up = monitors.filter((m) => m.status === "up").length;
@@ -59,10 +69,10 @@ export default function MonitorsTable() {
         );
       },
       cell: ({ row }) => {
-        const status = row.getValue("status") as string;
+        const status = row.getValue("status") as MonitorStatus;
         return (
-          <div className={cn("capitalize", getTextStatusColor(status))}>
-            {status}
+          <div className="w-full px-3">
+            <MonitorStatusIndicator status={status} />
           </div>
         );
       },
@@ -84,11 +94,7 @@ export default function MonitorsTable() {
       },
       cell: ({ row }) => {
         const type = row.getValue("type") as string;
-        return (
-          <span className="font-light text-xs tracking-tight uppercase">
-            {type}
-          </span>
-        );
+        return <span className="text-xs uppercase">{type}</span>;
       },
     },
     {
@@ -245,13 +251,15 @@ export default function MonitorsTable() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
+      columnVisibility,
     },
   });
 
   return (
-    <div className="space-y-2 bg-surface rounded p-3">
+    <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Button
@@ -294,12 +302,12 @@ export default function MonitorsTable() {
           placeholder="Search by name..."
           value={nameFilter}
           onChange={(e) => setNameFilter(e.target.value)}
-          className="w-fit h-7 bg-background"
+          className="h-7 max-w-xs bg-background"
         />
       </div>
 
-      <div className="rounded p-1 bg-background overflow-x-scroll">
-        <Table>
+      <div className="overflow-x-scroll">
+        <Table className="border-separate border-spacing-y-2">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
@@ -330,10 +338,11 @@ export default function MonitorsTable() {
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => {
                 const monitor = row.original;
+                const cells = row.getVisibleCells();
                 return (
                   <TableRow
                     key={row.id}
-                    className="border-none cursor-pointer hover:bg-muted/50"
+                    className="cursor-pointer hover:bg-muted border-b-0"
                   >
                     <Link
                       to="/$teamId/monitors/$monitorId"
@@ -343,14 +352,26 @@ export default function MonitorsTable() {
                       }}
                       className="contents"
                     >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
+                      {cells.map((cell, index) => {
+                        const isFirst = index === 0;
+                        const isLast = index === cells.length - 1;
+                        return (
+                          <TableCell
+                            key={cell.id}
+                            className={cn(
+                              "bg-surface/50 border-y border-border/50",
+                              isFirst && "rounded-l-sm border-l",
+                              isLast && "rounded-r-sm border-r",
+                              !isFirst && "border-l-0",
+                            )}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </TableCell>
+                        );
+                      })}
                     </Link>
                   </TableRow>
                 );

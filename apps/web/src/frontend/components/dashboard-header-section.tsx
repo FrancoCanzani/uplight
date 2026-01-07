@@ -58,19 +58,6 @@ export default function DashboardHeaderSection() {
         params={{ teamId }}
         className="flex items-center space-x-1.5 hover:opacity-80 transition-opacity"
       >
-        <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{
-            type: "spring",
-            stiffness: 200,
-            damping: 15,
-            delay: 0.1,
-          }}
-          className="bg-surface p-1 rounded-full"
-        >
-          <Icon size={18} />
-        </motion.div>
         <motion.span
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

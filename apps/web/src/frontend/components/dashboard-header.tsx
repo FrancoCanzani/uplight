@@ -27,17 +27,10 @@ export default function DashboardHeader() {
   };
 
   return (
-    <header className="flex flex-col fixed top-0 left-0 right-0 z-50 ">
+    <header className="flex flex-col fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/70 supports-backdrop-filter:bg-background/50">
       <div className="relative">
-        <div className="absolute bottom-0 left-0 right-0 h-8 bg-linear-to-b from-background/80 to-transparent pointer-events-none"></div>
-        <div className="w-full lg:max-w-4xl mx-auto flex items-center justify-between px-4 lg:px-0 py-4 lg:py-6 relative">
+        <div className="w-full lg:max-w-4xl mx-auto flex items-center justify-between px-4 lg:px-0 py-4 relative">
           <div className="flex items-center gap-3">
-            <Link
-              to="/"
-              className="font-medium uppercase tracking-wide text-xl"
-            >
-              Uplight
-            </Link>
             <DashboardHeaderSection />
           </div>
           <DropdownMenu>

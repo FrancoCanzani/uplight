@@ -57,15 +57,15 @@ export default function FloatingMenu() {
             }}
             onHoverStart={() => setHoveredIndex(index)}
             className={cn(
-              "cursor-pointer p-2 rounded-full text-muted-foreground  z-10",
-              hoveredIndex === index && "bg-purple-50 text-foreground",
+              "cursor-pointer p-1.5 rounded-full text-muted-foreground  z-10",
+              hoveredIndex === index && "bg-surface text-foreground",
               isActive && "bg-surface text-foreground",
             )}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
           >
             <Link to={item.path} params={{ teamId }}>
-              <Icon size={20} />
+              <Icon size={16} />
               <motion.span className="sr-only">{item.name}</motion.span>
             </Link>
           </motion.div>
