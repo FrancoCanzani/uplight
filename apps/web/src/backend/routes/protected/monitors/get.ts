@@ -2,7 +2,7 @@ import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { and, eq, desc } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { monitor, domainCheckResult } from "../../../db/schema";
+import { monitor, domainCheckResult, checkResult } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { MonitorResponseSchema } from "./schemas";
 
@@ -57,6 +57,16 @@ export function registerGetMonitor(api: OpenAPIHono<AppEnv>) {
       .orderBy(desc(domainCheckResult.checkedAt))
       .limit(1);
 
+    const [lastCheck] = await db
+      .select({
+        checkedAt: checkResult.checkedAt,
+        responseTime: checkResult.responseTime,
+      })
+      .from(checkResult)
+      .where(eq(checkResult.monitorId, result[0].id))
+      .orderBy(desc(checkResult.checkedAt))
+      .limit(1);
+
     return c.json(
       {
         ...result[0],
@@ -78,6 +88,8 @@ export function registerGetMonitor(api: OpenAPIHono<AppEnv>) {
               checkedAt: lastDomainCheck.checkedAt.getTime(),
             }
           : null,
+        lastCheckAt: lastCheck?.checkedAt.getTime() ?? null,
+        lastResponseTime: lastCheck?.responseTime ?? null,
       },
       200
     );

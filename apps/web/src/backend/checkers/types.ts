@@ -39,7 +39,6 @@ interface BaseCheckRequest {
   monitorId: number;
   location: Location;
   timeout: number;
-  checkDNS: boolean;
   contentCheck?: ContentCheck;
 }
 
@@ -53,7 +52,6 @@ export interface HttpCheckRequest extends BaseCheckRequest {
   password?: string;
   expectedStatusCodes: number[];
   followRedirects: boolean;
-  verifySSL: boolean;
 }
 
 export interface TcpCheckRequest extends BaseCheckRequest {
@@ -105,8 +103,7 @@ export interface MonitorRow {
   password: string | null;
   expectedStatusCodes: string | null;
   followRedirects: boolean;
-  verifySSL: boolean;
-  checkDNS: boolean;
+  checkDomain: boolean;
   host: string | null;
   port: number | null;
   status: string;

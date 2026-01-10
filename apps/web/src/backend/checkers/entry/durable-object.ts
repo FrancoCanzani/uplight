@@ -26,23 +26,21 @@ export class CheckerDO extends DurableObject<Env> {
     const startTime = Date.now();
     const timeoutMs = request.timeout * 1000;
 
-    if (request.checkDNS) {
-      const hostname =
-        request.type === "http" ? extractHostname(request.url) : request.host;
+    const hostname =
+      request.type === "http" ? extractHostname(request.url) : request.host;
 
-      const dnsOk = await checkDns(hostname);
-      if (!dnsOk) {
-        return {
-          monitorId: request.monitorId,
-          location: request.location,
-          result: "error",
-          responseTime: Math.round(performance.now() - startTime),
-          errorMessage: `DNS resolution failed for ${hostname}`,
-          cause: "dns_failure",
-          retryCount: 0,
-          checkedAt: Date.now(),
-        };
-      }
+    const dnsOk = await checkDns(hostname);
+    if (!dnsOk) {
+      return {
+        monitorId: request.monitorId,
+        location: request.location,
+        result: "error",
+        responseTime: Math.round(performance.now() - startTime),
+        errorMessage: `DNS resolution failed for ${hostname}`,
+        cause: "dns_failure",
+        retryCount: 0,
+        checkedAt: Date.now(),
+      };
     }
 
     const config: CheckConfig = {

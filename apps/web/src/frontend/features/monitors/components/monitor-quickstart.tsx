@@ -67,8 +67,6 @@ export default function MonitorQuickstart() {
             locations: ["wnam"],
             expectedStatusCodes: twoXxCodes,
             followRedirects: true,
-            verifySSL: true,
-            checkDNS: true,
             checkDomain: true,
           },
         },

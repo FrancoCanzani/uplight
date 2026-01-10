@@ -1,5 +1,11 @@
 import z from "zod";
 
+// Default status codes: 2xx (200-299) and 3xx (300-399)
+const DEFAULT_STATUS_CODES = [
+  ...Array.from({ length: 100 }, (_, i) => 200 + i), // 2xx: 200-299
+  ...Array.from({ length: 100 }, (_, i) => 300 + i), // 3xx: 300-399
+];
+
 export const LocationSchema = z.enum([
   "wnam",
   "enam",
@@ -27,7 +33,7 @@ export const HttpMonitorSchema = z.object({
   }),
   method: z.enum(["get", "post", "head", "put", "patch", "delete", "options"]),
   interval: z.int().min(60000).max(1800000),
-  timeout: z.int().min(1).max(60).default(30),
+  timeout: z.int().min(1).max(30).default(30),
   responseTimeThreshold: z.int().min(1).optional(),
   locations: z
     .array(LocationSchema)
@@ -36,10 +42,10 @@ export const HttpMonitorSchema = z.object({
   body: z.string().max(10000).optional(),
   username: z.string().max(50).optional(),
   password: z.string().max(50).optional(),
-  expectedStatusCodes: z.array(z.int().min(100).max(599)).default([200]),
+  expectedStatusCodes: z
+    .array(z.int().min(100).max(599))
+    .default(DEFAULT_STATUS_CODES),
   followRedirects: z.boolean().default(true),
-  verifySSL: z.boolean().default(true),
-  checkDNS: z.boolean().default(true),
   checkDomain: z.boolean().default(true),
   contentCheck: ContentCheckSchema.optional(),
 });
@@ -50,7 +56,7 @@ export const TcpMonitorSchema = z.object({
   host: z.string().min(1).max(255),
   port: z.int().min(1).max(65535),
   interval: z.int().min(60000).max(1800000),
-  timeout: z.int().min(1).max(60).default(30),
+  timeout: z.int().min(1).max(30).default(30),
   responseTimeThreshold: z.int().min(1).optional(),
   locations: z
     .array(LocationSchema)
@@ -115,8 +121,6 @@ export const MonitorResponseSchema = z.object({
   password: z.string().nullable(),
   expectedStatusCodes: z.string().nullable(),
   followRedirects: z.boolean(),
-  verifySSL: z.boolean(),
-  checkDNS: z.boolean(),
   checkDomain: z.boolean(),
   host: z.string().nullable(),
   port: z.number().nullable(),

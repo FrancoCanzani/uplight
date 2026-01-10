@@ -28,7 +28,7 @@ function getDefaultValues(existing?: Notifier): DiscordFormInput {
 
   return {
     type: "discord",
-    enabled: true,
+    enabled: false,
     webhookUrl: "",
     username: "",
     avatarUrl: "",
@@ -110,7 +110,7 @@ export default function DiscordNotifierForm({
                   </div>
                   <Switch
                     id={field.name}
-                    checked={field.state.value ?? true}
+                    checked={field.state.value ?? false}
                     onCheckedChange={field.handleChange}
                   />
                 </div>

@@ -28,7 +28,7 @@ function getDefaultValues(existing?: Notifier): SlackFormInput {
 
   return {
     type: "slack",
-    enabled: true,
+    enabled: false,
     webhookUrl: "",
     channel: "",
     username: "",
@@ -110,7 +110,7 @@ export default function SlackNotifierForm({
                   </div>
                   <Switch
                     id={field.name}
-                    checked={field.state.value ?? true}
+                    checked={field.state.value ?? false}
                     onCheckedChange={field.handleChange}
                   />
                 </div>

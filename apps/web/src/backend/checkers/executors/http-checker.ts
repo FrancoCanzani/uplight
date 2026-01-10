@@ -142,13 +142,10 @@ export async function performHttpCheck(
       }
 
       if (isSslError(error)) {
-        const sslNote = request.verifySSL
-          ? ""
-          : " (note: Workers cannot bypass SSL checks)";
         return {
           result: "error",
           responseTime,
-          errorMessage: `SSL error: ${error.message}${sslNote}`,
+          errorMessage: `SSL error: ${error.message}`,
           cause: "ssl_error",
           ...(responseHeaders && { responseHeaders }),
           ...(responseBody && { responseBody }),

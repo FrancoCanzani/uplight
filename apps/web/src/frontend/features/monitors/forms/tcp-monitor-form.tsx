@@ -258,7 +258,7 @@ export function TcpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                       name={field.name}
                       type="number"
                       min={1}
-                      max={60}
+                      max={30}
                       value={field.state.value}
                       onBlur={field.handleBlur}
                       onChange={(e) =>
@@ -268,7 +268,7 @@ export function TcpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                     />
                     <FieldDescription>
                       Maximum time to wait for a connection before considering
-                      the check failed.
+                      the check failed. Maximum timeout is 30 seconds.
                     </FieldDescription>
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />

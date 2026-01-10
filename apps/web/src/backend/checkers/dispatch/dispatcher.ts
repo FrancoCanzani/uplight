@@ -21,7 +21,6 @@ function buildCheckRequest(mon: MonitorRow, location: Location): CheckRequest {
     monitorId: mon.id,
     location,
     timeout: mon.timeout,
-    checkDNS: mon.checkDNS,
     contentCheck: mon.contentCheck ? JSON.parse(mon.contentCheck) : undefined,
   };
 
@@ -39,7 +38,6 @@ function buildCheckRequest(mon: MonitorRow, location: Location): CheckRequest {
         ? JSON.parse(mon.expectedStatusCodes)
         : [200],
       followRedirects: mon.followRedirects,
-      verifySSL: mon.verifySSL,
     };
   }
 

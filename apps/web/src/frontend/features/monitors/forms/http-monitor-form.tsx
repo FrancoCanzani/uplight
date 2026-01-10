@@ -49,6 +49,12 @@ import {
 import { expandStatusCodes } from "../utils/expand-status-codes";
 import { getSelectedOptions } from "../utils/get-selected-options";
 
+// Default to 2xx (200-299) and 3xx (300-399) status codes
+const defaultStatusCodes = [
+  ...Array.from({ length: 100 }, (_, i) => 200 + i), // 2xx: 200-299
+  ...Array.from({ length: 100 }, (_, i) => 300 + i), // 3xx: 300-399
+];
+
 const emptyValues: HttpMonitorInput = {
   type: "http",
   name: "",
@@ -62,10 +68,8 @@ const emptyValues: HttpMonitorInput = {
   body: "",
   username: "",
   password: "",
-  expectedStatusCodes: [200],
+  expectedStatusCodes: defaultStatusCodes,
   followRedirects: true,
-  verifySSL: true,
-  checkDNS: true,
   checkDomain: true,
   contentCheck: undefined,
 };
@@ -75,9 +79,14 @@ function monitorToFormValues(monitor: MonitorResponse): HttpMonitorInput {
   const contentCheck = monitor.contentCheck
     ? JSON.parse(monitor.contentCheck)
     : undefined;
+  // Default to 2xx (200-299) and 3xx (300-399) status codes if not set
+  const defaultStatusCodes = [
+    ...Array.from({ length: 100 }, (_, i) => 200 + i), // 2xx: 200-299
+    ...Array.from({ length: 100 }, (_, i) => 300 + i), // 3xx: 300-399
+  ];
   const expectedStatusCodes = monitor.expectedStatusCodes
     ? JSON.parse(monitor.expectedStatusCodes)
-    : [200];
+    : defaultStatusCodes;
   const headers = monitor.headers ? JSON.parse(monitor.headers) : {};
 
   return {
@@ -95,8 +104,6 @@ function monitorToFormValues(monitor: MonitorResponse): HttpMonitorInput {
     password: monitor.password ?? "",
     expectedStatusCodes,
     followRedirects: monitor.followRedirects,
-    verifySSL: monitor.verifySSL,
-    checkDNS: monitor.checkDNS,
     checkDomain: monitor.checkDomain,
     contentCheck,
   };
@@ -313,7 +320,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                       name={field.name}
                       type="number"
                       min={1}
-                      max={60}
+                      max={30}
                       value={field.state.value}
                       onBlur={field.handleBlur}
                       onChange={(e) =>
@@ -323,7 +330,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                     />
                     <FieldDescription>
                       Maximum time to wait for a response before considering the
-                      check failed.
+                      check failed. Maximum timeout is 30 seconds.
                     </FieldDescription>
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />
@@ -577,7 +584,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
           <div>
             <FieldLabel>Request Options</FieldLabel>
             <FieldDescription>
-              Configure SSL verification, redirect handling, and DNS checks.
+              Configure redirect handling and domain/SSL monitoring.
             </FieldDescription>
           </div>
           <div className="grid gap-7 sm:grid-cols-2">
@@ -609,56 +616,6 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
             />
 
             <form.Field
-              name="verifySSL"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field orientation="horizontal" data-invalid={isInvalid}>
-                    <FieldContent>
-                      <FieldLabel htmlFor={field.name}>Verify SSL</FieldLabel>
-                      <FieldDescription>
-                        Validate SSL/TLS certificates
-                      </FieldDescription>
-                    </FieldContent>
-                    <Switch
-                      id={field.name}
-                      name={field.name}
-                      checked={field.state.value}
-                      onCheckedChange={field.handleChange}
-                      aria-invalid={isInvalid}
-                    />
-                  </Field>
-                );
-              }}
-            />
-
-            <form.Field
-              name="checkDNS"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field orientation="horizontal" data-invalid={isInvalid}>
-                    <FieldContent>
-                      <FieldLabel htmlFor={field.name}>Check DNS</FieldLabel>
-                      <FieldDescription>
-                        Verify DNS resolution before making the request
-                      </FieldDescription>
-                    </FieldContent>
-                    <Switch
-                      id={field.name}
-                      name={field.name}
-                      checked={field.state.value}
-                      onCheckedChange={field.handleChange}
-                      aria-invalid={isInvalid}
-                    />
-                  </Field>
-                );
-              }}
-            />
-
-            <form.Field
               name="checkDomain"
               children={(field) => {
                 const isInvalid =
@@ -668,7 +625,9 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                     <FieldContent>
                       <FieldLabel htmlFor={field.name}>Check Domain</FieldLabel>
                       <FieldDescription>
-                        Monitor domain expiration and SSL certificate
+                        Verify SSL/TLS certificates during requests and monitor
+                        domain information (WHOIS expiration, registrar) and SSL
+                        certificate details (expiry, issuer)
                       </FieldDescription>
                     </FieldContent>
                     <Switch

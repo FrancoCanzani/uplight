@@ -1,4 +1,4 @@
-import { and, eq, or } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { parseISO, isValid } from "date-fns";
 import { createDb } from "../../db";
 import { monitor, domainCheckResult } from "../../db/schema";
@@ -44,12 +44,7 @@ export async function handleDomainChecks(env: Env): Promise<void> {
       url: monitor.url,
     })
     .from(monitor)
-    .where(
-      and(
-        eq(monitor.type, "http"),
-        or(eq(monitor.verifySSL, true), eq(monitor.checkDomain, true))
-      )
-    );
+    .where(and(eq(monitor.type, "http"), eq(monitor.checkDomain, true)));
 
   if (httpMonitors.length === 0) {
     console.log("[DOMAIN-CHECK] No HTTP monitors to check");

@@ -35,7 +35,7 @@ function getDefaultValues(existing?: Notifier): GitHubFormInput {
 
   return {
     type: "github",
-    enabled: true,
+    enabled: false,
     repository: "",
     token: "",
     labels: "",
@@ -132,7 +132,7 @@ export default function GitHubNotifierForm({
                   </div>
                   <Switch
                     id={field.name}
-                    checked={field.state.value ?? true}
+                    checked={field.state.value ?? false}
                     onCheckedChange={field.handleChange}
                   />
                 </div>

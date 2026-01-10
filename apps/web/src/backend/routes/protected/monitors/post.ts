@@ -2,7 +2,7 @@ import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { eq, desc } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { monitor, domainCheckResult } from "../../../db/schema";
+import { monitor, domainCheckResult, checkResult } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { CreateMonitorSchema, MonitorResponseSchema } from "./schemas";
 
@@ -65,8 +65,6 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
               data.expectedStatusCodes ?? [200]
             ),
             followRedirects: data.followRedirects ?? true,
-            verifySSL: data.verifySSL ?? true,
-            checkDNS: data.checkDNS ?? true,
             checkDomain: data.checkDomain ?? true,
             contentCheck: data.contentCheck
               ? JSON.stringify(data.contentCheck)
@@ -84,8 +82,6 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
             host: data.host,
             port: data.port,
             followRedirects: false,
-            verifySSL: false,
-            checkDNS: false,
             checkDomain: false,
             contentCheck: null,
           };
@@ -100,6 +96,16 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
       .from(domainCheckResult)
       .where(eq(domainCheckResult.monitorId, createdMonitor.id))
       .orderBy(desc(domainCheckResult.checkedAt))
+      .limit(1);
+
+    const [lastCheck] = await db
+      .select({
+        checkedAt: checkResult.checkedAt,
+        responseTime: checkResult.responseTime,
+      })
+      .from(checkResult)
+      .where(eq(checkResult.monitorId, createdMonitor.id))
+      .orderBy(desc(checkResult.checkedAt))
       .limit(1);
 
     return c.json(
@@ -123,6 +129,8 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
               checkedAt: lastDomainCheck.checkedAt.getTime(),
             }
           : null,
+        lastCheckAt: lastCheck?.checkedAt.getTime() ?? null,
+        lastResponseTime: lastCheck?.responseTime ?? null,
       },
       201
     );

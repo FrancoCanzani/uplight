@@ -61,8 +61,6 @@ export const monitor = sqliteTable(
     password: text(),
     expectedStatusCodes: text(),
     followRedirects: integer({ mode: "boolean" }).default(true).notNull(),
-    verifySSL: integer({ mode: "boolean" }).default(true).notNull(),
-    checkDNS: integer({ mode: "boolean" }).default(true).notNull(),
     checkDomain: integer({ mode: "boolean" }).default(true).notNull(),
     host: text(),
     port: integer(),

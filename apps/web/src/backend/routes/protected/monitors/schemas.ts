@@ -1,5 +1,11 @@
 import { z } from "@hono/zod-openapi";
 
+// Default status codes: 2xx (200-299) and 3xx (300-399)
+const DEFAULT_STATUS_CODES = [
+  ...Array.from({ length: 100 }, (_, i) => 200 + i), // 2xx: 200-299
+  ...Array.from({ length: 100 }, (_, i) => 300 + i), // 3xx: 300-399
+];
+
 export const LocationSchema = z
   .enum(["wnam", "enam", "sam", "weur", "eeur", "apac", "oc", "afr", "me"])
   .openapi({ example: "wnam" });
@@ -32,7 +38,7 @@ export const HttpMonitorSchema = z
       .min(60000)
       .max(1800000)
       .openapi({ example: 60000 }),
-    timeout: z.number().int().min(1).max(60).default(30),
+    timeout: z.number().int().min(1).max(30).default(30),
     responseTimeThreshold: z.number().int().min(1).optional(),
     locations: z
       .array(LocationSchema)
@@ -43,10 +49,8 @@ export const HttpMonitorSchema = z
     password: z.string().max(50).optional(),
     expectedStatusCodes: z
       .array(z.number().int().min(100).max(599))
-      .default([200]),
+      .default(DEFAULT_STATUS_CODES),
     followRedirects: z.boolean().default(true),
-    verifySSL: z.boolean().default(true),
-    checkDNS: z.boolean().default(true),
     checkDomain: z.boolean().default(true),
     contentCheck: ContentCheckSchema.optional(),
   })
@@ -64,7 +68,7 @@ export const TcpMonitorSchema = z
       .min(60000)
       .max(1800000)
       .openapi({ example: 60000 }),
-    timeout: z.number().int().min(1).max(60).default(30),
+    timeout: z.number().int().min(1).max(30).default(30),
     responseTimeThreshold: z.number().int().min(1).optional(),
     locations: z
       .array(LocationSchema)
@@ -124,8 +128,6 @@ export const MonitorResponseSchema = z
     password: z.string().nullable(),
     expectedStatusCodes: z.string().nullable(),
     followRedirects: z.boolean(),
-    verifySSL: z.boolean(),
-    checkDNS: z.boolean(),
     checkDomain: z.boolean(),
     host: z.string().nullable(),
     port: z.number().int().nullable(),

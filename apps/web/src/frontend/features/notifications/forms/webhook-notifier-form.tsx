@@ -34,7 +34,7 @@ function getDefaultValues(existing?: Notifier): WebhookFormInput {
 
   return {
     type: "webhook",
-    enabled: true,
+    enabled: false,
     url: "",
     method: "POST",
   };
@@ -114,7 +114,7 @@ export default function WebhookNotifierForm({
                   </div>
                   <Switch
                     id={field.name}
-                    checked={field.state.value ?? true}
+                    checked={field.state.value ?? false}
                     onCheckedChange={field.handleChange}
                   />
                 </div>

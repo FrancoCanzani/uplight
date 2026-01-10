@@ -2,7 +2,7 @@ import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
 import { and, eq, desc } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { monitor, domainCheckResult } from "../../../db/schema";
+import { monitor, domainCheckResult, checkResult } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import {
   HttpMonitorSchema,
@@ -117,10 +117,9 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
         );
       if (data.followRedirects !== undefined)
         baseUpdates.followRedirects = data.followRedirects;
-      if (data.verifySSL !== undefined) baseUpdates.verifySSL = data.verifySSL;
-      if (data.checkDNS !== undefined) baseUpdates.checkDNS = data.checkDNS;
-      if (data.checkDomain !== undefined)
+      if (data.checkDomain !== undefined) {
         baseUpdates.checkDomain = data.checkDomain;
+      }
     } else if (data.type === "tcp") {
       if (data.host !== undefined) baseUpdates.host = data.host;
       if (data.port !== undefined) baseUpdates.port = data.port;
@@ -144,6 +143,16 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
       .orderBy(desc(domainCheckResult.checkedAt))
       .limit(1);
 
+    const [lastCheck] = await db
+      .select({
+        checkedAt: checkResult.checkedAt,
+        responseTime: checkResult.responseTime,
+      })
+      .from(checkResult)
+      .where(eq(checkResult.monitorId, updatedMonitor.id))
+      .orderBy(desc(checkResult.checkedAt))
+      .limit(1);
+
     return c.json(
       {
         ...updatedMonitor,
@@ -165,6 +174,8 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
               checkedAt: lastDomainCheck.checkedAt.getTime(),
             }
           : null,
+        lastCheckAt: lastCheck?.checkedAt.getTime() ?? null,
+        lastResponseTime: lastCheck?.responseTime ?? null,
       },
       200
     );
