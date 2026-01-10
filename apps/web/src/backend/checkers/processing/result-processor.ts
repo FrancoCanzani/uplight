@@ -131,6 +131,7 @@ export async function processResults(
       newStatus,
       results: processedResults,
       incidentEvents,
+      env,
     });
   }
 }

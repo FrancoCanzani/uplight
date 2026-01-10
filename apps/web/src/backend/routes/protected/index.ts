@@ -5,6 +5,7 @@ import { maintenance } from "./maintenance";
 import { incidents } from "./incidents";
 import { logs } from "./logs";
 import { heartbeats } from "./heartbeats";
+import { notifications } from "./notifications";
 import type { AppEnv } from "../../types";
 
 const protectedRouter = new OpenAPIHono<AppEnv>();
@@ -15,5 +16,6 @@ protectedRouter.route("/heartbeats", heartbeats);
 protectedRouter.route("/maintenance", maintenance);
 protectedRouter.route("/incidents", incidents);
 protectedRouter.route("/logs", logs);
+protectedRouter.route("/notifications", notifications);
 
 export { protectedRouter };

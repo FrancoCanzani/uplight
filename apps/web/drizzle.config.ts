@@ -5,7 +5,7 @@ const LOCAL_DB_PATH = process.env.LOCAL_DB_PATH;
 
 export default defineConfig({
   out: "./drizzle",
-  schema: "./src/backend/db/schema.ts",
+  schema: ["./src/backend/db/schema.ts", "./src/backend/db/auth-schema.ts"],
   dialect: "sqlite",
   casing: "snake_case",
   ...(LOCAL_DB_PATH

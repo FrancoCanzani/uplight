@@ -5,64 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1765833929511,
-      "tag": "0000_init",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1765913750020,
-      "tag": "0001_crazy_selene",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1766004893011,
-      "tag": "0002_hard_callisto",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1766690522060,
-      "tag": "0003_material_hellfire_club",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1766860573664,
-      "tag": "0004_late_trish_tilby",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1767042924495,
-      "tag": "0005_milky_nightcrawler",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "6",
-      "when": 1767292759414,
-      "tag": "0006_amazing_eternity",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "6",
-      "when": 1767452301401,
-      "tag": "0007_modern_silver_surfer",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "6",
-      "when": 1767529111316,
-      "tag": "0008_faithful_stark_industries",
+      "when": 1768064140177,
+      "tag": "0000_uneven_johnny_blaze",
       "breakpoints": true
     }
   ]

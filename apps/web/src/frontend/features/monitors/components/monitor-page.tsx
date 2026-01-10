@@ -7,7 +7,9 @@ import {
 } from "@/components/ui/card";
 import { formatDate } from "@lib/utils";
 import { getRouteApi, Link } from "@tanstack/react-router";
+import { useMemo } from "react";
 import getLocationLabel from "../utils/get-location-label";
+import calculatePercentiles from "../utils/calculate-percentiles";
 import MonitorHeader from "./monitor-header";
 import MonitorStatusAlert from "./monitor-status-alert";
 import RecentChecksTable from "./recent-checks-table";
@@ -37,6 +39,18 @@ export default function MonitorPage() {
   const filteredChecks = region
     ? checks.filter((c) => c.location === region)
     : checks;
+
+  const percentileStats = useMemo(() => {
+    const times = filteredChecks
+      .filter((c) => c.responseTime > 0)
+      .map((c) => c.responseTime);
+
+    if (times.length === 0) {
+      return { 50: 0, 75: 0, 95: 0, 99: 0 };
+    }
+
+    return calculatePercentiles(times, [50, 75, 95, 99]);
+  }, [filteredChecks]);
 
   return (
     <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
@@ -106,6 +120,38 @@ export default function MonitorPage() {
         </Card>
         <Card size="xs">
           <CardHeader>
+            <CardDescription>P50 Response Time</CardDescription>
+            <CardTitle className="text-lg">
+              <AnimatedNumber value={percentileStats[50]} suffix="ms" />
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card size="xs">
+          <CardHeader>
+            <CardDescription>P75 Response Time</CardDescription>
+            <CardTitle className="text-lg">
+              <AnimatedNumber value={percentileStats[75]} suffix="ms" />
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card size="xs">
+          <CardHeader>
+            <CardDescription>P95 Response Time</CardDescription>
+            <CardTitle className="text-lg">
+              <AnimatedNumber value={percentileStats[95]} suffix="ms" />
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card size="xs">
+          <CardHeader>
+            <CardDescription>P99 Response Time</CardDescription>
+            <CardTitle className="text-lg">
+              <AnimatedNumber value={percentileStats[99]} suffix="ms" />
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card size="xs">
+          <CardHeader>
             <CardDescription>Total Checks</CardDescription>
             <CardTitle className="text-lg">
               <AnimatedNumber value={stats.totalChecks} />
@@ -115,7 +161,7 @@ export default function MonitorPage() {
         <Card size="xs">
           <CardHeader>
             <CardDescription>Last Check</CardDescription>
-            <CardTitle className="text-lg">
+            <CardTitle className="tabular-nums text-lg font-mono font-light">
               {stats.lastCheckAt ? formatDate(stats.lastCheckAt) : "-"}
             </CardTitle>
           </CardHeader>

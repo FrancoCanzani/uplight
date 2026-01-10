@@ -128,12 +128,6 @@ export const heartbeatIncident = sqliteTable(
   ]
 );
 
-export const teamRelations = relations(team, ({ many }) => ({
-  members: many(teamMember),
-  monitors: many(monitor),
-  heartbeats: many(heartbeat),
-}));
-
 export const teamMemberRelations = relations(teamMember, ({ one }) => ({
   team: one(team, {
     fields: [teamMember.teamId],
@@ -318,6 +312,41 @@ export const heartbeatIncidentRelations = relations(
   })
 );
 
+export const notifier = sqliteTable(
+  "notifier",
+  {
+    id: integer().primaryKey({ autoIncrement: true }),
+    teamId: integer()
+      .notNull()
+      .references(() => team.id, { onDelete: "cascade" }),
+    type: text({
+      enum: ["email", "slack", "discord", "webhook", "github"],
+    }).notNull(),
+    enabled: integer({ mode: "boolean" }).default(false).notNull(),
+    config: text().notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    index("notifier_teamId_idx").on(table.teamId),
+    index("notifier_type_idx").on(table.type),
+    index("notifier_enabled_idx").on(table.enabled),
+  ]
+);
+
+export const notifierRelations = relations(notifier, ({ one }) => ({
+  team: one(team, {
+    fields: [notifier.teamId],
+    references: [team.id],
+  }),
+}));
+
+export const teamRelations = relations(team, ({ many }) => ({
+  members: many(teamMember),
+  monitors: many(monitor),
+  heartbeats: many(heartbeat),
+  notifiers: many(notifier),
+}));
+
 export const schema = {
   ...authSchema,
   team,
@@ -329,4 +358,5 @@ export const schema = {
   domainCheckResult,
   heartbeat,
   heartbeatIncident,
+  notifier,
 } as const;

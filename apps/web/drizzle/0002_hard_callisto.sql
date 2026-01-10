@@ -1,1 +1,0 @@
-ALTER TABLE `check_result` RENAME COLUMN "status" TO "result";

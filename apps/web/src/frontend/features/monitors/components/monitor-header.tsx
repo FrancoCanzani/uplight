@@ -122,15 +122,16 @@ export default function MonitorHeader({
                   handleTogglePause();
                 }}
                 disabled={toggleStatus.isPending}
+                className="text-xs"
               >
                 {isPaused ? (
                   <>
-                    <Play className="size-3" />
+                    <Play className="size-2.5" />
                     Resume
                   </>
                 ) : (
                   <>
-                    <Pause className="size-3" />
+                    <Pause className="size-2.5" />
                     Pause
                   </>
                 )}
@@ -140,8 +141,8 @@ export default function MonitorHeader({
                 to="/$teamId/monitors/$monitorId/maintenance"
                 params={{ teamId, monitorId }}
               >
-                <DropdownMenuItem>
-                  <Wrench className="size-3" />
+                <DropdownMenuItem className="text-xs">
+                  <Wrench className="size-2.5" />
                   Maintenance
                 </DropdownMenuItem>
               </Link>
@@ -149,8 +150,8 @@ export default function MonitorHeader({
                 to="/$teamId/monitors/$monitorId/edit"
                 params={{ teamId, monitorId }}
               >
-                <DropdownMenuItem>
-                  <Pencil className="size-3" />
+                <DropdownMenuItem className="text-xs">
+                  <Pencil className="size-2.5" />
                   Edit
                 </DropdownMenuItem>
               </Link>
@@ -161,8 +162,9 @@ export default function MonitorHeader({
                   e.preventDefault();
                   setDeleteDialogOpen(true);
                 }}
+                className="text-xs"
               >
-                <Trash2 className="size-3" />
+                <Trash2 className="size-2.5" />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>

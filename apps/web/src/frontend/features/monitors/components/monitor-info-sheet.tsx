@@ -132,7 +132,7 @@ export default function MonitorInfoSheet({
                   label="Expires"
                   value={format(
                     parseISO(monitor.domainCheck.whoisExpirationDate),
-                    "MMM d, yyyy h:mm a"
+                    "MMM d, yyyy h:mm a",
                   )}
                 />
               )}
@@ -151,7 +151,7 @@ export default function MonitorInfoSheet({
                             ? "text-green-700"
                             : whoisStatus.status === "warn"
                               ? "text-amber-400"
-                              : "text-destructive"
+                              : "text-destructive",
                         )}
                       >
                         {whoisStatus.status === "ok"
@@ -175,7 +175,7 @@ export default function MonitorInfoSheet({
                   label="SSL Expires"
                   value={format(
                     new Date(monitor.domainCheck.sslExpiry),
-                    "MMM d, yyyy h:mm a"
+                    "MMM d, yyyy h:mm a",
                   )}
                 />
               )}
@@ -194,7 +194,7 @@ export default function MonitorInfoSheet({
                             ? "text-green-700"
                             : sslStatus.status === "warn"
                               ? "text-amber-400"
-                              : "text-destructive"
+                              : "text-destructive",
                         )}
                       >
                         {sslStatus.status === "ok"
@@ -211,7 +211,7 @@ export default function MonitorInfoSheet({
                 label="Last Checked"
                 value={format(
                   new Date(monitor.domainCheck.checkedAt),
-                  "MMM d, yyyy h:mm a"
+                  "MMM d, yyyy h:mm a",
                 )}
               />
             </Section>

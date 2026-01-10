@@ -1,17 +1,15 @@
 import { useMotionValue, useMotionValueEvent, useSpring } from "motion/react";
 import { useEffect, useState } from "react";
 
-interface AnimatedNumberProps {
-  value: number;
-  decimals?: number;
-  suffix?: string;
-}
-
 export default function AnimatedNumber({
   value,
   decimals = 0,
   suffix = "",
-}: AnimatedNumberProps) {
+}: {
+  value: number;
+  decimals?: number;
+  suffix?: string;
+}) {
   const motionValue = useMotionValue(0);
   const spring = useSpring(motionValue, {
     stiffness: 100,

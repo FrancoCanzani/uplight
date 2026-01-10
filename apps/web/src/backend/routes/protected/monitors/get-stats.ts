@@ -93,9 +93,7 @@ export function registerGetStats(api: OpenAPIHono<AppEnv>) {
     const uptimePercentage =
       totalChecks > 0 ? (successfulChecks / totalChecks) * 100 : 100;
 
-    const responseChecks = checks.filter(
-      (c) => c.result === "success" && c.responseTime > 0
-    );
+    const responseChecks = checks.filter((c) => c.responseTime > 0);
     const avgResponseTime =
       responseChecks.length > 0
         ? responseChecks.reduce((sum, c) => sum + c.responseTime, 0) /

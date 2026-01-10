@@ -11,7 +11,7 @@
   "assets": {
     "directory": "./dist/client",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": ["/api/*"],
   },
   "durable_objects": {
     "bindings": [
@@ -53,7 +53,7 @@
         {
           "binding": "DB",
           "database_name": "uplight-prod",
-          "database_id": "c03b99be-0c6c-4944-83a4-b105835ca5d3",
+          "database_id": "cc5a7fc6-109e-437b-8a00-612fb5b410bf",
           "migrations_dir": "drizzle",
         },
       ],
