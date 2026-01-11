@@ -7,14 +7,15 @@ import { monitor, incident } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 
 const PatchIncidentSchema = z.object({
-  status: z.enum(["active", "acknowledged", "fixing"]),
+  status: z.enum(["ongoing", "acknowledged", "fixing", "resolved"]),
 });
 
 const ResponseSchema = z.object({
   id: z.number(),
-  status: z.enum(["active", "acknowledged", "fixing", "resolved"]),
+  status: z.enum(["ongoing", "acknowledged", "fixing", "resolved"]),
   acknowledgedAt: z.number().nullable(),
   fixingAt: z.number().nullable(),
+  resolvedAt: z.number().nullable(),
 });
 
 const route = createRoute({
@@ -83,9 +84,10 @@ export function registerPatchIncident(api: OpenAPIHono<AppEnv>) {
     }
 
     const updateData: {
-      status: "active" | "acknowledged" | "fixing";
+      status: "ongoing" | "acknowledged" | "fixing" | "resolved";
       acknowledgedAt?: Date;
       fixingAt?: Date;
+      resolvedAt?: Date;
     } = { status };
 
     if (status === "acknowledged" && !existingIncident.acknowledgedAt) {
@@ -94,6 +96,10 @@ export function registerPatchIncident(api: OpenAPIHono<AppEnv>) {
 
     if (status === "fixing" && !existingIncident.fixingAt) {
       updateData.fixingAt = new Date(now);
+    }
+
+    if (status === "resolved" && !existingIncident.resolvedAt) {
+      updateData.resolvedAt = new Date(now);
     }
 
     const [updated] = await db
@@ -108,6 +114,7 @@ export function registerPatchIncident(api: OpenAPIHono<AppEnv>) {
         status: updated.status,
         acknowledgedAt: updated.acknowledgedAt?.getTime() ?? null,
         fixingAt: updated.fixingAt?.getTime() ?? null,
+        resolvedAt: updated.resolvedAt?.getTime() ?? null,
       },
       200
     );

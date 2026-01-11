@@ -1,12 +1,13 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
-import type { KanbanStatus } from "../types";
+
+type UpdateableStatus = "ongoing" | "acknowledged" | "fixing" | "resolved";
 
 interface UpdateIncidentStatusParams {
   teamId: number;
   incidentId: number;
-  status: KanbanStatus;
+  status: UpdateableStatus;
 }
 
 interface UpdateIncidentStatusResponse {
@@ -14,6 +15,7 @@ interface UpdateIncidentStatusResponse {
   status: string;
   acknowledgedAt: number | null;
   fixingAt: number | null;
+  resolvedAt: number | null;
 }
 
 async function updateIncidentStatus({
@@ -39,11 +41,13 @@ async function updateIncidentStatus({
 
 export function useUpdateIncidentStatus() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: updateIncidentStatus,
     onSuccess: () => {
       router.invalidate();
+      queryClient.invalidateQueries();
     },
     onError: (error) => {
       toast.error("Failed to update incident", {

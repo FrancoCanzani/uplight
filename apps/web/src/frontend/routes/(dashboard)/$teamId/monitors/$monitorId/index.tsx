@@ -9,6 +9,11 @@ import z from "zod";
 const searchSchema = z.object({
   region: z.string().optional(),
   period: z.string().optional().default("7"),
+  checkId: z.string().optional(),
+  checkResult: z.string().optional(),
+  checkLocation: z.string().optional(),
+  checkDateFrom: z.string().optional(),
+  checkDateTo: z.string().optional(),
 });
 
 export const Route = createFileRoute(

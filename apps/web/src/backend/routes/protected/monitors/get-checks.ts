@@ -1,5 +1,5 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { and, desc, eq, gte } from "drizzle-orm";
+import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { checkResult, monitor } from "../../../db/schema";
@@ -15,24 +15,36 @@ const CheckResultSchema = z.object({
   checkedAt: z.number(),
 });
 
+const ChecksResponseSchema = z.object({
+  checks: z.array(CheckResultSchema),
+  hasMore: z.boolean(),
+  total: z.number(),
+});
+
 const route = createRoute({
   method: "get",
   path: "/:teamId/:monitorId/checks",
   tags: ["monitors"],
-  summary: "Get check history",
+  summary: "Get check history with pagination and filtering",
   request: {
     query: z.object({
+      limit: z.string().optional().default("50"),
+      offset: z.string().optional().default("0"),
       days: z.string().optional().default("14"),
+      result: z.string().optional(),
+      location: z.string().optional(),
+      dateFrom: z.string().optional(),
+      dateTo: z.string().optional(),
     }),
   },
   responses: {
     200: {
       content: {
         "application/json": {
-          schema: z.array(CheckResultSchema),
+          schema: ChecksResponseSchema,
         },
       },
-      description: "Check results",
+      description: "Paginated check results",
     },
   },
 });
@@ -41,7 +53,8 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
   return api.openapi(route, async (c) => {
     const teamContext = c.get("team");
     const { monitorId } = c.req.param();
-    const { days } = c.req.valid("query");
+    const { limit, offset, days, result, location, dateFrom, dateTo } =
+      c.req.valid("query");
 
     if (!teamContext) {
       throw new HTTPException(401, { message: "Unauthorized" });
@@ -55,8 +68,8 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(monitor.teamId, teamContext.teamId),
-          eq(monitor.id, Number(monitorId)),
-        ),
+          eq(monitor.id, Number(monitorId))
+        )
       )
       .limit(1);
 
@@ -64,7 +77,52 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
       throw new HTTPException(404, { message: "Monitor not found" });
     }
 
-    const since = new Date(Date.now() - Number(days) * 24 * 60 * 60 * 1000);
+    const conditions = [eq(checkResult.monitorId, Number(monitorId))];
+
+    // Date filtering - use days if no dateFrom/dateTo provided
+    if (dateFrom) {
+      const dateFromNum = Number(dateFrom);
+      if (!isNaN(dateFromNum)) {
+        conditions.push(gte(checkResult.checkedAt, new Date(dateFromNum)));
+      }
+    } else if (dateTo) {
+      // If only dateTo is provided, still need a start date
+      const since = new Date(Date.now() - Number(days) * 24 * 60 * 60 * 1000);
+      conditions.push(gte(checkResult.checkedAt, since));
+    } else {
+      // Default to days filter
+      const since = new Date(Date.now() - Number(days) * 24 * 60 * 60 * 1000);
+      conditions.push(gte(checkResult.checkedAt, since));
+    }
+
+    if (dateTo) {
+      const dateToNum = Number(dateTo);
+      if (!isNaN(dateToNum)) {
+        conditions.push(lte(checkResult.checkedAt, new Date(dateToNum)));
+      }
+    }
+
+    if (result) {
+      const validResults = [
+        "success",
+        "failure",
+        "timeout",
+        "error",
+        "maintenance",
+        "degraded",
+      ] as const;
+      type ResultType = (typeof validResults)[number];
+      if (validResults.includes(result as ResultType)) {
+        conditions.push(eq(checkResult.result, result as ResultType));
+      }
+    }
+
+    if (location) {
+      conditions.push(eq(checkResult.location, location));
+    }
+
+    const limitNum = Number(limit);
+    const offsetNum = Number(offset);
 
     const checks = await db
       .select({
@@ -77,20 +135,29 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
         checkedAt: checkResult.checkedAt,
       })
       .from(checkResult)
-      .where(
-        and(
-          eq(checkResult.monitorId, Number(monitorId)),
-          gte(checkResult.checkedAt, since),
-        ),
-      )
-      .orderBy(desc(checkResult.checkedAt));
+      .where(and(...conditions))
+      .orderBy(desc(checkResult.checkedAt))
+      .limit(limitNum + 1)
+      .offset(offsetNum);
+
+    const hasMore = checks.length > limitNum;
+    const paginatedChecks = checks.slice(0, limitNum);
+
+    const totalResult = await db
+      .select({ id: checkResult.id })
+      .from(checkResult)
+      .where(and(...conditions));
 
     return c.json(
-      checks.map((c) => ({
-        ...c,
-        checkedAt: c.checkedAt.getTime(),
-      })),
-      200,
+      {
+        checks: paginatedChecks.map((c) => ({
+          ...c,
+          checkedAt: c.checkedAt.getTime(),
+        })),
+        hasMore,
+        total: totalResult.length,
+      },
+      200
     );
   });
 }

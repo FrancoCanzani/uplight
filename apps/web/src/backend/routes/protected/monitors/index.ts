@@ -8,6 +8,7 @@ import { registerPutMonitor } from "./put";
 import { registerDeleteMonitor } from "./delete";
 import { registerGetStats } from "./get-stats";
 import { registerGetChecks } from "./get-checks";
+import { registerGetCheckDetail } from "./get-check-detail";
 import { registerGetIncidents } from "./get-incidents";
 import { registerPatchMonitorStatus } from "./patch";
 
@@ -23,6 +24,7 @@ registerPutMonitor(monitors);
 registerDeleteMonitor(monitors);
 registerGetStats(monitors);
 registerGetChecks(monitors);
+registerGetCheckDetail(monitors);
 registerGetIncidents(monitors);
 registerPatchMonitorStatus(monitors);
 

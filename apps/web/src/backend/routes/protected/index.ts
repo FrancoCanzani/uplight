@@ -3,7 +3,6 @@ import { monitors } from "./monitors";
 import { teams } from "./teams";
 import { maintenance } from "./maintenance";
 import { incidents } from "./incidents";
-import { logs } from "./logs";
 import { heartbeats } from "./heartbeats";
 import { notifications } from "./notifications";
 import type { AppEnv } from "../../types";
@@ -15,7 +14,6 @@ protectedRouter.route("/monitors", monitors);
 protectedRouter.route("/heartbeats", heartbeats);
 protectedRouter.route("/maintenance", maintenance);
 protectedRouter.route("/incidents", incidents);
-protectedRouter.route("/logs", logs);
 protectedRouter.route("/notifications", notifications);
 
 export { protectedRouter };

@@ -206,8 +206,8 @@ export const incident = sqliteTable(
     description: text(),
     hint: text(),
     severity: text({ enum: ["low", "medium", "high", "critical"] }),
-    status: text({ enum: ["active", "acknowledged", "fixing", "resolved"] })
-      .default("active")
+    status: text({ enum: ["ongoing", "acknowledged", "fixing", "resolved"] })
+      .default("ongoing")
       .notNull(),
     postMortemTitle: text(),
     postMortemContent: text(),

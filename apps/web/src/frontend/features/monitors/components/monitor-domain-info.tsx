@@ -40,7 +40,6 @@ export default function MonitorDomainInfo({
       <Tooltip>
         <TooltipTrigger className={"flex items-center justify-start gap-x-1.5"}>
           <Lock className={cn("size-3", sslColor)} />
-          Secure
         </TooltipTrigger>
 
         <TooltipContent className={"max-w-64 font-mono"}>

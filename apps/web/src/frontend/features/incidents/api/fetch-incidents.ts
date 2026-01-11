@@ -8,28 +8,13 @@ export interface IncidentsResponse {
 
 export interface FetchIncidentsParams {
   teamId: string;
-  limit?: number;
-  offset?: number;
-  monitorId?: string;
-  from?: string;
-  to?: string;
 }
 
 export default async function fetchIncidents({
   teamId,
-  limit = 20,
-  offset = 0,
-  monitorId,
-  from,
-  to,
 }: FetchIncidentsParams): Promise<IncidentsResponse> {
   const params = new URLSearchParams();
-  params.set("limit", String(limit));
-  params.set("offset", String(offset));
-
-  if (monitorId) params.set("monitorId", monitorId);
-  if (from) params.set("from", from);
-  if (to) params.set("to", to);
+  params.set("limit", "10000");
 
   const response = await fetch(`/api/incidents/${teamId}?${params.toString()}`);
 

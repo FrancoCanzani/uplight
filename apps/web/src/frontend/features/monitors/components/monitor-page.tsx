@@ -6,13 +6,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { formatDate } from "@lib/utils";
-import { getRouteApi, Link } from "@tanstack/react-router";
+import { getRouteApi } from "@tanstack/react-router";
 import { useMemo } from "react";
-import getLocationLabel from "../utils/get-location-label";
 import calculatePercentiles from "../utils/calculate-percentiles";
+import getLocationLabel from "../utils/get-location-label";
+import ChecksTable from "./checks-table";
 import MonitorHeader from "./monitor-header";
 import MonitorStatusAlert from "./monitor-status-alert";
-import RecentChecksTable from "./recent-checks-table";
 import RegionFilter from "./region-filter";
 import ResponseTimeChart from "./response-time-chart";
 import ResponseTimeStats from "./response-time-stats";
@@ -22,7 +22,7 @@ export default function MonitorPage() {
   const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
   const { monitor, stats, checks } = routeApi.useLoaderData();
   const { teamId, monitorId } = routeApi.useParams();
-  const search = routeApi.useSearch() || {};
+  const search = routeApi.useSearch();
   const { region, period } = search;
 
   const availableRegions = [...new Set(checks.map((c) => c.location))];
@@ -54,13 +54,7 @@ export default function MonitorPage() {
 
   return (
     <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
-      <div className="flex flex-col gap-4">
-        <MonitorHeader
-          monitor={monitor}
-          teamId={teamId}
-          monitorId={monitorId}
-        />
-      </div>
+      <MonitorHeader monitor={monitor} teamId={teamId} monitorId={monitorId} />
 
       {(monitor.status === "down" ||
         monitor.status === "degraded" ||
@@ -168,28 +162,18 @@ export default function MonitorPage() {
         </Card>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-12">
         <div className="flex items-center justify-between">
           <h3 className="font-medium">Response Time</h3>
           <ResponseTimeStats checks={filteredChecks} />
         </div>
+
         <ResponseTimeChart checks={filteredChecks} />
       </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-medium">Recent Checks</h3>
-          <Link
-            to="/$teamId/logs"
-            params={{
-              teamId,
-            }}
-            className="text-xs hover:underline text-muted-foreground hover:text-primary"
-          >
-            View all
-          </Link>
-        </div>
-        <RecentChecksTable checks={filteredChecks} />
+      <div className="space-y-12">
+        <h3 className="font-medium">Check Logs</h3>
+        <ChecksTable />
       </div>
     </div>
   );

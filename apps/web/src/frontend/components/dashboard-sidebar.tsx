@@ -58,7 +58,7 @@ export function DashboardSidebar() {
                 <SidebarMenuButton
                   className={cn(
                     "",
-                    locationArr.includes("monitors") && "bg-sidebar-accent",
+                    locationArr.includes("monitors") && "bg-sidebar-accent"
                   )}
                 >
                   <Link
@@ -75,7 +75,7 @@ export function DashboardSidebar() {
                 <SidebarMenuButton
                   className={cn(
                     "",
-                    locationArr.includes("heartbeats") && "bg-sidebar-accent",
+                    locationArr.includes("heartbeats") && "bg-sidebar-accent"
                   )}
                 >
                   <Link
@@ -92,34 +92,16 @@ export function DashboardSidebar() {
                 <SidebarMenuButton
                   className={cn(
                     "",
-                    locationArr.includes("incidents") && "bg-sidebar-accent",
+                    locationArr.includes("incidents") && "bg-sidebar-accent"
                   )}
                 >
                   <Link
                     className="w-full flex items-center gap-x-2 text-base font-light"
-                    to="/$teamId/incidents/kanban"
+                    to="/$teamId/incidents"
                     params={{ teamId }}
                   >
                     <BadgeAlertIcon />
                     Incidents
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  className={cn(
-                    "",
-                    locationArr.includes("logs") && "bg-sidebar-accent",
-                  )}
-                >
-                  {" "}
-                  <Link
-                    className="w-full flex items-center gap-x-2 text-base font-light"
-                    to="/$teamId/logs"
-                    params={{ teamId }}
-                  >
-                    <GalleryVerticalEndIcon />
-                    Logs
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -138,8 +120,7 @@ export function DashboardSidebar() {
                 <SidebarMenuButton
                   className={cn(
                     "",
-                    locationArr.includes("notifications") &&
-                      "bg-sidebar-accent",
+                    locationArr.includes("notifications") && "bg-sidebar-accent"
                   )}
                 >
                   <Link
@@ -173,7 +154,7 @@ export function DashboardSidebar() {
             <SidebarMenuButton
               className={cn(
                 "",
-                locationArr.includes("settings") && "bg-sidebar-accent",
+                locationArr.includes("settings") && "bg-sidebar-accent"
               )}
             >
               <Link

@@ -1,11 +1,4 @@
-export type IncidentStatus =
-  | "active"
-  | "acknowledged"
-  | "fixing"
-  | "resolved"
-  | "ongoing";
-
-export type KanbanStatus = "active" | "acknowledged" | "fixing";
+export type IncidentStatus = "ongoing" | "acknowledged" | "fixing" | "resolved";
 
 export type IncidentSeverity = "low" | "medium" | "high" | "critical";
 

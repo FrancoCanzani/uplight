@@ -22,7 +22,7 @@ const sections = [
   },
   {
     icon: BadgeAlertIcon,
-    path: "/$teamId/incidents/kanban",
+    path: "/$teamId/incidents",
     name: "Incidents",
     routeSegment: "incidents",
   },
@@ -40,7 +40,7 @@ export default function DashboardHeaderSection() {
   const locationArr = location.pathname.split("/");
 
   const currentSection = sections.find((section) =>
-    locationArr.includes(section.routeSegment),
+    locationArr.includes(section.routeSegment)
   );
 
   if (!currentSection) return null;

@@ -31,7 +31,7 @@ export default function FloatingMenu() {
     },
     {
       icon: BadgeAlertIcon,
-      path: "/$teamId/incidents/kanban",
+      path: "/$teamId/incidents",
       name: "Incidents",
       routeSegment: "incidents",
     },
@@ -59,7 +59,7 @@ export default function FloatingMenu() {
             className={cn(
               "cursor-pointer p-1.5 rounded-full text-muted-foreground  z-10",
               hoveredIndex === index && "bg-surface text-foreground",
-              isActive && "bg-surface text-foreground",
+              isActive && "bg-surface text-foreground"
             )}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}

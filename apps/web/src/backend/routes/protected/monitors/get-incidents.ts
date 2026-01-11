@@ -9,7 +9,7 @@ import type { AppEnv } from "../../../types";
 const IncidentSchema = z.object({
   id: z.number(),
   cause: z.string(),
-  status: z.enum(["active", "acknowledged", "fixing", "resolved"]),
+  status: z.enum(["ongoing", "acknowledged", "fixing", "resolved"]),
   startedAt: z.number(),
   acknowledgedAt: z.number().nullable(),
   fixingAt: z.number().nullable(),

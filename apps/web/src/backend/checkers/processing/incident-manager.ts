@@ -71,7 +71,7 @@ export async function manageIncidents(
         .values({
           monitorId,
           cause,
-          status: "active",
+          status: "ongoing",
           startedAt: new Date(now),
           title: aiParsed?.title ?? null,
           description: aiParsed?.description ?? null,

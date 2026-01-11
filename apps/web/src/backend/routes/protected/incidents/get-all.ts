@@ -20,7 +20,7 @@ const IncidentWithMonitorSchema = z.object({
   description: z.string().nullable(),
   hint: z.string().nullable(),
   severity: z.enum(["low", "medium", "high", "critical"]).nullable(),
-  status: z.enum(["active", "acknowledged", "fixing", "resolved", "ongoing"]),
+  status: z.enum(["ongoing", "acknowledged", "fixing", "resolved"]),
   postMortemTitle: z.string().nullable(),
   postMortemContent: z.string().nullable(),
   startedAt: z.number(),
@@ -101,7 +101,7 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
       description: string | null;
       hint: string | null;
       severity: "low" | "medium" | "high" | "critical" | null;
-      status: "active" | "acknowledged" | "fixing" | "resolved" | "ongoing";
+      status: "ongoing" | "acknowledged" | "fixing" | "resolved";
       postMortemTitle: string | null;
       postMortemContent: string | null;
       startedAt: number;

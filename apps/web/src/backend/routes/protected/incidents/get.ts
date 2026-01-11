@@ -15,7 +15,7 @@ const IncidentResponseSchema = z.object({
   description: z.string().nullable(),
   hint: z.string().nullable(),
   severity: z.enum(["low", "medium", "high", "critical"]).nullable(),
-  status: z.enum(["active", "acknowledged", "fixing", "resolved"]),
+  status: z.enum(["ongoing", "acknowledged", "fixing", "resolved"]),
   postMortemTitle: z.string().nullable(),
   postMortemContent: z.string().nullable(),
   startedAt: z.number(),
