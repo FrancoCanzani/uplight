@@ -29,7 +29,7 @@ export const UpdateTeamSchema = z.object({
 
 export const InviteMemberSchema = z.object({
   email: z.string().email(),
-  role: TeamRoleSchema.default("member"),
+  role: TeamRoleSchema,
 });
 
 export const UpdateMemberRoleSchema = z.object({

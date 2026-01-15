@@ -1,13 +1,12 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { z } from "@hono/zod-openapi";
-import { and, eq, gte, lte, inArray } from "drizzle-orm";
+import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { and, eq, gte, inArray, lte } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import {
-  monitor,
-  incident,
   heartbeat,
   heartbeatIncident,
+  incident,
+  monitor,
 } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 
@@ -20,12 +19,23 @@ const IncidentWithMonitorSchema = z.object({
   description: z.string().nullable(),
   hint: z.string().nullable(),
   severity: z.enum(["low", "medium", "high", "critical"]).nullable(),
-  status: z.enum(["ongoing", "acknowledged", "fixing", "resolved"]),
+  incidentType: z
+    .enum(["availability", "performance", "security", "data", "other"])
+    .nullable(),
+  status: z.enum([
+    "ongoing",
+    "acknowledged",
+    "fixing",
+    "recovered",
+    "resolved",
+  ]),
+  assignees: z.array(z.string()),
   postMortemTitle: z.string().nullable(),
   postMortemContent: z.string().nullable(),
   startedAt: z.number(),
   acknowledgedAt: z.number().nullable(),
   fixingAt: z.number().nullable(),
+  recoveredAt: z.number().nullable(),
   resolvedAt: z.number().nullable(),
   type: z.enum(["monitor", "heartbeat"]),
 });
@@ -47,8 +57,8 @@ const route = createRoute({
       offset: z.string().optional().default("0"),
       monitorId: z.string().optional(),
       heartbeatId: z.string().optional(),
-      from: z.string().optional(),
-      to: z.string().optional(),
+      from: z.string().regex(/^\d+$/, "Must be a valid timestamp").optional(),
+      to: z.string().regex(/^\d+$/, "Must be a valid timestamp").optional(),
     }),
   },
   responses: {
@@ -101,12 +111,21 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
       description: string | null;
       hint: string | null;
       severity: "low" | "medium" | "high" | "critical" | null;
-      status: "ongoing" | "acknowledged" | "fixing" | "resolved";
+      incidentType:
+        | "availability"
+        | "performance"
+        | "security"
+        | "data"
+        | "other"
+        | null;
+      status: "ongoing" | "acknowledged" | "fixing" | "recovered" | "resolved";
+      assignees: string[];
       postMortemTitle: string | null;
       postMortemContent: string | null;
       startedAt: number;
       acknowledgedAt: number | null;
       fixingAt: number | null;
+      recoveredAt: number | null;
       resolvedAt: number | null;
       type: "monitor" | "heartbeat";
     };
@@ -148,12 +167,15 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
           description: i.description,
           hint: i.hint,
           severity: i.severity,
+          incidentType: i.incidentType,
           status: i.status,
+          assignees: i.assignees ? (() => { try { return JSON.parse(i.assignees); } catch { return []; } })() : [],
           postMortemTitle: i.postMortemTitle,
           postMortemContent: i.postMortemContent,
           startedAt: i.startedAt.getTime(),
           acknowledgedAt: i.acknowledgedAt?.getTime() ?? null,
           fixingAt: i.fixingAt?.getTime() ?? null,
+          recoveredAt: i.recoveredAt?.getTime() ?? null,
           resolvedAt: i.resolvedAt?.getTime() ?? null,
           type: "monitor",
         });
@@ -176,13 +198,13 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
 
       if (from) {
         hbConditions.push(
-          gte(heartbeatIncident.startedAt, new Date(Number(from)))
+          gte(heartbeatIncident.startedAt, new Date(Number(from))),
         );
       }
 
       if (to) {
         hbConditions.push(
-          lte(heartbeatIncident.startedAt, new Date(Number(to)))
+          lte(heartbeatIncident.startedAt, new Date(Number(to))),
         );
       }
 
@@ -201,12 +223,15 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
           description: null,
           hint: null,
           severity: null,
+          incidentType: null,
           status: i.status,
+          assignees: [],
           postMortemTitle: null,
           postMortemContent: null,
           startedAt: i.startedAt.getTime(),
           acknowledgedAt: null,
           fixingAt: null,
+          recoveredAt: null,
           resolvedAt: i.resolvedAt?.getTime() ?? null,
           type: "heartbeat",
         });
@@ -222,7 +247,7 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
 
     const paginatedIncidents = allIncidents.slice(
       offsetNum,
-      offsetNum + limitNum
+      offsetNum + limitNum,
     );
 
     const hasMore = offsetNum + limitNum < total;
@@ -233,7 +258,7 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
         hasMore,
         total,
       },
-      200
+      200,
     );
   });
 }

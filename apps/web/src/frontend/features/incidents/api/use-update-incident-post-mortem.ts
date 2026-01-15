@@ -1,13 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 
-type UpdatePostMortemInput = {
-  teamId: string;
-  incidentId: string;
-  postMortemTitle: string | null;
-  postMortemContent: string | null;
-};
-
 export default function useUpdateIncidentPostMortem() {
   const router = useRouter();
 
@@ -17,7 +10,12 @@ export default function useUpdateIncidentPostMortem() {
       incidentId,
       postMortemTitle,
       postMortemContent,
-    }: UpdatePostMortemInput) => {
+    }: {
+      teamId: string;
+      incidentId: string;
+      postMortemTitle: string | null;
+      postMortemContent: string | null;
+    }) => {
       const response = await fetch(`/api/incidents/${teamId}/${incidentId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -25,7 +23,8 @@ export default function useUpdateIncidentPostMortem() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update post mortem");
+        const { error } = await response.json();
+        throw new Error(error || "Failed to update post mortem");
       }
 
       return response.json();

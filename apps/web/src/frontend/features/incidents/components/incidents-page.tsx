@@ -1,3 +1,4 @@
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -19,15 +20,9 @@ const STATUS_ORDER: IncidentStatus[] = [
   "ongoing",
   "acknowledged",
   "fixing",
+  "recovered",
   "resolved",
 ];
-
-const STATUS_LABELS: Record<IncidentStatus, string> = {
-  ongoing: "Ongoing",
-  acknowledged: "Acknowledged",
-  fixing: "Fixing",
-  resolved: "Resolved",
-};
 
 export default function IncidentsPage() {
   const routeApi = getRouteApi("/(dashboard)/$teamId/incidents/");
@@ -48,6 +43,7 @@ export default function IncidentsPage() {
       ongoing: [],
       acknowledged: [],
       fixing: [],
+      recovered: [],
       resolved: [],
     };
 
@@ -58,7 +54,9 @@ export default function IncidentsPage() {
     });
 
     const statusOrder = hideResolved
-      ? STATUS_ORDER.filter((status) => status !== "resolved")
+      ? STATUS_ORDER.filter(
+          (status) => status !== "resolved" && status !== "recovered",
+        )
       : STATUS_ORDER;
 
     return statusOrder.map((status) => ({
@@ -84,7 +82,12 @@ export default function IncidentsPage() {
     updateStatus.mutate({
       teamId: Number(teamId),
       incidentId,
-      status: newStatus as "ongoing" | "acknowledged" | "fixing" | "resolved",
+      status: newStatus as
+        | "ongoing"
+        | "acknowledged"
+        | "fixing"
+        | "recovered"
+        | "resolved",
     });
   }
 
@@ -97,15 +100,16 @@ export default function IncidentsPage() {
 
   return (
     <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
+      <PageHeader title="Incidents" />
       <div className="flex justify-between items-center gap-4">
         <div className="flex items-center gap-6 text-sm">
           <div>
             <div className="text-muted-foreground text-xs">Open</div>
-            <div className="font-medium">{stats.openCount}</div>
+            <div className="font-mono">{stats.openCount}</div>
           </div>
           <div>
             <div className="text-muted-foreground text-xs">Resolve Time</div>
-            <div className="font-medium">
+            <div className="font-mono">
               {stats.resolveTime > 0 ? formatDuration(stats.resolveTime) : "-"}
             </div>
           </div>
@@ -113,7 +117,7 @@ export default function IncidentsPage() {
             <div className="text-muted-foreground text-xs">
               Acknowledge Time
             </div>
-            <div className="font-medium">
+            <div className="font-mono">
               {stats.acknowledgeTime > 0
                 ? formatDuration(stats.acknowledgeTime)
                 : "-"}
@@ -149,8 +153,8 @@ export default function IncidentsPage() {
                 ) : (
                   <ChevronRight className="size-4" />
                 )}
-                <span>
-                  {STATUS_LABELS[group.status]} ({group.count})
+                <span className="capitalize">
+                  {group.status} ({group.count})
                 </span>
               </button>
 
@@ -201,7 +205,7 @@ export default function IncidentsPage() {
                                 disabled={incident.status === status}
                                 className="text-xs"
                               >
-                                {STATUS_LABELS[status]}
+                                <span className="capitalize">{status}</span>
                               </DropdownMenuItem>
                             ))}
                           </DropdownMenuContent>

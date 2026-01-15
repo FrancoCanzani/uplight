@@ -2,19 +2,19 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 
-type UpdateableStatus = "ongoing" | "acknowledged" | "fixing" | "resolved";
-
-interface UpdateIncidentStatusParams {
-  teamId: number;
-  incidentId: number;
-  status: UpdateableStatus;
-}
+type UpdateableStatus =
+  | "ongoing"
+  | "acknowledged"
+  | "fixing"
+  | "recovered"
+  | "resolved";
 
 interface UpdateIncidentStatusResponse {
   id: number;
   status: string;
   acknowledgedAt: number | null;
   fixingAt: number | null;
+  recoveredAt: number | null;
   resolvedAt: number | null;
 }
 
@@ -22,7 +22,11 @@ async function updateIncidentStatus({
   teamId,
   incidentId,
   status,
-}: UpdateIncidentStatusParams): Promise<UpdateIncidentStatusResponse> {
+}: {
+  teamId: number;
+  incidentId: number;
+  status: UpdateableStatus;
+}): Promise<UpdateIncidentStatusResponse> {
   const response = await fetch(`/api/incidents/${teamId}/${incidentId}`, {
     method: "PATCH",
     headers: {

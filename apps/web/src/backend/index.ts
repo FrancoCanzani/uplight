@@ -6,14 +6,14 @@ import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { secureHeaders } from "hono/secure-headers";
 import { createAuth } from "../../auth";
-import { handleMonitorChecks } from "./checkers/entry/checker-cron";
-import { handleDomainChecks } from "./checkers/entry/domain-cron";
-import { handleHeartbeatChecks } from "./checkers/entry/heartbeat-cron";
+import { handleMonitorChecks } from "./checkers/cron/monitors";
+import { handleDomainChecks } from "./checkers/cron/domains";
+import { handleHeartbeatChecks } from "./checkers/cron/heartbeats";
 import { authMiddleware, requireAuth } from "./middleware/auth";
 import { protectedRouter } from "./routes/protected";
 import { publicRouter } from "./routes/public";
 import type { AppEnv } from "./types";
-export { CheckerDO } from "./checkers/entry/durable-object";
+export { CheckerDO } from "./checkers/executors/durable-object";
 
 const app = new OpenAPIHono<AppEnv>();
 
@@ -24,7 +24,7 @@ app.use(secureHeaders());
 
 app.onError((error, c) => {
   if (error instanceof HTTPException) {
-    return error.getResponse();
+    return c.json({ error: error.message }, error.status);
   }
   console.error(error);
   return c.json({ error: "Internal Server Error" }, 500);

@@ -22,7 +22,6 @@ import { ActivityIcon } from "./motion/icons/activity";
 import { BadgeAlertIcon } from "./motion/icons/badge-alert";
 import { BellIcon } from "./motion/icons/bell";
 import { FileTextIcon } from "./motion/icons/file-text";
-import { GalleryVerticalEndIcon } from "./motion/icons/gallery-vertical-end";
 import { HeartIcon } from "./motion/icons/heart";
 import { LayoutPanelTopIcon } from "./motion/icons/layout-panel-top";
 import { LogoutIcon } from "./motion/icons/logout";
@@ -46,7 +45,7 @@ export function DashboardSidebar() {
   };
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="none" className="hidden md:flex">
       <SidebarHeader>
         <TeamSwitcher />
       </SidebarHeader>
@@ -58,7 +57,7 @@ export function DashboardSidebar() {
                 <SidebarMenuButton
                   className={cn(
                     "",
-                    locationArr.includes("monitors") && "bg-sidebar-accent"
+                    locationArr.includes("monitors") && "bg-sidebar-accent",
                   )}
                 >
                   <Link
@@ -75,7 +74,7 @@ export function DashboardSidebar() {
                 <SidebarMenuButton
                   className={cn(
                     "",
-                    locationArr.includes("heartbeats") && "bg-sidebar-accent"
+                    locationArr.includes("heartbeats") && "bg-sidebar-accent",
                   )}
                 >
                   <Link
@@ -92,7 +91,7 @@ export function DashboardSidebar() {
                 <SidebarMenuButton
                   className={cn(
                     "",
-                    locationArr.includes("incidents") && "bg-sidebar-accent"
+                    locationArr.includes("incidents") && "bg-sidebar-accent",
                   )}
                 >
                   <Link
@@ -120,7 +119,8 @@ export function DashboardSidebar() {
                 <SidebarMenuButton
                   className={cn(
                     "",
-                    locationArr.includes("notifications") && "bg-sidebar-accent"
+                    locationArr.includes("notifications") &&
+                      "bg-sidebar-accent",
                   )}
                 >
                   <Link
@@ -154,7 +154,7 @@ export function DashboardSidebar() {
             <SidebarMenuButton
               className={cn(
                 "",
-                locationArr.includes("settings") && "bg-sidebar-accent"
+                locationArr.includes("settings") && "bg-sidebar-accent",
               )}
             >
               <Link
@@ -168,10 +168,16 @@ export function DashboardSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton>
+            <SidebarMenuButton
+              className={cn(
+                "",
+                locationArr.includes("support") && "bg-sidebar-accent",
+              )}
+            >
               <Link
                 className="w-full flex items-center gap-x-2 text-base font-light"
-                to="/"
+                to="/$teamId/support"
+                params={{ teamId }}
               >
                 <MessageSquareIcon />
                 Support

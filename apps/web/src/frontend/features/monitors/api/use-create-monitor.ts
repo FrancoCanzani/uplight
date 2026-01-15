@@ -3,15 +3,13 @@ import { useNavigate, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import type { CreateMonitor, MonitorResponse } from "../schemas";
 
-interface CreateMonitorParams {
-  teamId: number;
-  data: CreateMonitor;
-}
-
 async function createMonitor({
   teamId,
   data,
-}: CreateMonitorParams): Promise<MonitorResponse> {
+}: {
+  teamId: number;
+  data: CreateMonitor;
+}): Promise<MonitorResponse> {
   const response = await fetch(`/api/monitors/${teamId}`, {
     method: "POST",
     headers: {

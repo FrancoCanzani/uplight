@@ -1,8 +1,7 @@
 import { eq, ne, lte, gt, and } from "drizzle-orm";
 import { createDb } from "../../db";
 import { monitor, maintenance, checkResult } from "../../db/schema";
-import { dispatchChecks } from "../dispatch/dispatcher";
-import { processResults } from "../processing/result-processor";
+import { runPipeline } from "../pipeline";
 import type { Location } from "../types";
 
 export async function handleMonitorChecks(env: Env): Promise<void> {
@@ -39,7 +38,6 @@ export async function handleMonitorChecks(env: Env): Promise<void> {
     } else if (mon.status === "maintenance") {
       monitorsExitingMaintenance.push(mon);
     } else if (mon.status === "initializing") {
-      // Monitors with "initializing" status should be checked immediately
       monitorsToCheck.push(mon);
     } else {
       const lastCheck = mon.updatedAt?.getTime() ?? 0;
@@ -77,7 +75,6 @@ export async function handleMonitorChecks(env: Env): Promise<void> {
       .set({ status: "initializing" })
       .where(eq(monitor.id, mon.id));
     console.log(`[CRON] Maintenance ended for monitor: ${mon.name}`);
-    // Add to check queue immediately after exiting maintenance
     monitorsToCheck.push(mon);
   }
 
@@ -92,9 +89,7 @@ export async function handleMonitorChecks(env: Env): Promise<void> {
 
   console.log(`[CRON] Checking ${monitorsToCheck.length} monitors`);
 
-  const results = await dispatchChecks(monitorsToCheck, env);
+  await runPipeline(monitorsToCheck, env);
 
-  await processResults(results, env);
-
-  console.log(`[CRON] Processed ${results.length} check results`);
+  console.log(`[CRON] Processed checks for ${monitorsToCheck.length} monitors`);
 }

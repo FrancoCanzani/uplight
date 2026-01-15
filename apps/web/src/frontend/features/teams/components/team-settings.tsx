@@ -62,11 +62,9 @@ export function TeamSettings({
           </CardHeader>
           <CardContent>
             <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive">
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete team
-                </Button>
+              <AlertDialogTrigger render={<Button variant="destructive" />}>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete team
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>

@@ -107,6 +107,18 @@ export const DomainCheckSchema = z
   .nullable()
   .openapi("DomainCheck");
 
+export const RecentCheckSchema = z
+  .object({
+    id: z.number().int(),
+    location: z.string(),
+    result: z.string(),
+    responseTime: z.number().int(),
+    statusCode: z.number().int().nullable(),
+    errorMessage: z.string().nullable(),
+    checkedAt: z.number().int(),
+  })
+  .openapi("RecentCheck");
+
 export const MonitorResponseSchema = z
   .object({
     id: z.number().int().openapi({ example: 1 }),
@@ -137,6 +149,7 @@ export const MonitorResponseSchema = z
     domainCheck: DomainCheckSchema,
     lastCheckAt: z.number().int().nullable(),
     lastResponseTime: z.number().int().nullable(),
+    recentChecks: z.array(RecentCheckSchema).default([]),
   })
   .openapi("MonitorResponse");
 

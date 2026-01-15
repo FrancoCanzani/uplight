@@ -22,6 +22,20 @@
       "when": 1768159068981,
       "tag": "0002_stiff_callisto",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1768342673435,
+      "tag": "0003_sloppy_shadow_king",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1768343416963,
+      "tag": "0004_fat_eddie_brock",
+      "breakpoints": true
     }
   ]
 }

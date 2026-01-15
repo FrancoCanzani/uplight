@@ -8,8 +8,8 @@ async function deleteTeam(teamId: string): Promise<void> {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to delete team");
+    const { error } = await response.json();
+    throw new Error(error || "Failed to delete team");
   }
 }
 

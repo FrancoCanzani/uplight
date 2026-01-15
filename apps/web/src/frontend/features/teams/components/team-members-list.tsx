@@ -35,11 +35,9 @@ export function TeamMembersList({
           <CardTitle>Team members</CardTitle>
           {canManage && (
             <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add member
-                </Button>
+              <DialogTrigger render={<Button size="sm" />}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add member
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>

@@ -3,6 +3,7 @@ import { and, eq, desc } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { monitor, domainCheckResult, checkResult } from "../../../db/schema";
+import { encrypt } from "../../../lib/crypto";
 import type { AppEnv } from "../../../types";
 import {
   HttpMonitorSchema,
@@ -110,7 +111,9 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
       if (data.username !== undefined)
         baseUpdates.username = data.username ?? null;
       if (data.password !== undefined)
-        baseUpdates.password = data.password ?? null;
+        baseUpdates.password = data.password
+          ? await encrypt(data.password, c.env.BETTER_AUTH_SECRET)
+          : null;
       if (data.expectedStatusCodes !== undefined)
         baseUpdates.expectedStatusCodes = JSON.stringify(
           data.expectedStatusCodes
@@ -156,6 +159,7 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
     return c.json(
       {
         ...updatedMonitor,
+        password: updatedMonitor.password ? "********" : null,
         createdAt: updatedMonitor.createdAt.toISOString(),
         updatedAt: updatedMonitor.updatedAt.toISOString(),
         domainCheck: lastDomainCheck

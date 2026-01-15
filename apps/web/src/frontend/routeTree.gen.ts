@@ -13,7 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as dashboardTeamIdRouteRouteImport } from './routes/(dashboard)/$teamId/route'
+import { Route as dashboardTeamIdTeamRouteImport } from './routes/(dashboard)/$teamId/team'
+import { Route as dashboardTeamIdSupportRouteImport } from './routes/(dashboard)/$teamId/support'
 import { Route as dashboardTeamIdSettingsRouteImport } from './routes/(dashboard)/$teamId/settings'
+import { Route as dashboardTeamIdNewTeamRouteImport } from './routes/(dashboard)/$teamId/new-team'
 import { Route as dashboardTeamIdNotificationsIndexRouteImport } from './routes/(dashboard)/$teamId/notifications/index'
 import { Route as dashboardTeamIdMonitorsIndexRouteImport } from './routes/(dashboard)/$teamId/monitors/index'
 import { Route as dashboardTeamIdIncidentsIndexRouteImport } from './routes/(dashboard)/$teamId/incidents/index'
@@ -47,9 +50,24 @@ const dashboardTeamIdRouteRoute = dashboardTeamIdRouteRouteImport.update({
   path: '/$teamId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const dashboardTeamIdTeamRoute = dashboardTeamIdTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => dashboardTeamIdRouteRoute,
+} as any)
+const dashboardTeamIdSupportRoute = dashboardTeamIdSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => dashboardTeamIdRouteRoute,
+} as any)
 const dashboardTeamIdSettingsRoute = dashboardTeamIdSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => dashboardTeamIdRouteRoute,
+} as any)
+const dashboardTeamIdNewTeamRoute = dashboardTeamIdNewTeamRouteImport.update({
+  id: '/new-team',
+  path: '/new-team',
   getParentRoute: () => dashboardTeamIdRouteRoute,
 } as any)
 const dashboardTeamIdNotificationsIndexRoute =
@@ -130,7 +148,10 @@ export interface FileRoutesByFullPath {
   '/$teamId': typeof dashboardTeamIdRouteRouteWithChildren
   '/login': typeof authLoginRoute
   '/signup': typeof authSignupRoute
+  '/$teamId/new-team': typeof dashboardTeamIdNewTeamRoute
   '/$teamId/settings': typeof dashboardTeamIdSettingsRoute
+  '/$teamId/support': typeof dashboardTeamIdSupportRoute
+  '/$teamId/team': typeof dashboardTeamIdTeamRoute
   '/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
   '/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
@@ -149,7 +170,10 @@ export interface FileRoutesByTo {
   '/$teamId': typeof dashboardTeamIdRouteRouteWithChildren
   '/login': typeof authLoginRoute
   '/signup': typeof authSignupRoute
+  '/$teamId/new-team': typeof dashboardTeamIdNewTeamRoute
   '/$teamId/settings': typeof dashboardTeamIdSettingsRoute
+  '/$teamId/support': typeof dashboardTeamIdSupportRoute
+  '/$teamId/team': typeof dashboardTeamIdTeamRoute
   '/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
   '/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
@@ -169,7 +193,10 @@ export interface FileRoutesById {
   '/(dashboard)/$teamId': typeof dashboardTeamIdRouteRouteWithChildren
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/signup': typeof authSignupRoute
+  '/(dashboard)/$teamId/new-team': typeof dashboardTeamIdNewTeamRoute
   '/(dashboard)/$teamId/settings': typeof dashboardTeamIdSettingsRoute
+  '/(dashboard)/$teamId/support': typeof dashboardTeamIdSupportRoute
+  '/(dashboard)/$teamId/team': typeof dashboardTeamIdTeamRoute
   '/(dashboard)/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/(dashboard)/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
   '/(dashboard)/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
@@ -190,7 +217,10 @@ export interface FileRouteTypes {
     | '/$teamId'
     | '/login'
     | '/signup'
+    | '/$teamId/new-team'
     | '/$teamId/settings'
+    | '/$teamId/support'
+    | '/$teamId/team'
     | '/$teamId/heartbeats/new'
     | '/$teamId/incidents/$incidentId'
     | '/$teamId/monitors/new'
@@ -209,7 +239,10 @@ export interface FileRouteTypes {
     | '/$teamId'
     | '/login'
     | '/signup'
+    | '/$teamId/new-team'
     | '/$teamId/settings'
+    | '/$teamId/support'
+    | '/$teamId/team'
     | '/$teamId/heartbeats/new'
     | '/$teamId/incidents/$incidentId'
     | '/$teamId/monitors/new'
@@ -228,7 +261,10 @@ export interface FileRouteTypes {
     | '/(dashboard)/$teamId'
     | '/(auth)/login'
     | '/(auth)/signup'
+    | '/(dashboard)/$teamId/new-team'
     | '/(dashboard)/$teamId/settings'
+    | '/(dashboard)/$teamId/support'
+    | '/(dashboard)/$teamId/team'
     | '/(dashboard)/$teamId/heartbeats/new'
     | '/(dashboard)/$teamId/incidents/$incidentId'
     | '/(dashboard)/$teamId/monitors/new'
@@ -280,11 +316,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardTeamIdRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(dashboard)/$teamId/team': {
+      id: '/(dashboard)/$teamId/team'
+      path: '/team'
+      fullPath: '/$teamId/team'
+      preLoaderRoute: typeof dashboardTeamIdTeamRouteImport
+      parentRoute: typeof dashboardTeamIdRouteRoute
+    }
+    '/(dashboard)/$teamId/support': {
+      id: '/(dashboard)/$teamId/support'
+      path: '/support'
+      fullPath: '/$teamId/support'
+      preLoaderRoute: typeof dashboardTeamIdSupportRouteImport
+      parentRoute: typeof dashboardTeamIdRouteRoute
+    }
     '/(dashboard)/$teamId/settings': {
       id: '/(dashboard)/$teamId/settings'
       path: '/settings'
       fullPath: '/$teamId/settings'
       preLoaderRoute: typeof dashboardTeamIdSettingsRouteImport
+      parentRoute: typeof dashboardTeamIdRouteRoute
+    }
+    '/(dashboard)/$teamId/new-team': {
+      id: '/(dashboard)/$teamId/new-team'
+      path: '/new-team'
+      fullPath: '/$teamId/new-team'
+      preLoaderRoute: typeof dashboardTeamIdNewTeamRouteImport
       parentRoute: typeof dashboardTeamIdRouteRoute
     }
     '/(dashboard)/$teamId/notifications/': {
@@ -375,7 +432,10 @@ declare module '@tanstack/react-router' {
 }
 
 interface dashboardTeamIdRouteRouteChildren {
+  dashboardTeamIdNewTeamRoute: typeof dashboardTeamIdNewTeamRoute
   dashboardTeamIdSettingsRoute: typeof dashboardTeamIdSettingsRoute
+  dashboardTeamIdSupportRoute: typeof dashboardTeamIdSupportRoute
+  dashboardTeamIdTeamRoute: typeof dashboardTeamIdTeamRoute
   dashboardTeamIdHeartbeatsNewRoute: typeof dashboardTeamIdHeartbeatsNewRoute
   dashboardTeamIdIncidentsIncidentIdRoute: typeof dashboardTeamIdIncidentsIncidentIdRoute
   dashboardTeamIdMonitorsNewRoute: typeof dashboardTeamIdMonitorsNewRoute
@@ -391,7 +451,10 @@ interface dashboardTeamIdRouteRouteChildren {
 }
 
 const dashboardTeamIdRouteRouteChildren: dashboardTeamIdRouteRouteChildren = {
+  dashboardTeamIdNewTeamRoute: dashboardTeamIdNewTeamRoute,
   dashboardTeamIdSettingsRoute: dashboardTeamIdSettingsRoute,
+  dashboardTeamIdSupportRoute: dashboardTeamIdSupportRoute,
+  dashboardTeamIdTeamRoute: dashboardTeamIdTeamRoute,
   dashboardTeamIdHeartbeatsNewRoute: dashboardTeamIdHeartbeatsNewRoute,
   dashboardTeamIdIncidentsIncidentIdRoute:
     dashboardTeamIdIncidentsIncidentIdRoute,

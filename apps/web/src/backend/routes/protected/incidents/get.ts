@@ -1,9 +1,8 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { z } from "@hono/zod-openapi";
-import { eq, and } from "drizzle-orm";
+import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { monitor, incident } from "../../../db/schema";
+import { incident, monitor } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 
 const IncidentResponseSchema = z.object({
@@ -15,12 +14,23 @@ const IncidentResponseSchema = z.object({
   description: z.string().nullable(),
   hint: z.string().nullable(),
   severity: z.enum(["low", "medium", "high", "critical"]).nullable(),
-  status: z.enum(["ongoing", "acknowledged", "fixing", "resolved"]),
+  incidentType: z
+    .enum(["availability", "performance", "security", "data", "other"])
+    .nullable(),
+  status: z.enum([
+    "ongoing",
+    "acknowledged",
+    "fixing",
+    "recovered",
+    "resolved",
+  ]),
+  assignees: z.array(z.string()),
   postMortemTitle: z.string().nullable(),
   postMortemContent: z.string().nullable(),
   startedAt: z.number(),
   acknowledgedAt: z.number().nullable(),
   fixingAt: z.number().nullable(),
+  recoveredAt: z.number().nullable(),
   resolvedAt: z.number().nullable(),
 });
 
@@ -59,8 +69,8 @@ export function registerGetIncident(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(incident.id, Number(incidentId)),
-          eq(monitor.teamId, teamContext.teamId)
-        )
+          eq(monitor.teamId, teamContext.teamId),
+        ),
       )
       .limit(1);
 
@@ -78,15 +88,20 @@ export function registerGetIncident(api: OpenAPIHono<AppEnv>) {
         description: result.incident.description,
         hint: result.incident.hint,
         severity: result.incident.severity,
+        incidentType: result.incident.incidentType,
         status: result.incident.status,
+        assignees: result.incident.assignees
+          ? JSON.parse(result.incident.assignees)
+          : [],
         postMortemTitle: result.incident.postMortemTitle,
         postMortemContent: result.incident.postMortemContent,
         startedAt: result.incident.startedAt.getTime(),
         acknowledgedAt: result.incident.acknowledgedAt?.getTime() ?? null,
         fixingAt: result.incident.fixingAt?.getTime() ?? null,
+        recoveredAt: result.incident.recoveredAt?.getTime() ?? null,
         resolvedAt: result.incident.resolvedAt?.getTime() ?? null,
       },
-      200
+      200,
     );
   });
 }

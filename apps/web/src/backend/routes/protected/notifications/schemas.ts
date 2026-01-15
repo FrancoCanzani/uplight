@@ -27,7 +27,7 @@ export const WebhookConfigSchema = z
 
 export const GitHubConfigSchema = z
   .object({
-    repository: z.string().regex(/^[\w\-\.]+\/[\w\-\.]+$/),
+    repository: z.string().regex(/^[\w\-.]+\/[\w\-.]+$/),
     token: z.string().min(1),
     labels: z.array(z.string()).optional(),
     assignees: z.array(z.string()).optional(),

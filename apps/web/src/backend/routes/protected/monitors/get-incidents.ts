@@ -1,18 +1,25 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { z } from "@hono/zod-openapi";
-import { and, eq, desc } from "drizzle-orm";
+import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { and, desc, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { monitor, incident } from "../../../db/schema";
+import { incident, monitor } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 
 const IncidentSchema = z.object({
   id: z.number(),
   cause: z.string(),
-  status: z.enum(["ongoing", "acknowledged", "fixing", "resolved"]),
+  status: z.enum([
+    "ongoing",
+    "acknowledged",
+    "fixing",
+    "recovered",
+    "resolved",
+  ]),
+  assignees: z.array(z.string()),
   startedAt: z.number(),
   acknowledgedAt: z.number().nullable(),
   fixingAt: z.number().nullable(),
+  recoveredAt: z.number().nullable(),
   resolvedAt: z.number().nullable(),
 });
 
@@ -55,8 +62,8 @@ export function registerGetIncidents(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(monitor.teamId, teamContext.teamId),
-          eq(monitor.id, Number(monitorId))
-        )
+          eq(monitor.id, Number(monitorId)),
+        ),
       )
       .limit(1);
 
@@ -80,12 +87,16 @@ export function registerGetIncidents(api: OpenAPIHono<AppEnv>) {
         id: lastIncident.id,
         cause: lastIncident.cause,
         status: lastIncident.status,
+        assignees: lastIncident.assignees
+          ? JSON.parse(lastIncident.assignees)
+          : [],
         startedAt: lastIncident.startedAt.getTime(),
         acknowledgedAt: lastIncident.acknowledgedAt?.getTime() ?? null,
         fixingAt: lastIncident.fixingAt?.getTime() ?? null,
+        recoveredAt: lastIncident.recoveredAt?.getTime() ?? null,
         resolvedAt: lastIncident.resolvedAt?.getTime() ?? null,
       },
-      200
+      200,
     );
   });
 }

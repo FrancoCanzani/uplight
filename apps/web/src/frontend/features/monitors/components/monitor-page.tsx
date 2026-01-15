@@ -1,4 +1,5 @@
 import AnimatedNumber from "@/components/motion/animated-number";
+import { PageHeader } from "@/components/page-header";
 import {
   Card,
   CardDescription,
@@ -11,7 +12,9 @@ import { useMemo } from "react";
 import calculatePercentiles from "../utils/calculate-percentiles";
 import getLocationLabel from "../utils/get-location-label";
 import ChecksTable from "./checks-table";
-import MonitorHeader from "./monitor-header";
+import MonitorActions from "./monitor-actions";
+import MonitorDomainInfo from "./monitor-domain-info";
+import MonitorInfoSheet from "./monitor-info-sheet";
 import MonitorStatusAlert from "./monitor-status-alert";
 import RegionFilter from "./region-filter";
 import ResponseTimeChart from "./response-time-chart";
@@ -54,7 +57,18 @@ export default function MonitorPage() {
 
   return (
     <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
-      <MonitorHeader monitor={monitor} teamId={teamId} monitorId={monitorId} />
+      <PageHeader
+        title={monitor.name}
+        subtitle={monitor.url || (monitor.host ? `${monitor.host}:${monitor.port}` : undefined)}
+        backLink={{ to: "/$teamId/monitors", params: { teamId } }}
+        actions={
+          <>
+            <MonitorDomainInfo monitor={monitor} />
+            <MonitorInfoSheet monitor={monitor} />
+            <MonitorActions />
+          </>
+        }
+      />
 
       {(monitor.status === "down" ||
         monitor.status === "degraded" ||

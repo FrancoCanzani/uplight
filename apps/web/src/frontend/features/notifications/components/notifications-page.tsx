@@ -3,6 +3,7 @@ import GithubLogo from "@/components/logos/github";
 import GmailLogo from "@/components/logos/gmail";
 import SlackLogo from "@/components/logos/slack";
 import WebhookLogo from "@/components/logos/webhook";
+import { PageHeader } from "@/components/page-header";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -174,6 +175,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
+      <PageHeader title="Notifications" />
       <div className="grid gap-4 sm:grid-cols-2">
         {NOTIFIER_TYPES.map((type) => {
           const config = NOTIFIER_TYPE_CONFIG[type];

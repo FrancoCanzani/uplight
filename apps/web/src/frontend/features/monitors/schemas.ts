@@ -101,6 +101,16 @@ export const DomainCheckSchema = z
   })
   .nullable();
 
+export const RecentCheckSchema = z.object({
+  id: z.number(),
+  location: z.string(),
+  result: z.string(),
+  responseTime: z.number(),
+  statusCode: z.number().nullable(),
+  errorMessage: z.string().nullable(),
+  checkedAt: z.number(),
+});
+
 export const MonitorResponseSchema = z.object({
   id: z.number(),
   teamId: z.number(),
@@ -130,11 +140,13 @@ export const MonitorResponseSchema = z.object({
   domainCheck: DomainCheckSchema,
   lastCheckAt: z.number().nullable(),
   lastResponseTime: z.number().nullable(),
+  recentChecks: z.array(RecentCheckSchema).default([]),
 });
 
 export type Location = z.infer<typeof LocationSchema>;
 export type ContentCheck = z.infer<typeof ContentCheckSchema>;
 export type DomainCheck = z.infer<typeof DomainCheckSchema>;
+export type RecentCheck = z.infer<typeof RecentCheckSchema>;
 
 export type HttpMonitor = z.infer<typeof HttpMonitorSchema>;
 export type HttpMonitorInput = z.input<typeof HttpMonitorSchema>;

@@ -1,3 +1,4 @@
+import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -67,65 +68,55 @@ export default function HeartbeatPage() {
 
   return (
     <div className="space-y-8 w-full lg:max-w-4xl mx-auto">
-      <header className="flex items-start justify-between">
-        <div className="space-y-1">
-          <h1 className="text-2xl tracking-tight">{heartbeat.name}</h1>
+      <PageHeader
+        title={heartbeat.name}
+        subtitle={`Grace period: ${formatGracePeriod(heartbeat.gracePeriod)}`}
+        backLink={{ to: "/$teamId/heartbeats", params: { teamId } }}
+        actions={
           <div className="flex items-center gap-2">
-            <Badge
+            <Button
               variant="outline"
-              className={cn("capitalize", getStatusColor(heartbeat.status))}
+              size="xs"
+              render={
+                <Link
+                  to="/$teamId/heartbeats/$heartbeatId/edit"
+                  params={{ teamId, heartbeatId: String(heartbeat.id) }}
+                >
+                  <Pencil className="size-3" />
+                  Edit
+                </Link>
+              }
+            />
+            <Button
+              variant="outline"
+              size="xs"
+              onClick={handleToggleStatus}
+              disabled={toggleStatus.isPending}
             >
-              {heartbeat.status}
-            </Badge>
-            <span className="text-xs text-muted-foreground">
-              Grace period: {formatGracePeriod(heartbeat.gracePeriod)}
-            </span>
+              {heartbeat.status === "paused" ? (
+                <>
+                  <Play className="size-3" />
+                  Resume
+                </>
+              ) : (
+                <>
+                  <Pause className="size-3" />
+                  Pause
+                </>
+              )}
+            </Button>
+            <Button
+              variant="destructive"
+              size="xs"
+              onClick={handleDelete}
+              disabled={deleteHeartbeat.isPending}
+            >
+              <Trash2 className="size-3" />
+              Delete
+            </Button>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="xs"
-            render={
-              <Link
-                to="/$teamId/heartbeats/$heartbeatId/edit"
-                params={{ teamId, heartbeatId: String(heartbeat.id) }}
-              >
-                <Pencil className="size-3" />
-                Edit
-              </Link>
-            }
-          />
-          <Button
-            variant="outline"
-            size="xs"
-            onClick={handleToggleStatus}
-            disabled={toggleStatus.isPending}
-          >
-            {heartbeat.status === "paused" ? (
-              <>
-                <Play className="size-3" />
-                Resume
-              </>
-            ) : (
-              <>
-                <Pause className="size-3" />
-                Pause
-              </>
-            )}
-          </Button>
-          <Button
-            variant="destructive"
-            size="xs"
-            onClick={handleDelete}
-            disabled={deleteHeartbeat.isPending}
-          >
-            <Trash2 className="size-3" />
-            Delete
-          </Button>
-        </div>
-      </header>
-
+        }
+      />
       <div className="space-y-4 bg-surface rounded p-4">
         <div>
           <h2 className="text-sm font-medium mb-2">Ping URL</h2>

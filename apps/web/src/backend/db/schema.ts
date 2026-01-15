@@ -34,7 +34,7 @@ export const teamMember = sqliteTable(
     primaryKey({ columns: [table.teamId, table.userId] }),
     index("team_member_userId_idx").on(table.userId),
     index("team_member_teamId_idx").on(table.teamId),
-  ]
+  ],
 );
 
 export const monitor = sqliteTable(
@@ -75,7 +75,7 @@ export const monitor = sqliteTable(
     index("monitor_teamId_idx").on(table.teamId),
     index("monitor_type_idx").on(table.type),
     index("monitor_status_idx").on(table.status),
-  ]
+  ],
 );
 
 export const heartbeat = sqliteTable(
@@ -100,7 +100,7 @@ export const heartbeat = sqliteTable(
     index("heartbeat_teamId_idx").on(table.teamId),
     index("heartbeat_slug_idx").on(table.slug),
     index("heartbeat_status_idx").on(table.status),
-  ]
+  ],
 );
 
 export const heartbeatIncident = sqliteTable(
@@ -123,7 +123,7 @@ export const heartbeatIncident = sqliteTable(
   (table) => [
     index("heartbeat_incident_heartbeat_idx").on(table.heartbeatId),
     index("heartbeat_incident_status_idx").on(table.heartbeatId, table.status),
-  ]
+  ],
 );
 
 export const teamMemberRelations = relations(teamMember, ({ one }) => ({
@@ -182,9 +182,9 @@ export const checkResult = sqliteTable(
     index("check_result_checked_at_idx").on(table.checkedAt),
     index("check_result_monitor_checked_idx").on(
       table.monitorId,
-      table.checkedAt
+      table.checkedAt,
     ),
-  ]
+  ],
 );
 
 export const checkResultRelations = relations(checkResult, ({ one }) => ({
@@ -206,28 +206,82 @@ export const incident = sqliteTable(
     description: text(),
     hint: text(),
     severity: text({ enum: ["low", "medium", "high", "critical"] }),
-    status: text({ enum: ["ongoing", "acknowledged", "fixing", "resolved"] })
+    incidentType: text({
+      enum: ["availability", "performance", "security", "data", "other"],
+    }),
+    status: text({
+      enum: ["ongoing", "acknowledged", "fixing", "recovered", "resolved"],
+    })
       .default("ongoing")
       .notNull(),
+    assignees: text(),
     postMortemTitle: text(),
     postMortemContent: text(),
     startedAt: integer({ mode: "timestamp_ms" }).notNull(),
     acknowledgedAt: integer({ mode: "timestamp_ms" }),
     fixingAt: integer({ mode: "timestamp_ms" }),
+    recoveredAt: integer({ mode: "timestamp_ms" }),
     resolvedAt: integer({ mode: "timestamp_ms" }),
   },
   (table) => [
     index("incident_monitor_idx").on(table.monitorId),
     index("incident_monitor_status_idx").on(table.monitorId, table.status),
-  ]
+  ],
 );
 
-export const incidentRelations = relations(incident, ({ one }) => ({
+export const incidentActivity = sqliteTable(
+  "incident_activity",
+  {
+    id: integer().primaryKey({ autoIncrement: true }),
+    incidentId: integer()
+      .notNull()
+      .references(() => incident.id, { onDelete: "cascade" }),
+    userId: text().references(() => authSchema.user.id, {
+      onDelete: "set null",
+    }),
+    type: text({
+      enum: [
+        "status_change",
+        "assignee_added",
+        "assignee_removed",
+        "comment",
+        "type_changed",
+        "severity_changed",
+      ],
+    }).notNull(),
+    content: text(),
+    metadata: text(),
+    createdAt: integer({ mode: "timestamp_ms" })
+      .default(sql`(unixepoch() * 1000)`)
+      .notNull(),
+  },
+  (table) => [
+    index("incident_activity_incident_idx").on(table.incidentId),
+    index("incident_activity_created_idx").on(table.createdAt),
+  ],
+);
+
+export const incidentRelations = relations(incident, ({ one, many }) => ({
   monitor: one(monitor, {
     fields: [incident.monitorId],
     references: [monitor.id],
   }),
+  activities: many(incidentActivity),
 }));
+
+export const incidentActivityRelations = relations(
+  incidentActivity,
+  ({ one }) => ({
+    incident: one(incident, {
+      fields: [incidentActivity.incidentId],
+      references: [incident.id],
+    }),
+    user: one(authSchema.user, {
+      fields: [incidentActivity.userId],
+      references: [authSchema.user.id],
+    }),
+  }),
+);
 
 export const maintenance = sqliteTable(
   "maintenance",
@@ -246,7 +300,7 @@ export const maintenance = sqliteTable(
   (table) => [
     index("maintenance_monitor_idx").on(table.monitorId),
     index("maintenance_active_idx").on(table.startsAt, table.endsAt),
-  ]
+  ],
 );
 
 export const maintenanceRelations = relations(maintenance, ({ one }) => ({
@@ -279,7 +333,7 @@ export const domainCheckResult = sqliteTable(
   (table) => [
     index("domain_check_monitor_idx").on(table.monitorId),
     index("domain_check_checked_at_idx").on(table.checkedAt),
-  ]
+  ],
 );
 
 export const domainCheckResultRelations = relations(
@@ -289,7 +343,7 @@ export const domainCheckResultRelations = relations(
       fields: [domainCheckResult.monitorId],
       references: [monitor.id],
     }),
-  })
+  }),
 );
 
 export const heartbeatRelations = relations(heartbeat, ({ one, many }) => ({
@@ -307,7 +361,7 @@ export const heartbeatIncidentRelations = relations(
       fields: [heartbeatIncident.heartbeatId],
       references: [heartbeat.id],
     }),
-  })
+  }),
 );
 
 export const notifier = sqliteTable(
@@ -328,7 +382,7 @@ export const notifier = sqliteTable(
     index("notifier_teamId_idx").on(table.teamId),
     index("notifier_type_idx").on(table.type),
     index("notifier_enabled_idx").on(table.enabled),
-  ]
+  ],
 );
 
 export const notifierRelations = relations(notifier, ({ one }) => ({
@@ -352,6 +406,7 @@ export const schema = {
   monitor,
   checkResult,
   incident,
+  incidentActivity,
   maintenance,
   domainCheckResult,
   heartbeat,

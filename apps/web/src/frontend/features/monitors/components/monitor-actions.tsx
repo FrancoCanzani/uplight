@@ -17,23 +17,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Link } from "@tanstack/react-router";
-import {
-  MoreVertical,
-  Pause,
-  Pencil,
-  Play,
-  Trash2,
-  Wrench,
-} from "lucide-react";
+import { getRouteApi, Link } from "@tanstack/react-router";
+import { MoreVertical, Pause, Pencil, Play, Trash2, Wrench } from "lucide-react";
 import { useState } from "react";
 import { useDeleteMonitor } from "../api/use-delete-monitor";
 import { useToggleMonitorStatus } from "../api/use-toggle-monitor-status";
-import type { MonitorResponse } from "../schemas";
-import MonitorDomainInfo from "./monitor-domain-info";
-import MonitorInfoSheet from "./monitor-info-sheet";
 
-function getMonitorDomain(monitor: MonitorResponse): string {
+function getMonitorDomain(monitor: { type: string; host?: string | null; url?: string | null; domainCheck?: { domain: string } | null }): string {
   if (monitor.type === "tcp") {
     return monitor.host || "";
   }
@@ -51,15 +41,11 @@ function getMonitorDomain(monitor: MonitorResponse): string {
   return "";
 }
 
-export default function MonitorHeader({
-  monitor,
-  teamId,
-  monitorId,
-}: {
-  monitor: MonitorResponse;
-  teamId: string;
-  monitorId: string;
-}) {
+export default function MonitorActions() {
+  const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
+  const { monitor } = routeApi.useLoaderData();
+  const { teamId, monitorId } = routeApi.useParams();
+
   const toggleStatus = useToggleMonitorStatus();
   const deleteMonitor = useDeleteMonitor();
   const isPaused = monitor.status === "paused";
@@ -93,84 +79,66 @@ export default function MonitorHeader({
 
   return (
     <>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl font-medium">{monitor.name}</h1>
-
-        <div className="flex gap-2 items-center justify-end">
-          <div className="flex items-center justify-start gap-x-2">
-            {monitor.type === "tcp" ? (
-              <h2 className="text-xs text-muted-foreground">
-                {`${monitor.host}:${monitor.port}`}
-              </h2>
-            ) : monitor.domainCheck ? (
-              <MonitorDomainInfo monitor={monitor} />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="xs">
+            <MoreVertical className="size-3" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.preventDefault();
+              handleTogglePause();
+            }}
+            disabled={toggleStatus.isPending}
+            className="text-xs"
+          >
+            {isPaused ? (
+              <>
+                <Play className="size-2.5" />
+                Resume
+              </>
             ) : (
-              <h2 className="text-xs text-muted-foreground">{monitor.url}</h2>
+              <>
+                <Pause className="size-2.5" />
+                Pause
+              </>
             )}
-          </div>
-          <MonitorInfoSheet monitor={monitor} />
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button variant="outline" size="xs">
-                <MoreVertical className="size-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleTogglePause();
-                }}
-                disabled={toggleStatus.isPending}
-                className="text-xs"
-              >
-                {isPaused ? (
-                  <>
-                    <Play className="size-2.5" />
-                    Resume
-                  </>
-                ) : (
-                  <>
-                    <Pause className="size-2.5" />
-                    Pause
-                  </>
-                )}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <Link
-                to="/$teamId/monitors/$monitorId/maintenance"
-                params={{ teamId, monitorId }}
-              >
-                <DropdownMenuItem className="text-xs">
-                  <Wrench className="size-2.5" />
-                  Maintenance
-                </DropdownMenuItem>
-              </Link>
-              <Link
-                to="/$teamId/monitors/$monitorId/edit"
-                params={{ teamId, monitorId }}
-              >
-                <DropdownMenuItem className="text-xs">
-                  <Pencil className="size-2.5" />
-                  Edit
-                </DropdownMenuItem>
-              </Link>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                variant="destructive"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setDeleteDialogOpen(true);
-                }}
-                className="text-xs"
-              >
-                <Trash2 className="size-2.5" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <Link
+            to="/$teamId/monitors/$monitorId/maintenance"
+            params={{ teamId, monitorId }}
+          >
+            <DropdownMenuItem className="text-xs">
+              <Wrench className="size-2.5" />
+              Maintenance
+            </DropdownMenuItem>
+          </Link>
+          <Link
+            to="/$teamId/monitors/$monitorId/edit"
+            params={{ teamId, monitorId }}
+          >
+            <DropdownMenuItem className="text-xs">
+              <Pencil className="size-2.5" />
+              Edit
+            </DropdownMenuItem>
+          </Link>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={(e) => {
+              e.preventDefault();
+              setDeleteDialogOpen(true);
+            }}
+            className="text-xs"
+          >
+            <Trash2 className="size-2.5" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>

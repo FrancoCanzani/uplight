@@ -48,6 +48,10 @@ export function registerGetAllMonitors(api: OpenAPIHono<AppEnv>) {
       number,
       { checkedAt: number; responseTime: number }
     >();
+    const recentChecksMap = new Map<
+      number,
+      (typeof checkResult.$inferSelect)[]
+    >();
 
     if (monitorIds.length > 0) {
       const allDomainChecks = await db
@@ -80,13 +84,35 @@ export function registerGetAllMonitors(api: OpenAPIHono<AppEnv>) {
           });
         }
       }
+
+      // Fetch last 100 checks for each monitor
+      // Order by checkedAt descending, then group by monitorId in JavaScript
+      const allRecentChecks = await db
+        .select()
+        .from(checkResult)
+        .where(inArray(checkResult.monitorId, monitorIds))
+        .orderBy(desc(checkResult.checkedAt));
+
+      // Group checks by monitorId and take first 100 per monitor (most recent)
+      for (const check of allRecentChecks) {
+        if (!recentChecksMap.has(check.monitorId)) {
+          recentChecksMap.set(check.monitorId, []);
+        }
+        const checks = recentChecksMap.get(check.monitorId)!;
+        if (checks.length < 100) {
+          checks.push(check);
+        }
+      }
     }
 
     const result = monitors.map((mon) => {
       const domainCheck = domainCheckMap.get(mon.id);
       const lastCheck = lastCheckMap.get(mon.id);
+      const recentChecks = recentChecksMap.get(mon.id) || [];
+
       return {
         ...mon,
+        password: mon.password ? "********" : null,
         createdAt: mon.createdAt.toISOString(),
         updatedAt: mon.updatedAt.toISOString(),
         domainCheck: domainCheck
@@ -107,6 +133,18 @@ export function registerGetAllMonitors(api: OpenAPIHono<AppEnv>) {
           : null,
         lastCheckAt: lastCheck?.checkedAt ?? null,
         lastResponseTime: lastCheck?.responseTime ?? null,
+        recentChecks: recentChecks
+          .slice(0, 100)
+          .reverse() // Reverse to chronological order (oldest to newest)
+          .map((check) => ({
+            id: check.id,
+            location: check.location,
+            result: check.result,
+            responseTime: check.responseTime,
+            statusCode: check.statusCode,
+            errorMessage: check.errorMessage,
+            checkedAt: check.checkedAt.getTime(),
+          })),
       };
     });
 

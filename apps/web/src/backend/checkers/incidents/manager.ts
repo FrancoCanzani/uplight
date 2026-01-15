@@ -1,8 +1,10 @@
-import { eq, and, ne } from "drizzle-orm";
+import { and, eq, gt, notInArray } from "drizzle-orm";
 import { createDb } from "../../db";
 import { incident } from "../../db/schema";
-import { parseIncidentWithAI } from "../utils/parse-incident-with-ai";
 import type { CheckResult, IncidentCause } from "../types";
+import { parseIncidentWithAI } from "./ai-parser";
+
+const CONSOLIDATION_WINDOW_MS = 5 * 60 * 1000;
 
 export interface IncidentEvent {
   type: "created" | "resolved";
@@ -39,13 +41,32 @@ export async function manageIncidents(
     .select()
     .from(incident)
     .where(
-      and(eq(incident.monitorId, monitorId), ne(incident.status, "resolved"))
+      and(
+        eq(incident.monitorId, monitorId),
+        notInArray(incident.status, ["resolved", "recovered"])
+      )
     );
 
   for (const cause of currentCauses) {
     const existing = openIncidents.find((i) => i.cause === cause);
 
     if (!existing) {
+      const [recentIncident] = await db
+        .select({ id: incident.id })
+        .from(incident)
+        .where(
+          and(
+            eq(incident.monitorId, monitorId),
+            eq(incident.cause, cause),
+            gt(incident.startedAt, new Date(now - CONSOLIDATION_WINDOW_MS))
+          )
+        )
+        .limit(1);
+
+      if (recentIncident) {
+        continue;
+      }
+
       const failedResult = failedResults.find((r) => r.cause === cause);
 
       let aiParsed: Awaited<ReturnType<typeof parseIncidentWithAI>> | null =
@@ -93,8 +114,8 @@ export async function manageIncidents(
       await db
         .update(incident)
         .set({
-          status: "resolved",
-          resolvedAt: new Date(now),
+          status: "recovered",
+          recoveredAt: new Date(now),
         })
         .where(eq(incident.id, openIncident.id));
 

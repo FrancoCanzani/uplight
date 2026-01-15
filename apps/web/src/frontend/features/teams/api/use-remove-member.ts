@@ -7,8 +7,8 @@ async function removeMember(teamId: string, userId: string): Promise<void> {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to remove member");
+    const { error } = await response.json();
+    throw new Error(error || "Failed to remove member");
   }
 }
 

@@ -16,8 +16,8 @@ async function updateTeam(
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to update team");
+    const { error } = await response.json();
+    throw new Error(error || "Failed to update team");
   }
 
   return response.json();

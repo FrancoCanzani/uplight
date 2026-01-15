@@ -7,8 +7,8 @@ export async function fetchTeamMembers(
   const response = await fetch(`/api/teams/${teamId}/members`);
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to fetch team members");
+    const { error } = await response.json();
+    throw new Error(error || "Failed to fetch team members");
   }
 
   return response.json();

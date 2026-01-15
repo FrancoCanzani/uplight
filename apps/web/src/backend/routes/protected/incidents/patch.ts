@@ -1,20 +1,32 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { z } from "@hono/zod-openapi";
-import { eq, and, inArray } from "drizzle-orm";
+import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { and, eq, inArray } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { monitor, incident } from "../../../db/schema";
+import { incident, incidentActivity, monitor } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 
 const PatchIncidentSchema = z.object({
-  status: z.enum(["ongoing", "acknowledged", "fixing", "resolved"]),
+  status: z.enum([
+    "ongoing",
+    "acknowledged",
+    "fixing",
+    "recovered",
+    "resolved",
+  ]),
 });
 
 const ResponseSchema = z.object({
   id: z.number(),
-  status: z.enum(["ongoing", "acknowledged", "fixing", "resolved"]),
+  status: z.enum([
+    "ongoing",
+    "acknowledged",
+    "fixing",
+    "recovered",
+    "resolved",
+  ]),
   acknowledgedAt: z.number().nullable(),
   fixingAt: z.number().nullable(),
+  recoveredAt: z.number().nullable(),
   resolvedAt: z.number().nullable(),
 });
 
@@ -47,10 +59,11 @@ const route = createRoute({
 export function registerPatchIncident(api: OpenAPIHono<AppEnv>) {
   return api.openapi(route, async (c) => {
     const teamContext = c.get("team");
+    const user = c.get("user");
     const { incidentId } = c.req.param();
     const { status } = c.req.valid("json");
 
-    if (!teamContext) {
+    if (!teamContext || !user) {
       throw new HTTPException(401, { message: "Unauthorized" });
     }
 
@@ -74,8 +87,8 @@ export function registerPatchIncident(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(incident.id, Number(incidentId)),
-          inArray(incident.monitorId, monitorIds)
-        )
+          inArray(incident.monitorId, monitorIds),
+        ),
       )
       .limit(1);
 
@@ -84,9 +97,10 @@ export function registerPatchIncident(api: OpenAPIHono<AppEnv>) {
     }
 
     const updateData: {
-      status: "ongoing" | "acknowledged" | "fixing" | "resolved";
+      status: "ongoing" | "acknowledged" | "fixing" | "recovered" | "resolved";
       acknowledgedAt?: Date;
       fixingAt?: Date;
+      recoveredAt?: Date;
       resolvedAt?: Date;
     } = { status };
 
@@ -96,6 +110,10 @@ export function registerPatchIncident(api: OpenAPIHono<AppEnv>) {
 
     if (status === "fixing" && !existingIncident.fixingAt) {
       updateData.fixingAt = new Date(now);
+    }
+
+    if (status === "recovered" && !existingIncident.recoveredAt) {
+      updateData.recoveredAt = new Date(now);
     }
 
     if (status === "resolved" && !existingIncident.resolvedAt) {
@@ -108,15 +126,26 @@ export function registerPatchIncident(api: OpenAPIHono<AppEnv>) {
       .where(eq(incident.id, Number(incidentId)))
       .returning();
 
+    await db.insert(incidentActivity).values({
+      incidentId: Number(incidentId),
+      userId: user.id,
+      type: "status_change",
+      metadata: JSON.stringify({
+        from: existingIncident.status,
+        to: status,
+      }),
+    });
+
     return c.json(
       {
         id: updated.id,
         status: updated.status,
         acknowledgedAt: updated.acknowledgedAt?.getTime() ?? null,
         fixingAt: updated.fixingAt?.getTime() ?? null,
+        recoveredAt: updated.recoveredAt?.getTime() ?? null,
         resolvedAt: updated.resolvedAt?.getTime() ?? null,
       },
-      200
+      200,
     );
   });
 }

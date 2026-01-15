@@ -1,5 +1,6 @@
-import DashboardHeader from "@/components/dashboard-header";
-import FloatingMenu from "@/components/floating-menu";
+import { BottomNav } from "@/components/bottom-nav";
+import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { fetchTeams } from "@/features/teams/api/use-teams";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
@@ -35,14 +36,16 @@ export const Route = createFileRoute("/(dashboard)/$teamId")({
 
 function TeamLayoutComponent() {
   return (
-    <div className="h-screen">
-      <DashboardHeader />
-      <div className="pt-[calc(env(safe-area-inset-top)+64px)]">
-        <main className="p-4 lg:p-6 pb-24">
-          <Outlet />
-          <FloatingMenu />
-        </main>
+    <SidebarProvider>
+      <div className="h-screen flex w-full">
+        <DashboardSidebar />
+        <SidebarInset className="flex-1 overflow-auto">
+          <main className="p-4 lg:p-6 pb-20 md:pb-6">
+            <Outlet />
+          </main>
+        </SidebarInset>
+        <BottomNav />
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

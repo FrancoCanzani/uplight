@@ -16,8 +16,8 @@ async function updateMemberRole(
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to update member role");
+    const { error } = await response.json();
+    throw new Error(error || "Failed to update member role");
   }
 
   return response.json();

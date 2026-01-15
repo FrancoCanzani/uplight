@@ -15,8 +15,8 @@ async function inviteMember(
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to invite member");
+    const { error } = await response.json();
+    throw new Error(error || "Failed to invite member");
   }
 
   return response.json();

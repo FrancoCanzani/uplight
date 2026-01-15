@@ -1,8 +1,8 @@
 import { DurableObject } from "cloudflare:workers";
-import { performHttpCheck } from "../executors/http-checker";
-import { performTcpCheck } from "../executors/tcp-checker";
-import { checkDns } from "../executors/dns-checker";
-import { withRetry } from "../utils/retry";
+import { performHttpCheck } from "./http";
+import { performTcpCheck } from "./tcp";
+import { checkDns } from "./dns";
+import { withRetry } from "../retry";
 import { extractHostname } from "../../lib/utils";
 import type { CheckRequest, CheckResult, CheckConfig } from "../types";
 

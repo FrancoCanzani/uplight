@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useUpdateMemberRole } from "../api/use-update-member-role";
 import { useRemoveMember } from "../api/use-remove-member";
-import { canManageMembers } from "../utils/permissions";
+import { canManageMembers, canChangeRole, canRemoveMember } from "../utils/permissions";
 import type { TeamMemberResponse, TeamRole } from "../schemas";
 import { MoreVertical } from "lucide-react";
 
@@ -46,7 +46,7 @@ export function TeamMemberItem({
     }
   };
 
-  const roleColors: Record<TeamRole, string> = {
+  const roleVariants: Record<TeamRole, "default" | "secondary" | "outline"> = {
     owner: "default",
     admin: "secondary",
     member: "outline",
@@ -64,7 +64,7 @@ export function TeamMemberItem({
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Badge variant={roleColors[member.role] as any}>
+        <Badge variant={roleVariants[member.role]}>
           {member.role}
         </Badge>
         {canManage && (
@@ -75,25 +75,35 @@ export function TeamMemberItem({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {member.role !== "owner" && (
-                <DropdownMenuItem onClick={() => handleRoleChange("owner")}>
+              {member.role !== "owner" && canChangeRole(currentUserRole, member.role, "owner") && (
+                <DropdownMenuItem
+                  onClick={() => handleRoleChange("owner")}
+                  disabled={updateRole.isPending}
+                >
                   Make owner
                 </DropdownMenuItem>
               )}
-              {member.role !== "admin" && (
-                <DropdownMenuItem onClick={() => handleRoleChange("admin")}>
+              {member.role !== "admin" && canChangeRole(currentUserRole, member.role, "admin") && (
+                <DropdownMenuItem
+                  onClick={() => handleRoleChange("admin")}
+                  disabled={updateRole.isPending}
+                >
                   Make admin
                 </DropdownMenuItem>
               )}
-              {member.role !== "member" && (
-                <DropdownMenuItem onClick={() => handleRoleChange("member")}>
+              {member.role !== "member" && canChangeRole(currentUserRole, member.role, "member") && (
+                <DropdownMenuItem
+                  onClick={() => handleRoleChange("member")}
+                  disabled={updateRole.isPending}
+                >
                   Make member
                 </DropdownMenuItem>
               )}
-              {!isCurrentUser && (
+              {!isCurrentUser && canRemoveMember(currentUserRole, member.role) && (
                 <DropdownMenuItem
                   onClick={handleRemove}
                   className="text-destructive"
+                  disabled={removeMember.isPending}
                 >
                   Remove from team
                 </DropdownMenuItem>

@@ -70,6 +70,7 @@ export function registerGetMonitor(api: OpenAPIHono<AppEnv>) {
     return c.json(
       {
         ...result[0],
+        password: result[0].password ? "********" : null,
         createdAt: result[0].createdAt.toISOString(),
         updatedAt: result[0].updatedAt.toISOString(),
         domainCheck: lastDomainCheck

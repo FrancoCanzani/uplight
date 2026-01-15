@@ -3,7 +3,7 @@ import { createDb } from "../../db";
 import { notifier, teamMember, incident } from "../../db/schema";
 import { user } from "../../db/auth-schema";
 import type { CheckResult } from "../types";
-import type { IncidentEvent } from "./incident-manager";
+import type { IncidentEvent } from "../incidents/manager";
 import { formatDuration } from "../../lib/utils";
 import {
   EmailConfigSchema,
@@ -129,9 +129,6 @@ async function sendEmailNotification(
         subject: `🔴 ${title}`,
         body,
       });
-
-      // TODO: Integrate with email service (Resend, SendGrid, etc.)
-      // await fetch("https://api.resend.com/emails", { ... });
     }
 
     if (event.type === "resolved") {
@@ -150,9 +147,6 @@ async function sendEmailNotification(
         subject: `✅ ${title}`,
         body,
       });
-
-      // TODO: Integrate with email service
-      // await fetch("https://api.resend.com/emails", { ... });
     }
   }
 }
@@ -318,7 +312,7 @@ async function sendDiscordNotification(
             {
               title,
               description,
-              color: 15158332, // Red
+              color: 15158332,
               fields,
               timestamp: new Date().toISOString(),
             },
@@ -347,7 +341,7 @@ async function sendDiscordNotification(
             {
               title: "Monitor Recovered",
               description: `Monitor "${ctx.monitorName}" has recovered.`,
-              color: 3066993, // Green
+              color: 3066993,
               fields: [
                 { name: "Cause", value: cause, inline: true },
                 {
@@ -536,9 +530,6 @@ async function sendGitHubNotification(
           body: JSON.stringify(payload),
         });
       }
-
-      // Note: GitHub issues don't auto-resolve, so we don't create a new issue for resolved
-      // but we could add a comment to the existing issue if we track the issue number
     } catch (error) {
       console.error("[GITHUB] Failed to create issue:", error);
     }

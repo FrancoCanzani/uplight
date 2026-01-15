@@ -3,6 +3,7 @@ import { eq, desc } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { monitor, domainCheckResult, checkResult } from "../../../db/schema";
+import { encrypt } from "../../../lib/crypto";
 import type { AppEnv } from "../../../types";
 import { CreateMonitorSchema, MonitorResponseSchema } from "./schemas";
 
@@ -44,6 +45,11 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
     const data = c.req.valid("json");
     const db = createDb(c.env.DB);
 
+    let encryptedPassword: string | null = null;
+    if (data.type === "http" && data.password) {
+      encryptedPassword = await encrypt(data.password, c.env.BETTER_AUTH_SECRET);
+    }
+
     const insertData =
       data.type === "http"
         ? {
@@ -60,7 +66,7 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
             headers: data.headers ? JSON.stringify(data.headers) : null,
             body: data.body ?? null,
             username: data.username ?? null,
-            password: data.password ?? null,
+            password: encryptedPassword,
             expectedStatusCodes: JSON.stringify(
               data.expectedStatusCodes ?? [200]
             ),
@@ -111,6 +117,7 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
     return c.json(
       {
         ...createdMonitor,
+        password: createdMonitor.password ? "********" : null,
         createdAt: createdMonitor.createdAt.toISOString(),
         updatedAt: createdMonitor.updatedAt.toISOString(),
         domainCheck: lastDomainCheck

@@ -1,21 +1,22 @@
+import { PageHeader } from "@/components/page-header";
 import { NewMonitorForm } from "@/features/monitors/forms/new-monitor-form";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, getRouteApi } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(dashboard)/$teamId/monitors/new")({
   component: RouteComponent,
 });
 
+const routeApi = getRouteApi("/(dashboard)/$teamId");
+
 function RouteComponent() {
+  const { teamId } = routeApi.useParams();
+
   return (
-    <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
-      <div>
-        <h1 className="font-medium text-lg tracking-tight">
-          Create New Monitor
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          Set up a new uptime monitor for your service.
-        </p>
-      </div>
+    <div className="space-y-8 w-full lg:max-w-4xl mx-auto">
+      <PageHeader
+        title="New Monitor"
+        backLink={{ to: "/$teamId/monitors", params: { teamId } }}
+      />
       <NewMonitorForm />
     </div>
   );

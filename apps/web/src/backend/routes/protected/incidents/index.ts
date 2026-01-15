@@ -1,8 +1,9 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { requireTeamMember } from "../../../middleware/team";
 import type { AppEnv } from "../../../types";
-import { registerGetAllIncidents } from "./get-all";
+import { incidentActivities } from "./activities";
 import { registerGetIncident } from "./get";
+import { registerGetAllIncidents } from "./get-all";
 import { registerPatchIncident } from "./patch";
 import { registerPutIncident } from "./put";
 
@@ -15,5 +16,7 @@ registerGetAllIncidents(incidents);
 registerGetIncident(incidents);
 registerPatchIncident(incidents);
 registerPutIncident(incidents);
+
+incidents.route("/", incidentActivities);
 
 export { incidents };
