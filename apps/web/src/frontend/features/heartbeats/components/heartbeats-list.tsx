@@ -9,23 +9,13 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { cn, getStatusBgColor } from "@lib/utils";
-import { GRACE_PERIODS } from "../constants";
+import { cn, getStatusBgColor, type HeartbeatStatus } from "@lib/utils";
 import type { HeartbeatResponse, RecentPing } from "../schemas";
-
-function formatGracePeriod(seconds: number): string {
-  const period = GRACE_PERIODS.find((p) => p.value === seconds);
-  return period?.label ?? `${seconds}s`;
-}
+import { formatGracePeriod } from "../utils/format-grace-period";
+import HeartbeatStatusIndicator from "./heartbeat-status-indicator";
 
 function PingsVisualization({ pings }: { pings: RecentPing[] }) {
   if (pings.length === 0) {
@@ -63,7 +53,7 @@ function PingsVisualization({ pings }: { pings: RecentPing[] }) {
         return (
           <div
             key={i}
-            className="flex-1 bg-green-600"
+            className="flex-1 bg-green-700 hover:scale-110"
             style={{ minWidth: "1px" }}
           />
         );
@@ -72,32 +62,12 @@ function PingsVisualization({ pings }: { pings: RecentPing[] }) {
   );
 }
 
-function HeartbeatStatusIndicator({ status }: { status: string }) {
-  return (
-    <Tooltip>
-      <TooltipTrigger className="shrink-0">
-        <div
-          className={cn(
-            "size-2 -full flex items-center justify-center",
-            getStatusBgColor(status),
-          )}
-        >
-          <div
-            className={cn(
-              "size-1.5 -full animate-ping",
-              getStatusBgColor(status),
-            )}
-          />
-        </div>
-      </TooltipTrigger>
-      <TooltipContent className="capitalize text-xs">{status}</TooltipContent>
-    </Tooltip>
-  );
-}
-
-type StatusFilter = "up" | "down" | "paused" | "initializing";
-
-const ALL_STATUSES: StatusFilter[] = ["up", "down", "paused", "initializing"];
+const ALL_STATUSES: HeartbeatStatus[] = [
+  "up",
+  "down",
+  "paused",
+  "initializing",
+];
 
 export default function HeartbeatsList() {
   const routeApi = getRouteApi("/(dashboard)/$teamId/heartbeats/");
@@ -105,24 +75,23 @@ export default function HeartbeatsList() {
   const { teamId } = routeApi.useParams();
 
   const [nameFilter, setNameFilter] = useState("");
-  const [selectedStatuses, setSelectedStatuses] = useState<Set<StatusFilter>>(
-    new Set(ALL_STATUSES),
-  );
+  const [selectedStatuses, setSelectedStatuses] = useState<
+    Set<HeartbeatStatus>
+  >(new Set(ALL_STATUSES));
 
   const statusCounts = useMemo(() => {
-    const up = heartbeats.filter(
-      (h: HeartbeatResponse) => h.status === "up",
-    ).length;
-    const down = heartbeats.filter(
-      (h: HeartbeatResponse) => h.status === "down",
-    ).length;
-    const paused = heartbeats.filter(
-      (h: HeartbeatResponse) => h.status === "paused",
-    ).length;
-    const initializing = heartbeats.filter(
-      (h: HeartbeatResponse) => h.status === "initializing",
-    ).length;
-    return { up, down, paused, initializing };
+    const counts: Record<HeartbeatStatus, number> = {
+      up: 0,
+      down: 0,
+      paused: 0,
+      initializing: 0,
+    };
+    heartbeats.forEach((h: HeartbeatResponse) => {
+      if (counts[h.status as HeartbeatStatus] !== undefined) {
+        counts[h.status as HeartbeatStatus]++;
+      }
+    });
+    return counts;
   }, [heartbeats]);
 
   const filteredData = useMemo(() => {
@@ -130,7 +99,7 @@ export default function HeartbeatsList() {
 
     if (selectedStatuses.size < ALL_STATUSES.length) {
       filtered = filtered.filter((hb) =>
-        selectedStatuses.has(hb.status as StatusFilter),
+        selectedStatuses.has(hb.status as HeartbeatStatus),
       );
     }
 
@@ -143,7 +112,7 @@ export default function HeartbeatsList() {
     return filtered;
   }, [heartbeats, selectedStatuses, nameFilter]);
 
-  const toggleStatus = (status: StatusFilter) => {
+  const toggleStatus = (status: HeartbeatStatus) => {
     setSelectedStatuses((prev) => {
       const next = new Set(prev);
       if (next.has(status)) {
@@ -170,7 +139,6 @@ export default function HeartbeatsList() {
             render={
               <Button variant="outline" size="xs">
                 <Filter className="size-3" />
-                Filter
                 {activeFilterCount > 0 && (
                   <span className="bg-primary text-primary-foreground -full size-4 text-[10px] flex items-center justify-center">
                     {activeFilterCount}
@@ -179,47 +147,63 @@ export default function HeartbeatsList() {
               </Button>
             }
           ></DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-48">
+          <DropdownMenuContent align="start" className="w-fit">
             <DropdownMenuGroup>
               <DropdownMenuLabel>Status</DropdownMenuLabel>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuCheckboxItem
-              checked={selectedStatuses.has("up")}
-              onCheckedChange={() => toggleStatus("up")}
-            >
-              <div className="flex items-center gap-2">
-                <div className="size-2 -full bg-green-600" />
-                Up ({statusCounts.up})
-              </div>
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={selectedStatuses.has("down")}
-              onCheckedChange={() => toggleStatus("down")}
-            >
-              <div className="flex items-center gap-2">
-                <div className="size-2 -full bg-red-600" />
-                Down ({statusCounts.down})
-              </div>
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={selectedStatuses.has("paused")}
-              onCheckedChange={() => toggleStatus("paused")}
-            >
-              <div className="flex items-center gap-2">
-                <div className="size-2 -full bg-zinc-400" />
-                PauseIcond ({statusCounts.paused})
-              </div>
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={selectedStatuses.has("initializing")}
-              onCheckedChange={() => toggleStatus("initializing")}
-            >
-              <div className="flex items-center gap-2">
-                <div className="size-2 -full bg-amber-500" />
-                Initializing ({statusCounts.initializing})
-              </div>
-            </DropdownMenuCheckboxItem>
+            {statusCounts.up > 0 && (
+              <DropdownMenuCheckboxItem
+                checked={selectedStatuses.has("up")}
+                onCheckedChange={() => toggleStatus("up")}
+              >
+                <div className="flex items-center gap-2">
+                  <div className={cn("size-2 -full", getStatusBgColor("up"))} />
+                  Up ({statusCounts.up})
+                </div>
+              </DropdownMenuCheckboxItem>
+            )}
+            {statusCounts.down > 0 && (
+              <DropdownMenuCheckboxItem
+                checked={selectedStatuses.has("down")}
+                onCheckedChange={() => toggleStatus("down")}
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    className={cn("size-2 -full", getStatusBgColor("down"))}
+                  />
+                  Down ({statusCounts.down})
+                </div>
+              </DropdownMenuCheckboxItem>
+            )}
+            {statusCounts.paused > 0 && (
+              <DropdownMenuCheckboxItem
+                checked={selectedStatuses.has("paused")}
+                onCheckedChange={() => toggleStatus("paused")}
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    className={cn("size-2 -full", getStatusBgColor("paused"))}
+                  />
+                  Paused ({statusCounts.paused})
+                </div>
+              </DropdownMenuCheckboxItem>
+            )}
+            {statusCounts.initializing > 0 && (
+              <DropdownMenuCheckboxItem
+                checked={selectedStatuses.has("initializing")}
+                onCheckedChange={() => toggleStatus("initializing")}
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    className={cn(
+                      "size-2 -full",
+                      getStatusBgColor("initializing"),
+                    )}
+                  />
+                  Initializing ({statusCounts.initializing})
+                </div>
+              </DropdownMenuCheckboxItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
         <Input

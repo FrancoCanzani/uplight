@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { useCreateHeartbeat } from "../api/use-create-heartbeat";
 import { useUpdateHeartbeat } from "../api/use-update-heartbeat";
 import { GRACE_PERIODS, PERIODS } from "../constants";
@@ -84,43 +83,29 @@ export function HeartbeatForm({
       }}
     >
       <div className="space-y-6">
-        <div className="space-y-4">
-          <div>
-            <FieldLabel>Heartbeat InfoIconrmation</FieldLabel>
-            <FieldDescription>
-              Configure your heartbeat monitor for cron jobs, scheduled tasks,
-              or background workers.
-            </FieldDescription>
-          </div>
-          <form.Field
-            name="name"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Heartbeat Name</FieldLabel>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    aria-invalid={isInvalid}
-                    placeholder="Daily Backup Job"
-                    autoComplete="off"
-                  />
-                  <FieldDescription>
-                    A friendly name to identify this heartbeat.
-                  </FieldDescription>
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              );
-            }}
-          />
-        </div>
-
-        <Separator />
+        <form.Field
+          name="name"
+          children={(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Heartbeat Name</FieldLabel>
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  aria-invalid={isInvalid}
+                  placeholder="Daily Backup Job"
+                  autoComplete="off"
+                />
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            );
+          }}
+        />
 
         <div className="space-y-4">
           <div>
@@ -224,8 +209,6 @@ export function HeartbeatForm({
             }}
           />
         </div>
-
-        <Separator />
 
         <div className="flex justify-end w-full gap-3 pt-4">
           <Button

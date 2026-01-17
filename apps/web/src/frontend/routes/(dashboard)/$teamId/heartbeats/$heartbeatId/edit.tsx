@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PageHeader } from "@/components/page-header";
 import { fetchHeartbeat } from "@/features/heartbeats/api/fetch-heartbeat";
 import { HeartbeatForm } from "@/features/heartbeats/forms/heartbeat-form";
 
@@ -19,16 +20,9 @@ function EditHeartbeatPage() {
   const { heartbeat } = Route.useLoaderData();
 
   return (
-    <div className="space-y-10 w-full lg:max-w-4xl mx-auto">
-      <div>
-        <h1 className="font-medium text-lg tracking-tight">Edit Heartbeat</h1>
-        <p className="text-muted-foreground text-sm">
-          Update the configuration for {heartbeat.name}.
-        </p>
-      </div>
-      <div>
-        <HeartbeatForm heartbeat={heartbeat} />
-      </div>
+    <div className="space-y-8 w-full lg:max-w-4xl mx-auto">
+      <PageHeader title="Edit Heartbeat" />
+      <HeartbeatForm heartbeat={heartbeat} />
     </div>
   );
 }

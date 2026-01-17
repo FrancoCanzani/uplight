@@ -1,14 +1,31 @@
+import { useState } from "react";
 import { getRouteApi, Link } from "@tanstack/react-router";
 import { format, formatDistanceToNowStrict } from "date-fns";
 import { Copy, Pause, Pencil, Play, Trash } from "lucide-react";
 import { toast } from "sonner";
+import AnimatedNumber from "@/components/motion/animated-number";
 import { PageHeader } from "@/components/page-header";
-import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { cn, getStatusBgColor, getStatusTextColor } from "@lib/utils";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useDeleteHeartbeat } from "../api/use-delete-heartbeat";
 import { useToggleHeartbeatStatus } from "../api/use-toggle-heartbeat-status";
+import { formatGracePeriod } from "../utils/format-grace-period";
 
 export default function HeartbeatPage() {
   const routeApi = getRouteApi("/(dashboard)/$teamId/heartbeats/$heartbeatId/");
@@ -17,6 +34,9 @@ export default function HeartbeatPage() {
 
   const deleteHeartbeat = useDeleteHeartbeat();
   const toggleStatus = useToggleHeartbeatStatus();
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
 
   const pingUrl = `${window.location.origin}${heartbeat.pingUrl}`;
 
@@ -30,13 +50,23 @@ export default function HeartbeatPage() {
     toast.success("Code copied to clipboard");
   };
 
+  const isDeleteEnabled = deleteConfirmation === heartbeat.name;
+
   const handleDelete = () => {
-    if (confirm(`Are you sure you want to delete "${heartbeat.name}"?`)) {
-      deleteHeartbeat.mutate({
-        teamId: Number(teamId),
-        heartbeatId: heartbeat.id,
-        name: heartbeat.name,
-      });
+    if (isDeleteEnabled) {
+      deleteHeartbeat.mutate(
+        {
+          teamId: Number(teamId),
+          heartbeatId: heartbeat.id,
+          name: heartbeat.name,
+        },
+        {
+          onSuccess: () => {
+            setDeleteDialogOpen(false);
+            setDeleteConfirmation("");
+          },
+        },
+      );
     }
   };
 
@@ -53,8 +83,13 @@ export default function HeartbeatPage() {
   const nodeExample = `fetch("${pingUrl}").catch(console.error);`;
   const pythonExample = `import requests\nrequests.get("${pingUrl}")`;
 
+  const pingCount = heartbeat.recentPings.length;
+  const lastPingTime = heartbeat.lastPingAt
+    ? formatDistanceToNowStrict(heartbeat.lastPingAt, { addSuffix: true })
+    : "Never";
+
   return (
-    <div className="space-y-8 w-full lg:max-w-4xl mx-auto">
+    <div className="space-y-10 w-full lg:max-w-4xl mx-auto">
       <PageHeader
         title={heartbeat.name}
         actions={
@@ -93,8 +128,7 @@ export default function HeartbeatPage() {
             <Button
               variant="destructive"
               size="xs"
-              onClick={handleDelete}
-              disabled={deleteHeartbeat.isPending}
+              onClick={() => setDeleteDialogOpen(true)}
             >
               <Trash className="size-3" />
               Delete
@@ -103,155 +137,136 @@ export default function HeartbeatPage() {
         }
       />
 
-      <div className="space-y-4 bg-surface  p-4">
-        <h2 className="text-sm font-medium">Status</h2>
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <p className="text-xs text-muted-foreground">Current Status</p>
-            <div className="flex items-center gap-2">
-              <div
-                className={cn(
-                  "size-2.5 -full",
-                  getStatusBgColor(heartbeat.status),
-                )}
-              />
-              <p
-                className={cn(
-                  "text-sm font-medium capitalize",
-                  getStatusTextColor(heartbeat.status),
-                )}
-              >
-                {heartbeat.status}
-              </p>
-            </div>
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Last Ping</p>
-            <p className="text-sm ">
-              {heartbeat.lastPingAt
-                ? formatDistanceToNowStrict(heartbeat.lastPingAt, {
-                    addSuffix: true,
-                  })
-                : "Never"}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Created</p>
-            <p className="text-sm ">
-              {formatDistanceToNowStrict(new Date(heartbeat.createdAt), {
-                addSuffix: true,
-              })}
-            </p>
-          </div>
-        </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card size="xs">
+          <CardHeader>
+            <CardDescription>Status</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <span className="capitalize text-xs">{heartbeat.status}</span>
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card size="xs">
+          <CardHeader>
+            <CardDescription>Total Pings</CardDescription>
+            <CardTitle className="text-lg">
+              <AnimatedNumber value={pingCount} />
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card size="xs">
+          <CardHeader>
+            <CardDescription>Last Ping</CardDescription>
+            <CardTitle className="text-sm">{lastPingTime}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card size="xs">
+          <CardHeader>
+            <CardDescription>Grace Period</CardDescription>
+            <CardTitle className="text-sm">
+              {formatGracePeriod(heartbeat.gracePeriod)}
+            </CardTitle>
+          </CardHeader>
+        </Card>
       </div>
 
-      <div className="space-y-4 bg-surface  p-4">
+      <div className="space-y-4">
         <div>
-          <h2 className="text-sm font-medium mb-2">Ping URL</h2>
-          <p className="text-xs text-muted-foreground mb-3">
+          <h3 className="font-medium">Ping URL</h3>
+          <p className="text-xs text-muted-foreground">
             Send a GET request to this URL from your cron job, scheduled task,
             or background worker to report that it's running.
           </p>
-          <div className="flex items-center gap-2">
-            <code className="flex-1 bg-background  px-3 py-2 text-xs  break-all">
+          <div className="flex items-center gap-2 mt-4">
+            <code className="flex-1 bg-surface px-2 py-1.5 text-xs h-7 break-all">
               {pingUrl}
             </code>
-            <Button variant="outline" size="xs" onClick={copyPingUrl}>
+            <button onClick={copyPingUrl}>
               <Copy className="size-3" />
-              Copy
-            </Button>
-          </div>
-        </div>
-
-        <Separator />
-
-        <div>
-          <h2 className="text-sm font-medium mb-2">Usage Examples</h2>
-          <div className="space-y-3">
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-xs text-muted-foreground">curl</p>
-                <Button
-                  variant="ghost"
-                  size="xs"
-                  className="h-5 px-1.5"
-                  onClick={() => copyCode(`curl -fsS ${pingUrl}`)}
-                >
-                  <Copy className="size-2.5" />
-                </Button>
-              </div>
-              <code className="block bg-background  px-3 py-2 text-xs  break-all">
-                curl -fsS {pingUrl}
-              </code>
-            </div>
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-xs text-muted-foreground">
-                  Cron job (after your script)
-                </p>
-                <Button
-                  variant="ghost"
-                  size="xs"
-                  className="h-5 px-1.5"
-                  onClick={() =>
-                    copyCode(
-                      `0 * * * * /path/to/script.sh && curl -fsS ${pingUrl}`,
-                    )
-                  }
-                >
-                  <Copy className="size-2.5" />
-                </Button>
-              </div>
-              <code className="block bg-background  px-3 py-2 text-xs  break-all">
-                0 * * * * /path/to/script.sh && curl -fsS {pingUrl}
-              </code>
-            </div>
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-xs text-muted-foreground">
-                  Node.js / JavaScript
-                </p>
-                <Button
-                  variant="ghost"
-                  size="xs"
-                  className="h-5 px-1.5"
-                  onClick={() => copyCode(nodeExample)}
-                >
-                  <Copy className="size-2.5" />
-                </Button>
-              </div>
-              <code className="block bg-background  px-3 py-2 text-xs  break-all">
-                {nodeExample}
-              </code>
-            </div>
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-xs text-muted-foreground">Python</p>
-                <Button
-                  variant="ghost"
-                  size="xs"
-                  className="h-5 px-1.5"
-                  onClick={() => copyCode(pythonExample)}
-                >
-                  <Copy className="size-2.5" />
-                </Button>
-              </div>
-              <code className="block bg-background  px-3 py-2 text-xs  whitespace-pre break-all">
-                {pythonExample}
-              </code>
-            </div>
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="space-y-4 bg-surface  p-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium">Recent Pings</h2>
-          <span className="text-xs text-muted-foreground">
-            {heartbeat.recentPings.length} events
-          </span>
+      <div className="space-y-4">
+        <h3 className="font-medium">Usage Examples</h3>
+        <div className="space-y-3">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs text-muted-foreground">curl</p>
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={() => copyCode(`curl -fsS ${pingUrl}`)}
+              >
+                <Copy className="size-3" />
+              </Button>
+            </div>
+            <code className="block bg-surface px-3 py-2 text-xs break-all">
+              curl -fsS {pingUrl}
+            </code>
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs text-muted-foreground">
+                Cron job (after your script)
+              </p>
+              <Button
+                variant="ghost"
+                size="xs"
+                className="h-5 px-1.5"
+                onClick={() =>
+                  copyCode(
+                    `0 * * * * /path/to/script.sh && curl -fsS ${pingUrl}`,
+                  )
+                }
+              >
+                <Copy className="size-2.5" />
+              </Button>
+            </div>
+            <code className="block bg-surface  px-3 py-2 text-xs  break-all">
+              0 * * * * /path/to/script.sh && curl -fsS {pingUrl}
+            </code>
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs text-muted-foreground">
+                Node.js / JavaScript
+              </p>
+              <Button
+                variant="ghost"
+                size="xs"
+                className="h-5 px-1.5"
+                onClick={() => copyCode(nodeExample)}
+              >
+                <Copy className="size-2.5" />
+              </Button>
+            </div>
+            <code className="block bg-surface  px-3 py-2 text-xs  break-all">
+              {nodeExample}
+            </code>
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs text-muted-foreground">Python</p>
+              <Button
+                variant="ghost"
+                size="xs"
+                className="h-5 px-1.5"
+                onClick={() => copyCode(pythonExample)}
+              >
+                <Copy className="size-2.5" />
+              </Button>
+            </div>
+            <code className="block bg-surface  px-3 py-2 text-xs  whitespace-pre break-all">
+              {pythonExample}
+            </code>
+          </div>
         </div>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="font-medium">Recent Pings</h3>
 
         {heartbeat.recentPings.length === 0 ? (
           <div className="text-center py-8">
@@ -264,12 +279,11 @@ export default function HeartbeatPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-xs text-muted-foreground border-b border-border">
-                  <th className="py-2 pr-4 font-medium">ID</th>
-                  <th className="py-2 pr-4 font-medium">Date</th>
-                  <th className="py-2 pr-4 font-medium">Time</th>
                   <th className="py-2 pr-4 font-medium">Status</th>
-                  <th className="py-2 pr-4 font-medium">Request</th>
-                  <th className="py-2 font-medium">User Agent</th>
+                  <th className="py-2 pr-4 font-medium">Method</th>
+                  <th className="py-2 pr-4 font-medium">IP Address</th>
+                  <th className="py-2 pr-4 font-medium">User Agent</th>
+                  <th className="py-2 font-medium">Date</th>
                 </tr>
               </thead>
               <tbody>
@@ -280,33 +294,18 @@ export default function HeartbeatPage() {
                       key={ping.id}
                       className="border-b border-border/50 last:border-0"
                     >
-                      <td className="py-2.5 pr-4  text-xs text-muted-foreground">
-                        #{ping.id}
+                      <td className="py-2.5 pr-4 text-xs">OK</td>
+                      <td className="py-2.5 pr-4 text-xs">{ping.method}</td>
+                      <td className="py-2.5 pr-4 text-xs text-muted-foreground">
+                        {ping.ip || "—"}
                       </td>
-                      <td className="py-2.5 pr-4  text-xs">
-                        {format(pingDate, "MMM dd")}
+                      <td className="py-2.5 pr-4 text-xs text-muted-foreground max-w-50 truncate">
+                        {ping.userAgent || "—"}
                       </td>
-                      <td className="py-2.5 pr-4  text-xs">
-                        {format(pingDate, "HH:mm:ss")}
-                      </td>
-                      <td className="py-2.5 pr-4">
-                        <Badge
-                          variant="outline"
-                          className="text-[10px] px-1.5 py-0"
-                        >
-                          OK
-                        </Badge>
-                      </td>
-                      <td className="py-2.5 pr-4 text-xs">
-                        <span className="">{ping.method}</span>
-                        {ping.ip && (
-                          <span className="text-muted-foreground ml-1.5">
-                            from {ping.ip}
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-2.5 text-xs text-muted-foreground max-w-[200px] truncate">
-                        {ping.userAgent || "-"}
+                      <td className="py-2.5 text-xs tabular-nums tracking-tight">
+                        <time dateTime={new Date(ping.pingedAt).toISOString()}>
+                          {format(pingDate, "MMM d, h:mm a")}
+                        </time>
                       </td>
                     </tr>
                   );
@@ -316,6 +315,49 @@ export default function HeartbeatPage() {
           </div>
         )}
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Heartbeat</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              heartbeat and all associated data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground">
+              To confirm, please type the heartbeat name:{" "}
+              <strong>{heartbeat.name}</strong>
+            </p>
+            <Input
+              value={deleteConfirmation}
+              onChange={(e) => setDeleteConfirmation(e.target.value)}
+              placeholder={heartbeat.name}
+              className=" text-xs"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              size={"xs"}
+              onClick={() => {
+                setDeleteDialogOpen(false);
+                setDeleteConfirmation("");
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              size={"xs"}
+              onClick={handleDelete}
+              disabled={!isDeleteEnabled || deleteHeartbeat.isPending}
+              variant="destructive"
+            >
+              {deleteHeartbeat.isPending ? "Deleting..." : "Delete Heartbeat"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

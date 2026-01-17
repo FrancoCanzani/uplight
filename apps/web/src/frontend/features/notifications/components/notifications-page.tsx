@@ -211,7 +211,7 @@ export default function NotificationsPage() {
             </Card>
           );
         })}
-        <div className="border-dashed flex items-center justify-center border ">
+        <div className="border-dashed flex items-center justify-center border h-full min-h-18">
           <p className="text-xs text-muted-foreground">
             More notifiers coming soon
           </p>

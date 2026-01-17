@@ -8,7 +8,7 @@ export default function HeartbeatsPage() {
   const { teamId } = routeApi.useParams();
 
   return (
-    <div className="space-y-8 w-full lg:max-w-3xl mx-auto">
+    <div className="space-y-10 w-full lg:max-w-3xl mx-auto">
       <PageHeader
         title="Heartbeats"
         actions={

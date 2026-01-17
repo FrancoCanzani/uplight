@@ -16,7 +16,8 @@ export async function handleHeartbeatChecks(env: Env): Promise<void> {
       continue;
     }
 
-    const deadline = hb.lastPingAt.getTime() + hb.gracePeriod * 1000;
+    const deadline =
+      hb.lastPingAt.getTime() + (hb.period + hb.gracePeriod) * 1000;
     const isLate = now > deadline;
 
     if (isLate && hb.status !== "down") {

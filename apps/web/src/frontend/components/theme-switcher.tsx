@@ -24,7 +24,7 @@ export function ThemeSwitcher() {
 
   return (
     <Select value={theme || "system"} onValueChange={handleValueChange}>
-      <SelectTrigger size="xs" className={"min-w-24"}>
+      <SelectTrigger size="sm" className={"min-w-24"}>
         <SelectValue>{getThemeLabel(theme)}</SelectValue>
       </SelectTrigger>
       <SelectContent>

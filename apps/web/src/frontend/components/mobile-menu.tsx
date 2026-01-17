@@ -13,7 +13,6 @@ import {
   Plus,
   Users,
 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -68,35 +67,23 @@ export function MobileMenu() {
             <Menu className="size-5" />
           </button>
         }
-      ></DropdownMenuTrigger>
+      />
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuGroup>
           <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
-            Switch team
+            Team management
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuGroup>
           {teams.map((team) => (
             <DropdownMenuItem
               key={team.id}
-              className="cursor-pointer gap-2 py-2"
+              className="cursor-pointer w-full flex items-center justify-between"
               onClick={() => handleTeamSelect(team.id)}
             >
-              <Avatar size="sm">
-                <AvatarFallback className="text-[10px]">
-                  {team.name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col flex-1 min-w-0">
-                <span className="truncate text-sm">{team.name}</span>
-                {team.personal && (
-                  <span className="text-[10px] text-muted-foreground">
-                    Personal
-                  </span>
-                )}
-              </div>
+              <span className="truncate text-xs">{team.name}</span>
               {team.id === currentTeam.id && (
-                <Check className="size-4 text-primary shrink-0" />
+                <Check className="size-3 text-primary shrink-0" />
               )}
             </DropdownMenuItem>
           ))}
@@ -117,12 +104,12 @@ export function MobileMenu() {
                     "bg-muted",
                 )}
               >
-                <Users className="size-4 text-muted-foreground" />
+                <Users className="size-3 text-muted-foreground" />
                 <span>Manage team</span>
               </Link>
             }
             className="cursor-pointer gap-2"
-          ></DropdownMenuItem>
+          />
           <DropdownMenuItem
             render={
               <Link
@@ -130,12 +117,12 @@ export function MobileMenu() {
                 params={{ teamId }}
                 className="w-full flex items-center gap-2"
               >
-                <Plus className="size-4 text-muted-foreground" />
+                <Plus className="size-3 text-muted-foreground" />
                 <span>Create new team</span>
               </Link>
             }
             className="cursor-pointer gap-2"
-          ></DropdownMenuItem>
+          />
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
@@ -156,7 +143,7 @@ export function MobileMenu() {
                       isActive && "bg-muted",
                     )}
                   >
-                    <Icon className="size-4 text-muted-foreground" />
+                    <Icon className="size-3 text-muted-foreground" />
                     <span>{item.label}</span>
                   </Link>
                 }
@@ -170,9 +157,9 @@ export function MobileMenu() {
 
         <DropdownMenuItem
           onClick={handleSignOut}
-          className="cursor-pointer gap-2 text-destructive focus:bg-destructive/10 focus:text-destructive"
+          className="cursor-pointer gap-2 hover:text-destructive text-destructive focus:bg-destructive/10 focus:text-destructive"
         >
-          <LogOut className="size-4" />
+          <LogOut className="size-3" />
           <span>Sign out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

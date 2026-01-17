@@ -16,15 +16,6 @@ import getLocationLabel from "../utils/get-location-label";
 
 const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
 
-const resultLabels: Record<string, string> = {
-  success: "Success",
-  failure: "Failure",
-  timeout: "Timeout",
-  error: "Error",
-  maintenance: "Maintenance",
-  degraded: "Degraded",
-};
-
 export function ChecksFilters({
   isFetchingMore,
 }: {
@@ -51,9 +42,9 @@ export function ChecksFilters({
   const availableResults = useMemo(() => {
     const unique = new Set(checks.map((check) => check.result));
     return Array.from(unique)
-      .filter((r) => r && resultLabels[r])
+      .filter((r) => r)
       .sort()
-      .map((value) => ({ value, label: resultLabels[value] }));
+      .map((value) => ({ value }));
   }, [checks]);
 
   const availableLocations = useMemo(() => {
@@ -66,7 +57,9 @@ export function ChecksFilters({
 
   const selectedResultLabel = useMemo(() => {
     if (!search.checkResult) return "All results";
-    return resultLabels[search.checkResult] ?? "All results";
+    return (
+      search.checkResult.charAt(0).toUpperCase() + search.checkResult.slice(1)
+    );
   }, [search.checkResult]);
 
   const selectedLocationLabel = useMemo(() => {
@@ -174,8 +167,12 @@ export function ChecksFilters({
             <SelectContent>
               <SelectItem value="">All results</SelectItem>
               {availableResults.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="capitalize"
+                >
+                  {option.value}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -193,7 +190,7 @@ export function ChecksFilters({
             <SelectTrigger id="location-filter" size="sm">
               <SelectValue>{selectedLocationLabel}</SelectValue>
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className={"min-w-min"}>
               <SelectItem value="">All regions</SelectItem>
               {availableLocations.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
@@ -207,7 +204,7 @@ export function ChecksFilters({
         <div className="space-y-2">
           <Label htmlFor="date-from">Date From</Label>
           <Input
-            className="h-8"
+            className="h-7"
             id="date-from"
             type="datetime-local"
             value={dateFromValue}
@@ -219,7 +216,7 @@ export function ChecksFilters({
         <div className="space-y-2">
           <Label htmlFor="date-to">Date To</Label>
           <Input
-            className="h-8"
+            className="h-7"
             id="date-to"
             type="datetime-local"
             value={dateToValue}
@@ -237,7 +234,7 @@ export function ChecksFilters({
         {hasActiveFilters && (
           <Button variant="outline" size="xs" onClick={handleClearFilters}>
             <FilterX className="size-3.5" />
-            Clear filters
+            Clear
           </Button>
         )}
       </div>

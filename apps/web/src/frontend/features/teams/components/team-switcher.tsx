@@ -55,9 +55,7 @@ export function TeamSwitcher() {
               className="cursor-pointer"
               onClick={() => handleTeamSelect(team.id)}
             >
-              <div className="flex flex-col flex-1 min-w-0">
-                <span className="truncate text-xs">{team.name}</span>
-              </div>
+              <span className="truncate text-xs">{team.name}</span>
               {team.id === currentTeam.id && (
                 <Check className="size-3 text-primary shrink-0" />
               )}
