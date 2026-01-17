@@ -182,7 +182,7 @@ export function CheckDetailSheet() {
                       ([key, value]) => (
                         <div
                           key={key}
-                          className="flex items-start gap-4 text-xs  border-b border-border/50 pb-1.5 last:border-0 last:pb-0"
+                          className="flex items-start gap-4 text-xs border-b border-border/50 pb-1.5 last:border-0 last:pb-0"
                         >
                           <div className="font-semibold text-foreground shrink-0 min-w-[180px]">
                             {key}:
@@ -263,9 +263,7 @@ function ConfigItem({
   return (
     <div className="flex items-start justify-between gap-4">
       <span className="text-muted-foreground shrink-0">{label}</span>
-      <span
-        className={`text-right ${mono ? " text-[11px]" : ""} break-all`}
-      >
+      <span className={`text-right ${mono ? " text-[11px]" : ""} break-all`}>
         {value}
       </span>
     </div>

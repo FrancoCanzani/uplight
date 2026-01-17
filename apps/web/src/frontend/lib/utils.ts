@@ -48,7 +48,7 @@ export type HeartbeatStatus = "up" | "down" | "paused" | "initializing";
 export function getStatusBgColor(status: string): string {
   switch (status) {
     case "up":
-      return "bg-emerald-600";
+      return "bg-green-600";
     case "down":
       return "bg-red-600";
     case "degraded":
@@ -67,7 +67,7 @@ export function getStatusBgColor(status: string): string {
 export function getStatusTextColor(status: string): string {
   switch (status) {
     case "up":
-      return "text-emerald-600";
+      return "text-green-600";
     case "down":
       return "text-red-600";
     case "degraded":

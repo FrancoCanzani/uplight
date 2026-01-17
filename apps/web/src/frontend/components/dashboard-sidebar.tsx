@@ -10,6 +10,7 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -45,12 +46,16 @@ export function DashboardSidebar() {
   };
 
   return (
-    <Sidebar collapsible="none" className="hidden md:flex">
-      <SidebarHeader>
+    <Sidebar
+      collapsible="none"
+      className="hidden md:flex border-r border-r-border/30"
+    >
+      <SidebarHeader className="h-14 p-0">
         <TeamSwitcher />
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
+        <SidebarGroup className="py-2">
+          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>

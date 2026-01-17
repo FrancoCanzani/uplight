@@ -1,5 +1,4 @@
 import { differenceInDays, format, parseISO } from "date-fns";
-import { Globe, Lock } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -14,20 +13,12 @@ function getDaysRemaining(date: string | number | null): number | null {
   return differenceInDays(expiry, new Date());
 }
 
-function getStatusColor(days: number | null): string {
-  if (days === null) return "text-muted-foreground";
-  if (days < 0) return "text-destructive";
-  if (days <= 14) return "text-destructive";
-  if (days <= 30) return "text-amber-500";
-  return "text-green-600";
-}
-
 function getProgressColor(days: number | null): string {
   if (days === null) return "bg-muted";
   if (days < 0) return "bg-destructive";
   if (days <= 14) return "bg-destructive";
   if (days <= 30) return "bg-amber-500";
-  return "bg-green-600";
+  return "bg-green-700";
 }
 
 function getProgressWidth(days: number | null): number {
@@ -68,39 +59,26 @@ export default function MonitorDomainInfo({
         <Tooltip>
           <TooltipTrigger
             render={
-              <div className="flex items-center gap-2 border  px-2.5 py-1.5 cursor-default hover:bg-muted/50 transition-colors">
-                <Lock
-                  className={cn(
-                    "size-3",
-                    hasSslError ? "text-destructive" : getStatusColor(sslDays),
-                  )}
-                />
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-muted-foreground text-[10px] leading-none">
-                    SSL
-                  </span>
+              <div className="flex items-center gap-2 border h-6 px-2 cursor-default hover:bg-surface transition-colors">
+                <span className="text-muted-foreground text-xs">SSL</span>
+                <div>
                   <div className="flex items-center gap-1.5">
                     {hasSslError ? (
-                      <span className="text-xs font-medium text-destructive">
+                      <span className="text-xs font-medium text-red-700">
                         Error
                       </span>
                     ) : (
                       <>
-                        <div className="w-12 h-1 bg-muted -full overflow-hidden">
+                        <div className="w-10 h-1 bg-muted -full overflow-hidden">
                           <div
                             className={cn(
-                              "h-full -full",
+                              "h-full w-full",
                               getProgressColor(sslDays),
                             )}
                             style={{ width: `${getProgressWidth(sslDays)}%` }}
                           />
                         </div>
-                        <span
-                          className={cn(
-                            "text-xs font-medium tabular-nums",
-                            getStatusColor(sslDays),
-                          )}
-                        >
+                        <span className={"text-xs font-medium tabular-nums"}>
                           {sslDays !== null
                             ? sslDays < 0
                               ? "Exp"
@@ -142,30 +120,20 @@ export default function MonitorDomainInfo({
         <Tooltip>
           <TooltipTrigger
             render={
-              <div className="flex items-center gap-2 border  px-2.5 py-1.5 cursor-default hover:bg-muted/50 transition-colors">
-                <Globe
-                  className={cn(
-                    "size-3",
-                    hasDomainError
-                      ? "text-destructive"
-                      : getStatusColor(domainDays),
-                  )}
-                />
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-muted-foreground text-[10px] leading-none">
-                    Domain
-                  </span>
+              <div className="flex items-center gap-2 border h-6 px-2 cursor-default hover:bg-surface transition-colors">
+                <span className="text-muted-foreground text-xs">Domain</span>
+                <div>
                   <div className="flex items-center gap-1.5">
                     {hasDomainError ? (
-                      <span className="text-xs font-medium text-destructive">
+                      <span className="text-xs font-medium text-red-700">
                         Error
                       </span>
                     ) : (
                       <>
-                        <div className="w-12 h-1 bg-muted -full overflow-hidden">
+                        <div className="w-10 h-1 bg-muted -full overflow-hidden">
                           <div
                             className={cn(
-                              "h-full -full",
+                              "h-full w-full",
                               getProgressColor(domainDays),
                             )}
                             style={{
@@ -173,12 +141,7 @@ export default function MonitorDomainInfo({
                             }}
                           />
                         </div>
-                        <span
-                          className={cn(
-                            "text-xs font-medium tabular-nums",
-                            getStatusColor(domainDays),
-                          )}
-                        >
+                        <span className={"text-xs font-medium tabular-nums"}>
                           {domainDays !== null
                             ? domainDays < 0
                               ? "Exp"

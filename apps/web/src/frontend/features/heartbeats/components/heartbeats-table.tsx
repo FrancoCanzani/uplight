@@ -27,7 +27,7 @@ import type { HeartbeatResponse } from "../schemas";
 function getTextStatusColor(status: string): string {
   switch (status) {
     case "up":
-      return "text-emerald-600";
+      return "text-green-600";
     case "down":
       return "text-red-600";
     case "paused":

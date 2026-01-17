@@ -12,23 +12,22 @@ import {
 } from "@/components/ui/chart";
 import type { CheckResult } from "../api/fetch-checks";
 
-// Colors match the app's status colors from utils.ts
 const chartConfig = {
   success: {
     label: "Success",
-    color: "oklch(0.596 0.145 163.225)", // emerald-600
+    color: "oklch(0.549 0.158 163.225)", // green-700
   },
   degraded: {
     label: "Degraded",
-    color: "oklch(0.705 0.213 47.604)", // orange-500
+    color: "oklch(0.631 0.189 47.604)", // orange-700
   },
   failure: {
     label: "Failure",
-    color: "oklch(0.577 0.245 27.325)", // red-600
+    color: "oklch(0.509 0.211 27.325)", // red-700
   },
   maintenance: {
     label: "Maintenance",
-    color: "oklch(0.623 0.214 259.815)", // blue-500
+    color: "oklch(0.542 0.186 259.815)", // blue-700
   },
 } satisfies ChartConfig;
 
@@ -90,12 +89,12 @@ export default function CheckStatusChart({
   }
 
   return (
-    <ChartContainer config={chartConfig} className="h-48 w-full">
+    <ChartContainer config={chartConfig} className="h-60 w-full">
       <BarChart
         accessibilityLayer
         data={chartData}
         stackOffset="expand"
-        margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
+        margin={{ top: 8, right: 8, bottom: 0, left: -20 }}
       >
         <XAxis
           dataKey="date"

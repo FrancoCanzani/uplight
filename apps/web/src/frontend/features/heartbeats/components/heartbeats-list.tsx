@@ -63,7 +63,7 @@ function PingsVisualization({ pings }: { pings: RecentPing[] }) {
         return (
           <div
             key={i}
-            className="flex-1 bg-emerald-600"
+            className="flex-1 bg-green-600"
             style={{ minWidth: "1px" }}
           />
         );
@@ -189,7 +189,7 @@ export default function HeartbeatsList() {
               onCheckedChange={() => toggleStatus("up")}
             >
               <div className="flex items-center gap-2">
-                <div className="size-2 -full bg-emerald-600" />
+                <div className="size-2 -full bg-green-600" />
                 Up ({statusCounts.up})
               </div>
             </DropdownMenuCheckboxItem>

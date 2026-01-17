@@ -9,17 +9,6 @@ import { Separator } from "@/components/ui/separator";
 import { cn, getStatusBgColor, getStatusTextColor } from "@lib/utils";
 import { useDeleteHeartbeat } from "../api/use-delete-heartbeat";
 import { useToggleHeartbeatStatus } from "../api/use-toggle-heartbeat-status";
-import { GRACE_PERIODS, PERIODS } from "../constants";
-
-function formatGracePeriod(seconds: number): string {
-  const period = GRACE_PERIODS.find((p) => p.value === seconds);
-  return period?.label ?? `${seconds}s`;
-}
-
-function formatPeriod(seconds: number): string {
-  const period = PERIODS.find((p) => p.value === seconds);
-  return period?.label ?? `${seconds}s`;
-}
 
 export default function HeartbeatPage() {
   const routeApi = getRouteApi("/(dashboard)/$teamId/heartbeats/$heartbeatId/");
@@ -68,8 +57,6 @@ export default function HeartbeatPage() {
     <div className="space-y-8 w-full lg:max-w-4xl mx-auto">
       <PageHeader
         title={heartbeat.name}
-        subtitle={`Expected every ${formatPeriod(heartbeat.period)} · Grace: ${formatGracePeriod(heartbeat.gracePeriod)}`}
-        backLink={{ to: "/$teamId/heartbeats", params: { teamId } }}
         actions={
           <div className="flex items-center gap-2">
             <Button

@@ -43,7 +43,7 @@ export default function TimePeriodFilter({
 
   return (
     <Select value={currentPeriod || "7"} onValueChange={handleChange}>
-      <SelectTrigger size="xs">
+      <SelectTrigger size="sm">
         <SelectValue>{currentLabel}</SelectValue>
       </SelectTrigger>
       <SelectContent>

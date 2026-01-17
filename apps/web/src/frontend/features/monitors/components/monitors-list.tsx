@@ -8,12 +8,17 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { cn, formatDate, getStatusBgColor } from "@lib/utils";
+import {
+  cn,
+  formatDate,
+  getStatusBgColor,
+  type MonitorStatus,
+} from "@lib/utils";
 import type { MonitorResponse, RecentCheck } from "../schemas";
+import MonitorStatusIndicator from "./monitor-status-indicator";
 
 function ChecksVisualization({ checks }: { checks: RecentCheck[] | null }) {
   if (!checks || checks.length === 0) {
@@ -50,12 +55,13 @@ function ChecksVisualization({ checks }: { checks: RecentCheck[] | null }) {
         }
         const isSuccess =
           check.result === "success" || check.result === "maintenance";
+
         return (
           <div
             key={i}
             className={cn(
-              "flex-1",
-              isSuccess ? "bg-emerald-600" : "bg-red-600",
+              "flex-1 hover:scale-110",
+              isSuccess ? "bg-green-700" : "bg-red-700",
             )}
             style={{ minWidth: "1px" }}
           />
@@ -65,19 +71,7 @@ function ChecksVisualization({ checks }: { checks: RecentCheck[] | null }) {
   );
 }
 
-function MonitorStatusIndicator({ status }: { status: string }) {
-  return <div className={cn("size-2.5 -full", getStatusBgColor(status))} />;
-}
-
-type StatusFilter =
-  | "up"
-  | "down"
-  | "degraded"
-  | "maintenance"
-  | "paused"
-  | "initializing";
-
-const ALL_STATUSES: StatusFilter[] = [
+const ALL_STATUSES: MonitorStatus[] = [
   "up",
   "down",
   "degraded",
@@ -92,12 +86,12 @@ export default function MonitorsList() {
   const { teamId } = routeApi.useParams();
 
   const [nameFilter, setNameFilter] = useState("");
-  const [selectedStatuses, setSelectedStatuses] = useState<Set<StatusFilter>>(
+  const [selectedStatuses, setSelectedStatuses] = useState<Set<MonitorStatus>>(
     new Set(ALL_STATUSES),
   );
 
   const statusCounts = useMemo(() => {
-    const counts: Record<StatusFilter, number> = {
+    const counts: Record<MonitorStatus, number> = {
       up: 0,
       down: 0,
       degraded: 0,
@@ -106,8 +100,8 @@ export default function MonitorsList() {
       initializing: 0,
     };
     monitors.forEach((m: MonitorResponse) => {
-      if (counts[m.status as StatusFilter] !== undefined) {
-        counts[m.status as StatusFilter]++;
+      if (counts[m.status as MonitorStatus] !== undefined) {
+        counts[m.status as MonitorStatus]++;
       }
     });
     return counts;
@@ -118,7 +112,7 @@ export default function MonitorsList() {
 
     if (selectedStatuses.size < ALL_STATUSES.length) {
       filtered = filtered.filter((m) =>
-        selectedStatuses.has(m.status as StatusFilter),
+        selectedStatuses.has(m.status as MonitorStatus),
       );
     }
 
@@ -131,7 +125,7 @@ export default function MonitorsList() {
     return filtered;
   }, [monitors, selectedStatuses, nameFilter]);
 
-  const toggleStatus = (status: StatusFilter) => {
+  const toggleStatus = (status: MonitorStatus) => {
     setSelectedStatuses((prev) => {
       const next = new Set(prev);
       if (next.has(status)) {
@@ -158,7 +152,6 @@ export default function MonitorsList() {
             render={
               <Button variant="outline" size="xs">
                 <Funnel className="size-3" />
-                FilterIcon
                 {activeFilterCount > 0 && (
                   <span className="bg-primary text-primary-foreground -full size-4 text-[10px] flex items-center justify-center">
                     {activeFilterCount}
@@ -167,72 +160,99 @@ export default function MonitorsList() {
               </Button>
             }
           ></DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-48">
+          <DropdownMenuContent align="start" className="w-fit">
             <DropdownMenuGroup>
               <DropdownMenuLabel>Status</DropdownMenuLabel>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuCheckboxItem
-              checked={selectedStatuses.has("up")}
-              onCheckedChange={() => toggleStatus("up")}
-            >
-              <div className="flex items-center gap-2">
-                <div className="size-2 -full bg-emerald-600" />
-                Up ({statusCounts.up})
-              </div>
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={selectedStatuses.has("down")}
-              onCheckedChange={() => toggleStatus("down")}
-            >
-              <div className="flex items-center gap-2">
-                <div className="size-2 -full bg-red-600" />
-                Down ({statusCounts.down})
-              </div>
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={selectedStatuses.has("degraded")}
-              onCheckedChange={() => toggleStatus("degraded")}
-            >
-              <div className="flex items-center gap-2">
-                <div className="size-2 -full bg-orange-500" />
-                Degraded ({statusCounts.degraded})
-              </div>
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={selectedStatuses.has("maintenance")}
-              onCheckedChange={() => toggleStatus("maintenance")}
-            >
-              <div className="flex items-center gap-2">
-                <div className="size-2 -full bg-blue-500" />
-                Maintenance ({statusCounts.maintenance})
-              </div>
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={selectedStatuses.has("paused")}
-              onCheckedChange={() => toggleStatus("paused")}
-            >
-              <div className="flex items-center gap-2">
-                <div className="size-2 -full bg-zinc-400" />
-                PauseIcond ({statusCounts.paused})
-              </div>
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={selectedStatuses.has("initializing")}
-              onCheckedChange={() => toggleStatus("initializing")}
-            >
-              <div className="flex items-center gap-2">
-                <div className="size-2 -full bg-amber-500" />
-                Initializing ({statusCounts.initializing})
-              </div>
-            </DropdownMenuCheckboxItem>
+            {statusCounts.up > 0 && (
+              <DropdownMenuCheckboxItem
+                checked={selectedStatuses.has("up")}
+                onCheckedChange={() => toggleStatus("up")}
+              >
+                <div className="flex items-center gap-2">
+                  <div className={cn("size-2 -full", getStatusBgColor("up"))} />
+                  Up ({statusCounts.up})
+                </div>
+              </DropdownMenuCheckboxItem>
+            )}
+            {statusCounts.down > 0 && (
+              <DropdownMenuCheckboxItem
+                checked={selectedStatuses.has("down")}
+                onCheckedChange={() => toggleStatus("down")}
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    className={cn("size-2 -full", getStatusBgColor("down"))}
+                  />
+                  Down ({statusCounts.down})
+                </div>
+              </DropdownMenuCheckboxItem>
+            )}
+            {statusCounts.degraded > 0 && (
+              <DropdownMenuCheckboxItem
+                checked={selectedStatuses.has("degraded")}
+                onCheckedChange={() => toggleStatus("degraded")}
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    className={cn("size-2 -full", getStatusBgColor("degraded"))}
+                  />
+                  Degraded ({statusCounts.degraded})
+                </div>
+              </DropdownMenuCheckboxItem>
+            )}
+            {statusCounts.maintenance > 0 && (
+              <DropdownMenuCheckboxItem
+                checked={selectedStatuses.has("maintenance")}
+                onCheckedChange={() => toggleStatus("maintenance")}
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    className={cn(
+                      "size-2 -full",
+                      getStatusBgColor("maintenance"),
+                    )}
+                  />
+                  Maintenance ({statusCounts.maintenance})
+                </div>
+              </DropdownMenuCheckboxItem>
+            )}
+            {statusCounts.paused > 0 && (
+              <DropdownMenuCheckboxItem
+                checked={selectedStatuses.has("paused")}
+                onCheckedChange={() => toggleStatus("paused")}
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    className={cn("size-2 -full", getStatusBgColor("paused"))}
+                  />
+                  Paused ({statusCounts.paused})
+                </div>
+              </DropdownMenuCheckboxItem>
+            )}
+            {statusCounts.initializing > 0 && (
+              <DropdownMenuCheckboxItem
+                checked={selectedStatuses.has("initializing")}
+                onCheckedChange={() => toggleStatus("initializing")}
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    className={cn(
+                      "size-2 -full",
+                      getStatusBgColor("initializing"),
+                    )}
+                  />
+                  Initializing ({statusCounts.initializing})
+                </div>
+              </DropdownMenuCheckboxItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
         <Input
           placeholder="SearchIcon by name..."
           value={nameFilter}
           onChange={(e) => setNameFilter(e.target.value)}
-          className="h-7 max-w-xs bg-background"
+          className="h-7 max-w-xs"
         />
       </div>
 
@@ -258,7 +278,7 @@ export default function MonitorsList() {
                   teamId,
                   monitorId: monitor.id.toString(),
                 }}
-                className="border border-border/50  p-3 hover:bg-surface space-y-2.5 transition-colors cursor-pointer"
+                className="border border-border/30 p-3 hover:bg-surface space-y-2.5 transition-colors cursor-pointer"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2 justify-start">

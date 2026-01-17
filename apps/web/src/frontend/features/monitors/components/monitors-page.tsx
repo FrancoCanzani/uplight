@@ -9,12 +9,13 @@ export default function MonitorsPage() {
   const { teamId } = routeApi.useParams();
 
   return (
-    <div className="space-y-8 w-full lg:max-w-3xl mx-auto">
+    <div className="space-y-10 w-full lg:max-w-3xl mx-auto">
       <PageHeader
         title="Monitors"
         actions={
           <div className="flex items-center gap-2">
             <MonitorQuickstart />
+            <span className="italic text-xs">Or</span>
             <Button
               variant="outline"
               size="xs"

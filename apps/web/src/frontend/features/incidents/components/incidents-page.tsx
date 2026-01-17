@@ -131,7 +131,7 @@ export default function IncidentsPage() {
   }
 
   return (
-    <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
+    <div className="space-y-10 w-full lg:max-w-4xl mx-auto">
       <PageHeader title="Incidents" />
       <div className="flex flex-col gap-4">
         <div className="flex justify-between items-center gap-4">

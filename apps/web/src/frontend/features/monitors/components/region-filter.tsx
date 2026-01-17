@@ -49,7 +49,7 @@ export default function RegionFilter({
 
   return (
     <Select value={currentRegion || "all"} onValueChange={handleChange}>
-      <SelectTrigger size="xs">
+      <SelectTrigger size="sm">
         <SelectValue>{currentLabel}</SelectValue>
       </SelectTrigger>
       <SelectContent>

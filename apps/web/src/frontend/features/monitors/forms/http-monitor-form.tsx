@@ -428,8 +428,8 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                             />
                           </svg>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[300px] p-0" align="start">
-                          <div className="max-h-[300px] overflow-y-auto p-2">
+                        <PopoverContent className="w-75 p-0" align="start">
+                          <div className="max-h-75 overflow-y-auto p-2">
                             <FieldGroup>
                               {STATUS_CODE_OPTIONS.map((option) => {
                                 const isSelected = selectedOptions.includes(
@@ -685,7 +685,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                   onChange={(e) => field.handleChange(e.target.value)}
                   aria-invalid={isInvalid}
                   placeholder='{"key": "value"}'
-                  className="min-h-[100px]  text-xs"
+                  className="min-h-25  text-xs"
                 />
                 <FieldDescription>
                   Optional JSON body for POST/PUT/PATCH requests

@@ -10,7 +10,7 @@ import { MonitorStatus } from "@/features/monitors/schemas";
 import { cn } from "@/lib/utils";
 
 const config = {
-  up: { icon: CheckCircle2, color: "text-emerald-500" },
+  up: { icon: CheckCircle2, color: "text-green-500" },
   down: { icon: XCircle, color: "text-destructive" },
   degraded: { icon: AlertTriangle, color: "text-amber-500" },
   maintenance: { icon: Wrench, color: "text-muted-foreground" },

@@ -57,14 +57,9 @@ export default function MonitorPage() {
   }, [filteredChecks]);
 
   return (
-    <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
+    <div className="space-y-10 w-full lg:max-w-4xl mx-auto">
       <PageHeader
         title={monitor.name}
-        subtitle={
-          monitor.url ||
-          (monitor.host ? `${monitor.host}:${monitor.port}` : undefined)
-        }
-        backLink={{ to: "/$teamId/monitors", params: { teamId } }}
         actions={
           <>
             <MonitorDomainInfo monitor={monitor} />
@@ -173,7 +168,7 @@ export default function MonitorPage() {
         <Card size="xs">
           <CardHeader>
             <CardDescription>Last Check</CardDescription>
-            <CardTitle className="tabular-nums text-lg  font-light">
+            <CardTitle className="tabular-nums text-lg font-light">
               {stats.lastCheckAt ? formatDate(stats.lastCheckAt) : "-"}
             </CardTitle>
           </CardHeader>

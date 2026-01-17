@@ -19,7 +19,7 @@ function EditHeartbeatPage() {
   const { heartbeat } = Route.useLoaderData();
 
   return (
-    <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
+    <div className="space-y-10 w-full lg:max-w-4xl mx-auto">
       <div>
         <h1 className="font-medium text-lg tracking-tight">Edit Heartbeat</h1>
         <p className="text-muted-foreground text-sm">

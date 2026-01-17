@@ -87,7 +87,8 @@ export default function IncidentPage() {
   const teamMembers = teamMembersData || [];
   const currentAssignee = incident.assignees?.[0] || null;
 
-  const handleAssigneeChange = (userId: string) => {
+  const handleAssigneeChange = (userId: string | null) => {
+    if (!userId) return;
     updateIncident.mutate({
       teamId: Number(teamId),
       incidentId: Number(incidentId),
@@ -97,11 +98,7 @@ export default function IncidentPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={incident.title ?? formatCause(incident.cause)}
-        subtitle={`INC-${incident.id} · ${incident.monitorName}`}
-        backLink={{ to: "/$teamId/incidents", params: { teamId } }}
-      />
+      <PageHeader title={incident.title ?? formatCause(incident.cause)} />
       <div className="lg:flex lg:gap-6">
         <div className="flex-1 min-w-0">
           <Tabs defaultValue="overview">

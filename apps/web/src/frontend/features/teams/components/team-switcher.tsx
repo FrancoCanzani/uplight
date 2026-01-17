@@ -1,6 +1,5 @@
 import { getRouteApi, Link, useNavigate } from "@tanstack/react-router";
 import { Check, ChevronsUpDown, Plus, Users } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -31,14 +30,14 @@ export function TeamSwitcher() {
         render={
           <Button
             variant="ghost"
-            className="w-full border justify-between gap-2 px-2"
+            className="w-full h-14 justify-between gap-2 px-3 rounded-none border-b border-b-border/30"
           >
             <div className="flex items-center gap-2 min-w-0">
-              <Avatar size="sm">
-                <AvatarFallback className="text-[10px]">
-                  {currentTeam.name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <div className="size-4 flex overflow-hidden shrink-0">
+                <div className="flex-1 bg-red-600" />
+                <div className="flex-1 bg-green-600" />
+                <div className="flex-1 bg-blue-600" />
+              </div>
               <span className="truncate text-sm font-medium">
                 {currentTeam.name}
               </span>
@@ -47,57 +46,43 @@ export function TeamSwitcher() {
           </Button>
         }
       ></DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-60">
+      <DropdownMenuContent align="start">
         <DropdownMenuGroup>
-          <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
-            Switch team
-          </DropdownMenuLabel>
-        </DropdownMenuGroup>
-        <DropdownMenuGroup>
+          <DropdownMenuLabel>Team management</DropdownMenuLabel>
           {teams.map((team) => (
             <DropdownMenuItem
               key={team.id}
-              className="cursor-pointer gap-2 py-2"
+              className="cursor-pointer"
               onClick={() => handleTeamSelect(team.id)}
             >
-              <Avatar size="sm">
-                <AvatarFallback className="text-[10px]">
-                  {team.name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
               <div className="flex flex-col flex-1 min-w-0">
-                <span className="truncate text-sm">{team.name}</span>
-                {team.personal && (
-                  <span className="text-[10px] text-muted-foreground">
-                    Personal
-                  </span>
-                )}
+                <span className="truncate text-xs">{team.name}</span>
               </div>
               {team.id === currentTeam.id && (
-                <Check className="h-4 w-4 text-primary shrink-0" />
+                <Check className="size-3 text-primary shrink-0" />
               )}
             </DropdownMenuItem>
           ))}
         </DropdownMenuGroup>
-        <Separator className="my-1" />
+        <Separator />
         <DropdownMenuGroup>
-          <DropdownMenuItem className="cursor-pointer gap-2">
+          <DropdownMenuItem className="cursor-pointer">
             <Link
               to="/$teamId/team"
               params={{ teamId: String(currentTeam.id) }}
               className="w-full flex items-center gap-2"
             >
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <Users className="size-3 text-muted-foreground" />
               <span>Manage team</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer gap-2">
+          <DropdownMenuItem className="cursor-pointer">
             <Link
               to="/$teamId/new-team"
               params={{ teamId: String(currentTeam.id) }}
               className="w-full flex items-center gap-2"
             >
-              <Plus className="h-4 w-4 text-muted-foreground" />
+              <Plus className="size-3 text-muted-foreground" />
               <span>Create new team</span>
             </Link>
           </DropdownMenuItem>

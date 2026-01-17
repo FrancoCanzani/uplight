@@ -28,13 +28,7 @@ export function NewTeamPage() {
 
   return (
     <div className="max-w-xl w-full mx-auto space-y-8">
-      <PageHeader
-        title="New Team"
-        backLink={{
-          to: "/$teamId/team",
-          params: { teamId: String(currentTeam.id) },
-        }}
-      />
+      <PageHeader title="New Team" />
       <form
         onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
           e.preventDefault();

@@ -40,7 +40,7 @@ function TeamLayoutComponent() {
       <div className="h-screen flex w-full">
         <DashboardSidebar />
         <SidebarInset className="flex-1 overflow-auto">
-          <main className="p-4 lg:p-6 pb-20 md:pb-6">
+          <main className="px-4 lg:px-6 pb-20 md:pb-6">
             <Outlet />
           </main>
         </SidebarInset>

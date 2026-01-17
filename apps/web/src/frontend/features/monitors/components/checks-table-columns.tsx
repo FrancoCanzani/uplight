@@ -2,21 +2,14 @@ import { ColumnDef } from "@tanstack/react-table";
 import { formatDate } from "@/lib/utils";
 import type { CheckResult } from "../api/fetch-checks-paginated";
 import getLocationLabel from "../utils/get-location-label";
-import { mapCheckStatusToMonitorStatus } from "../utils/map-check-status";
-import MonitorStatusIndicator from "./monitor-status-indicator";
 
 export const checksTableColumns: ColumnDef<CheckResult>[] = [
   {
     accessorKey: "result",
-    header: "Status",
+    header: "Result",
     cell: ({ row }) => {
       const result = row.getValue("result") as string;
-      const status = mapCheckStatusToMonitorStatus(result);
-      return (
-        <div className="w-full px-3">
-          <MonitorStatusIndicator status={status} />
-        </div>
-      );
+      return <span className="capitalize text-xs">{result}</span>;
     },
   },
   {

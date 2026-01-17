@@ -17,7 +17,7 @@ export default function MaintenancePage() {
   });
 
   return (
-    <div className="space-y-12 w-full lg:max-w-3xl mx-auto">
+    <div className="space-y-10 w-full lg:max-w-3xl mx-auto">
       <div>
         <Link
           to="/$teamId/monitors/$monitorId"
