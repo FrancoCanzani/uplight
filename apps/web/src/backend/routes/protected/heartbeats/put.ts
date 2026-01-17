@@ -68,6 +68,7 @@ export function registerPutHeartbeat(api: OpenAPIHono<AppEnv>) {
 
     const updateData: Record<string, unknown> = {};
     if (data.name !== undefined) updateData.name = data.name;
+    if (data.period !== undefined) updateData.period = data.period;
     if (data.gracePeriod !== undefined)
       updateData.gracePeriod = data.gracePeriod;
 
@@ -84,12 +85,15 @@ export function registerPutHeartbeat(api: OpenAPIHono<AppEnv>) {
         type: "heartbeat" as const,
         name: updated.name,
         slug: updated.slug,
+        period: updated.period,
         gracePeriod: updated.gracePeriod,
         status: updated.status,
         lastPingAt: updated.lastPingAt?.getTime() ?? null,
         createdAt: updated.createdAt.toISOString(),
         updatedAt: updated.updatedAt.toISOString(),
         pingUrl: `/api/public/ping/${updated.slug}`,
+        recentPings: [],
+        incidentCount: 0,
       },
       200
     );

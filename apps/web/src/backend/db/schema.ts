@@ -87,6 +87,7 @@ export const heartbeat = sqliteTable(
       .references(() => team.id, { onDelete: "cascade" }),
     name: text().notNull(),
     slug: text().notNull().unique(),
+    period: integer().notNull().default(86400),
     gracePeriod: integer().notNull(),
     status: text({
       enum: ["up", "down", "paused", "initializing"],
@@ -123,6 +124,28 @@ export const heartbeatIncident = sqliteTable(
   (table) => [
     index("heartbeat_incident_heartbeat_idx").on(table.heartbeatId),
     index("heartbeat_incident_status_idx").on(table.heartbeatId, table.status),
+  ],
+);
+
+export const heartbeatPing = sqliteTable(
+  "heartbeat_ping",
+  {
+    id: integer().primaryKey({ autoIncrement: true }),
+    heartbeatId: integer()
+      .notNull()
+      .references(() => heartbeat.id, { onDelete: "cascade" }),
+    method: text({ enum: ["GET", "POST", "HEAD", "PUT"] }).notNull().default("GET"),
+    userAgent: text(),
+    ip: text(),
+    pingedAt: integer({ mode: "timestamp_ms" }).notNull(),
+  },
+  (table) => [
+    index("heartbeat_ping_heartbeat_idx").on(table.heartbeatId),
+    index("heartbeat_ping_pinged_at_idx").on(table.pingedAt),
+    index("heartbeat_ping_heartbeat_pinged_idx").on(
+      table.heartbeatId,
+      table.pingedAt,
+    ),
   ],
 );
 
@@ -352,6 +375,7 @@ export const heartbeatRelations = relations(heartbeat, ({ one, many }) => ({
     references: [team.id],
   }),
   incidents: many(heartbeatIncident),
+  pings: many(heartbeatPing),
 }));
 
 export const heartbeatIncidentRelations = relations(
@@ -363,6 +387,13 @@ export const heartbeatIncidentRelations = relations(
     }),
   }),
 );
+
+export const heartbeatPingRelations = relations(heartbeatPing, ({ one }) => ({
+  heartbeat: one(heartbeat, {
+    fields: [heartbeatPing.heartbeatId],
+    references: [heartbeat.id],
+  }),
+}));
 
 export const notifier = sqliteTable(
   "notifier",
@@ -411,5 +442,6 @@ export const schema = {
   domainCheckResult,
   heartbeat,
   heartbeatIncident,
+  heartbeatPing,
   notifier,
 } as const;

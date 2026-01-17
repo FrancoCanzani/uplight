@@ -11,6 +11,7 @@ import { getRouteApi } from "@tanstack/react-router";
 import { useMemo } from "react";
 import calculatePercentiles from "../utils/calculate-percentiles";
 import getLocationLabel from "../utils/get-location-label";
+import CheckStatusChart from "./check-status-chart";
 import ChecksTable from "./checks-table";
 import MonitorActions from "./monitor-actions";
 import MonitorDomainInfo from "./monitor-domain-info";
@@ -176,7 +177,12 @@ export default function MonitorPage() {
         </Card>
       </div>
 
-      <div className="space-y-12">
+      <div className="space-y-4">
+        <h3 className="font-medium">Check Status</h3>
+        <CheckStatusChart checks={filteredChecks} />
+      </div>
+
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-medium">Response Time</h3>
           <ResponseTimeStats checks={filteredChecks} />
@@ -185,7 +191,7 @@ export default function MonitorPage() {
         <ResponseTimeChart checks={filteredChecks} />
       </div>
 
-      <div className="space-y-12">
+      <div className="space-y-4">
         <h3 className="font-medium">Check Logs</h3>
         <ChecksTable />
       </div>

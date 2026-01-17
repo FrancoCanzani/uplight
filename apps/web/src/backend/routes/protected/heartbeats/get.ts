@@ -1,8 +1,8 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { heartbeat } from "../../../db/schema";
+import { heartbeat, heartbeatPing, heartbeatIncident } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { HeartbeatResponseSchema } from "./schemas";
 
@@ -58,6 +58,20 @@ export function registerGetHeartbeat(api: OpenAPIHono<AppEnv>) {
       throw new HTTPException(404, { message: "Heartbeat not found" });
     }
 
+    // Fetch recent pings (last 50)
+    const pings = await db
+      .select()
+      .from(heartbeatPing)
+      .where(eq(heartbeatPing.heartbeatId, hb.id))
+      .orderBy(desc(heartbeatPing.pingedAt))
+      .limit(50);
+
+    // Fetch incident count
+    const incidents = await db
+      .select()
+      .from(heartbeatIncident)
+      .where(eq(heartbeatIncident.heartbeatId, hb.id));
+
     return c.json(
       {
         id: hb.id,
@@ -65,12 +79,21 @@ export function registerGetHeartbeat(api: OpenAPIHono<AppEnv>) {
         type: "heartbeat" as const,
         name: hb.name,
         slug: hb.slug,
+        period: hb.period,
         gracePeriod: hb.gracePeriod,
         status: hb.status,
         lastPingAt: hb.lastPingAt?.getTime() ?? null,
         createdAt: hb.createdAt.toISOString(),
         updatedAt: hb.updatedAt.toISOString(),
         pingUrl: `/api/public/ping/${hb.slug}`,
+        recentPings: pings.map((p) => ({
+          id: p.id,
+          method: p.method,
+          userAgent: p.userAgent,
+          ip: p.ip,
+          pingedAt: p.pingedAt.getTime(),
+        })),
+        incidentCount: incidents.length,
       },
       200
     );

@@ -22,6 +22,8 @@ export type IncidentActivityType =
   | "type_changed"
   | "severity_changed";
 
+export type IncidentSourceType = "monitor" | "heartbeat";
+
 export interface Incident {
   id: number;
   monitorId: number;
@@ -41,6 +43,7 @@ export interface Incident {
   fixingAt: number | null;
   recoveredAt: number | null;
   resolvedAt: number | null;
+  type: IncidentSourceType;
 }
 
 export interface IncidentActivity {

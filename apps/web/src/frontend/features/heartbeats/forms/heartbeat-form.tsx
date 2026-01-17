@@ -18,7 +18,7 @@ import { useForm } from "@tanstack/react-form";
 import { useParams } from "@tanstack/react-router";
 import { useCreateHeartbeat } from "../api/use-create-heartbeat";
 import { useUpdateHeartbeat } from "../api/use-update-heartbeat";
-import { GRACE_PERIODS } from "../constants";
+import { GRACE_PERIODS, PERIODS } from "../constants";
 import {
   CreateHeartbeatSchema,
   type CreateHeartbeatInput,
@@ -27,14 +27,16 @@ import {
 
 const emptyValues: CreateHeartbeatInput = {
   name: "",
+  period: 86400,
   gracePeriod: 300,
 };
 
 function heartbeatToFormValues(
-  heartbeat: HeartbeatResponse
+  heartbeat: HeartbeatResponse,
 ): CreateHeartbeatInput {
   return {
     name: heartbeat.name,
+    period: heartbeat.period,
     gracePeriod: heartbeat.gracePeriod,
   };
 }
@@ -122,19 +124,67 @@ export function HeartbeatForm({
 
         <div className="space-y-4">
           <div>
-            <FieldLabel>Grace Period</FieldLabel>
+            <FieldLabel>Schedule</FieldLabel>
             <FieldDescription>
-              How long to wait after the expected ping before marking the
-              heartbeat as down.
+              Configure how often you expect to ping and the grace period.
             </FieldDescription>
           </div>
+
+          <form.Field
+            name="period"
+            children={(field) => {
+              const isInvalid =
+                field.state.meta.isTouched && !field.state.meta.isValid;
+              const selectedPeriod = PERIODS.find(
+                (period) => period.value === field.state.value,
+              );
+              return (
+                <Field data-invalid={isInvalid}>
+                  <FieldLabel htmlFor={field.name}>
+                    Expected Interval (Period)
+                  </FieldLabel>
+                  <Select
+                    name={field.name}
+                    value={String(field.state.value)}
+                    onValueChange={(v) => field.handleChange(Number(v))}
+                  >
+                    <SelectTrigger
+                      id={field.name}
+                      aria-invalid={isInvalid}
+                      className="w-full max-w-xs"
+                    >
+                      <SelectValue>
+                        {selectedPeriod?.label || "Select period"}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PERIODS.map((period) => (
+                        <SelectItem
+                          key={period.value}
+                          value={String(period.value)}
+                        >
+                          {period.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription>
+                    How often you expect to ping this heartbeat. For example, if
+                    your cron job runs every day, select "1 day".
+                  </FieldDescription>
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
+              );
+            }}
+          />
+
           <form.Field
             name="gracePeriod"
             children={(field) => {
               const isInvalid =
                 field.state.meta.isTouched && !field.state.meta.isValid;
               const selectedPeriod = GRACE_PERIODS.find(
-                (period) => period.value === field.state.value
+                (period) => period.value === field.state.value,
               );
               return (
                 <Field data-invalid={isInvalid}>
@@ -165,8 +215,8 @@ export function HeartbeatForm({
                     </SelectContent>
                   </Select>
                   <FieldDescription>
-                    If your job runs every hour, set the grace period to
-                    something like 1 hour + buffer time (e.g., 2 hours).
+                    How long to wait after the expected interval before marking
+                    the heartbeat as down. This is a buffer for delays.
                   </FieldDescription>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>

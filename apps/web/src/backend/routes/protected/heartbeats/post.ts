@@ -52,6 +52,7 @@ export function registerPostHeartbeat(api: OpenAPIHono<AppEnv>) {
         teamId: teamContext.teamId,
         name: data.name,
         slug,
+        period: data.period,
         gracePeriod: data.gracePeriod,
         status: "initializing",
       })
@@ -64,12 +65,15 @@ export function registerPostHeartbeat(api: OpenAPIHono<AppEnv>) {
         type: "heartbeat" as const,
         name: created.name,
         slug: created.slug,
+        period: created.period,
         gracePeriod: created.gracePeriod,
         status: created.status,
         lastPingAt: created.lastPingAt?.getTime() ?? null,
         createdAt: created.createdAt.toISOString(),
         updatedAt: created.updatedAt.toISOString(),
         pingUrl: `/api/public/ping/${created.slug}`,
+        recentPings: [],
+        incidentCount: 0,
       },
       201
     );

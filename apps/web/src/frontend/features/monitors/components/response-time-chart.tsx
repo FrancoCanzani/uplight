@@ -115,6 +115,7 @@ export default function ResponseTimeChart({
         <ChartTooltip
           content={
             <ChartTooltipContent
+              className="rounded"
               labelFormatter={(_, payload) => {
                 if (payload?.[0]?.payload?.time) {
                   return format(payload[0].payload.time, "MMMM d 'at' h:mm a");

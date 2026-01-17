@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/page-header";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -7,10 +8,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { formatCause, formatDuration } from "@lib/utils";
+import { cn, formatCause, formatDuration } from "@lib/utils";
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { formatDistanceToNowStrict } from "date-fns";
-import { ChevronDown, ChevronRight, MoreHorizontal } from "lucide-react";
+import {
+  Activity,
+  ChevronDown,
+  ChevronRight,
+  HeartPulse,
+  MoreHorizontal,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { useUpdateIncidentStatus } from "../api/use-update-incident-status";
 import type { Incident, IncidentStatus } from "../types";
@@ -35,8 +42,21 @@ export default function IncidentsPage() {
   const [expandedGroups, setExpandedGroups] = useState<Set<IncidentStatus>>(
     new Set(STATUS_ORDER),
   );
+  const [typeFilter, setTypeFilter] = useState<"all" | "monitor" | "heartbeat">(
+    "all",
+  );
 
   const stats = useMemo(() => calculateIncidentStats(incidents), [incidents]);
+
+  const typeCounts = useMemo(() => {
+    const monitor = incidents.filter(
+      (i: Incident) => i.type === "monitor",
+    ).length;
+    const heartbeat = incidents.filter(
+      (i: Incident) => i.type === "heartbeat",
+    ).length;
+    return { monitor, heartbeat };
+  }, [incidents]);
 
   const groups = useMemo(() => {
     const grouped: Partial<Record<IncidentStatus, Incident[]>> = {
@@ -47,7 +67,12 @@ export default function IncidentsPage() {
       resolved: [],
     };
 
-    incidents.forEach((incident: Incident) => {
+    const filteredIncidents =
+      typeFilter === "all"
+        ? incidents
+        : incidents.filter((i: Incident) => i.type === typeFilter);
+
+    filteredIncidents.forEach((incident: Incident) => {
       if (grouped[incident.status]) {
         grouped[incident.status]!.push(incident);
       }
@@ -64,7 +89,7 @@ export default function IncidentsPage() {
       incidents: grouped[status] ?? [],
       count: grouped[status]?.length ?? 0,
     }));
-  }, [incidents, hideResolved]);
+  }, [incidents, hideResolved, typeFilter]);
 
   function toggleGroup(status: IncidentStatus) {
     setExpandedGroups((prev) => {
@@ -91,51 +116,95 @@ export default function IncidentsPage() {
     });
   }
 
-  function handleIncidentClick(incidentId: number) {
-    navigate({
-      to: "/$teamId/incidents/$incidentId",
-      params: { teamId, incidentId: incidentId.toString() },
-    });
+  function handleIncidentClick(incident: Incident) {
+    if (incident.type === "monitor") {
+      navigate({
+        to: "/$teamId/incidents/$incidentId",
+        params: { teamId, incidentId: incident.id.toString() },
+      });
+    } else {
+      navigate({
+        to: "/$teamId/heartbeats/$heartbeatId",
+        params: { teamId, heartbeatId: incident.monitorId.toString() },
+      });
+    }
   }
 
   return (
     <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
       <PageHeader title="Incidents" />
-      <div className="flex justify-between items-center gap-4">
-        <div className="flex items-center gap-6 text-sm">
-          <div>
-            <div className="text-muted-foreground text-xs">Open</div>
-            <div className="font-mono">{stats.openCount}</div>
-          </div>
-          <div>
-            <div className="text-muted-foreground text-xs">Resolve Time</div>
-            <div className="font-mono">
-              {stats.resolveTime > 0 ? formatDuration(stats.resolveTime) : "-"}
+      <div className="flex flex-col gap-4">
+        <div className="flex justify-between items-center gap-4">
+          <div className="flex items-center gap-6 text-sm">
+            <div>
+              <div className="text-muted-foreground text-xs">Open</div>
+              <div className="font-mono">{stats.openCount}</div>
+            </div>
+            <div>
+              <div className="text-muted-foreground text-xs">Resolve Time</div>
+              <div className="font-mono">
+                {stats.resolveTime > 0
+                  ? formatDuration(stats.resolveTime)
+                  : "-"}
+              </div>
+            </div>
+            <div>
+              <div className="text-muted-foreground text-xs">
+                Acknowledge Time
+              </div>
+              <div className="font-mono">
+                {stats.acknowledgeTime > 0
+                  ? formatDuration(stats.acknowledgeTime)
+                  : "-"}
+              </div>
             </div>
           </div>
-          <div>
-            <div className="text-muted-foreground text-xs">
-              Acknowledge Time
-            </div>
-            <div className="font-mono">
-              {stats.acknowledgeTime > 0
-                ? formatDuration(stats.acknowledgeTime)
-                : "-"}
-            </div>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="hide-resolved"
+              checked={hideResolved}
+              onCheckedChange={(checked) => setHideResolved(checked === true)}
+            />
+            <label
+              htmlFor="hide-resolved"
+              className="text-sm text-muted-foreground cursor-pointer"
+            >
+              Hide resolved
+            </label>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Checkbox
-            id="hide-resolved"
-            checked={hideResolved}
-            onCheckedChange={(checked) => setHideResolved(checked === true)}
-          />
-          <label
-            htmlFor="hide-resolved"
-            className="text-sm text-muted-foreground cursor-pointer"
+          <Button
+            variant={typeFilter === "all" ? "default" : "outline"}
+            size="xs"
+            onClick={() => setTypeFilter("all")}
           >
-            Hide resolved
-          </label>
+            All
+          </Button>
+          <Button
+            variant={typeFilter === "monitor" ? "default" : "outline"}
+            size="xs"
+            disabled={typeCounts.monitor === 0}
+            onClick={() =>
+              setTypeFilter(typeFilter === "monitor" ? "all" : "monitor")
+            }
+          >
+            <Activity className="size-3" />
+            Monitors
+            {typeCounts.monitor > 0 && <span>({typeCounts.monitor})</span>}
+          </Button>
+          <Button
+            variant={typeFilter === "heartbeat" ? "default" : "outline"}
+            size="xs"
+            disabled={typeCounts.heartbeat === 0}
+            onClick={() =>
+              setTypeFilter(typeFilter === "heartbeat" ? "all" : "heartbeat")
+            }
+          >
+            <HeartPulse className="size-3" />
+            Heartbeats
+            {typeCounts.heartbeat > 0 && <span>({typeCounts.heartbeat})</span>}
+          </Button>
         </div>
       </div>
 
@@ -162,14 +231,25 @@ export default function IncidentsPage() {
                 <div className="space-y-0 pl-3 text-sm">
                   {group.incidents.map((incident) => (
                     <div
-                      key={incident.id}
-                      className="group flex items-center justify-between gap-4 py-1.5 px-2 hover:bg-surface cursor-pointer transition-colors border-b border-border/35 last:border-b-0"
-                      onClick={() => handleIncidentClick(incident.id)}
+                      key={`${incident.type}-${incident.id}`}
+                      className={cn(
+                        "group flex items-center justify-between gap-4 py-1.5 px-2 hover:bg-surface transition-colors border-b border-border/35 last:border-b-0",
+                        incident.type === "monitor" && "cursor-pointer",
+                      )}
+                      onClick={() => handleIncidentClick(incident)}
                     >
                       <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <span className="font-medium shrink-0">
-                          {incident.id}
-                        </span>
+                        <Badge
+                          variant="outline"
+                          className="shrink-0 text-[10px] px-1.5 py-0"
+                        >
+                          {incident.type === "monitor" ? (
+                            <Activity className="size-2.5 mr-1" />
+                          ) : (
+                            <HeartPulse className="size-2.5 mr-1" />
+                          )}
+                          {incident.type}
+                        </Badge>
                         <span className="shrink-0">{incident.monitorName}</span>
                         <span className="text-muted-foreground truncate">
                           {incident.title ?? formatCause(incident.cause)}
@@ -188,28 +268,30 @@ export default function IncidentsPage() {
                             },
                           )}
                         </span>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="xs">
-                              <MoreHorizontal className="size-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {STATUS_ORDER.map((status) => (
-                              <DropdownMenuItem
-                                key={status}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleStatusChange(incident.id, status);
-                                }}
-                                disabled={incident.status === status}
-                                className="text-xs"
-                              >
-                                <span className="capitalize">{status}</span>
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        {incident.type === "monitor" && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="xs">
+                                <MoreHorizontal className="size-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {STATUS_ORDER.map((status) => (
+                                <DropdownMenuItem
+                                  key={status}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleStatusChange(incident.id, status);
+                                  }}
+                                  disabled={incident.status === status}
+                                  className="text-xs"
+                                >
+                                  <span className="capitalize">{status}</span>
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
                       </div>
                     </div>
                   ))}
