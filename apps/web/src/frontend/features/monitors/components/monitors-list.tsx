@@ -1,17 +1,18 @@
+import { useMemo, useState } from "react";
+import { getRouteApi, Link } from "@tanstack/react-router";
+import { Funnel } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { cn, formatDate, getStatusBgColor } from "@lib/utils";
-import { getRouteApi, Link } from "@tanstack/react-router";
-import { Filter } from "lucide-react";
-import { useMemo, useState } from "react";
 import type { MonitorResponse, RecentCheck } from "../schemas";
 
 function ChecksVisualization({ checks }: { checks: RecentCheck[] | null }) {
@@ -65,9 +66,7 @@ function ChecksVisualization({ checks }: { checks: RecentCheck[] | null }) {
 }
 
 function MonitorStatusIndicator({ status }: { status: string }) {
-  return (
-    <div className={cn("size-2.5 rounded-full", getStatusBgColor(status))} />
-  );
+  return <div className={cn("size-2.5 -full", getStatusBgColor(status))} />;
 }
 
 type StatusFilter =
@@ -155,26 +154,30 @@ export default function MonitorsList() {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="xs">
-              <Filter className="size-3" />
-              Filter
-              {activeFilterCount > 0 && (
-                <span className="bg-primary text-primary-foreground rounded-full size-4 text-[10px] flex items-center justify-center">
-                  {activeFilterCount}
-                </span>
-              )}
-            </Button>
-          </DropdownMenuTrigger>
+          <DropdownMenuTrigger
+            render={
+              <Button variant="outline" size="xs">
+                <Funnel className="size-3" />
+                FilterIcon
+                {activeFilterCount > 0 && (
+                  <span className="bg-primary text-primary-foreground -full size-4 text-[10px] flex items-center justify-center">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </Button>
+            }
+          ></DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-48">
-            <DropdownMenuLabel>Status</DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>Status</DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuCheckboxItem
               checked={selectedStatuses.has("up")}
               onCheckedChange={() => toggleStatus("up")}
             >
               <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-emerald-600" />
+                <div className="size-2 -full bg-emerald-600" />
                 Up ({statusCounts.up})
               </div>
             </DropdownMenuCheckboxItem>
@@ -183,7 +186,7 @@ export default function MonitorsList() {
               onCheckedChange={() => toggleStatus("down")}
             >
               <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-red-600" />
+                <div className="size-2 -full bg-red-600" />
                 Down ({statusCounts.down})
               </div>
             </DropdownMenuCheckboxItem>
@@ -192,7 +195,7 @@ export default function MonitorsList() {
               onCheckedChange={() => toggleStatus("degraded")}
             >
               <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-orange-500" />
+                <div className="size-2 -full bg-orange-500" />
                 Degraded ({statusCounts.degraded})
               </div>
             </DropdownMenuCheckboxItem>
@@ -201,7 +204,7 @@ export default function MonitorsList() {
               onCheckedChange={() => toggleStatus("maintenance")}
             >
               <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-blue-500" />
+                <div className="size-2 -full bg-blue-500" />
                 Maintenance ({statusCounts.maintenance})
               </div>
             </DropdownMenuCheckboxItem>
@@ -210,8 +213,8 @@ export default function MonitorsList() {
               onCheckedChange={() => toggleStatus("paused")}
             >
               <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-zinc-400" />
-                Paused ({statusCounts.paused})
+                <div className="size-2 -full bg-zinc-400" />
+                PauseIcond ({statusCounts.paused})
               </div>
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
@@ -219,14 +222,14 @@ export default function MonitorsList() {
               onCheckedChange={() => toggleStatus("initializing")}
             >
               <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-amber-500" />
+                <div className="size-2 -full bg-amber-500" />
                 Initializing ({statusCounts.initializing})
               </div>
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <Input
-          placeholder="Search by name..."
+          placeholder="SearchIcon by name..."
           value={nameFilter}
           onChange={(e) => setNameFilter(e.target.value)}
           className="h-7 max-w-xs bg-background"
@@ -255,7 +258,7 @@ export default function MonitorsList() {
                   teamId,
                   monitorId: monitor.id.toString(),
                 }}
-                className="border border-border/50 rounded p-3 hover:bg-surface space-y-2.5 transition-colors cursor-pointer"
+                className="border border-border/50  p-3 hover:bg-surface space-y-2.5 transition-colors cursor-pointer"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2 justify-start">
@@ -271,11 +274,11 @@ export default function MonitorsList() {
                   <ChecksVisualization checks={monitor.recentChecks} />
                 </div>
 
-                <div className="text-xs flex items-center justify-between font-mono text-muted-foreground">
+                <div className="text-xs flex items-center justify-between  text-muted-foreground">
                   {`${successfulCount}/${totalCount} successful checks`}
 
                   {monitor.lastCheckAt && (
-                    <span className="text-xs tracking-tighter text-muted-foreground font-mono">
+                    <span className="text-xs tracking-tighter text-muted-foreground ">
                       Last check {formatDate(monitor.lastCheckAt)}
                     </span>
                   )}
@@ -284,7 +287,7 @@ export default function MonitorsList() {
             );
           })
         ) : (
-          <div className="text-center py-12 border border-dashed border-border rounded">
+          <div className="text-center py-12 border border-dashed border-border ">
             <p className="text-muted-foreground mb-2">No monitors found.</p>
             <p className="text-sm text-muted-foreground">
               Create a monitor to start tracking uptime.

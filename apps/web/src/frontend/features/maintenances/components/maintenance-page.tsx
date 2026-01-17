@@ -1,7 +1,7 @@
-import NoDataMessage from "@/components/no-data-message";
-import { Spinner } from "@/components/ui/spinner";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
+import NoDataMessage from "@/components/no-data-message";
+import { Spinner } from "@/components/ui/spinner";
 import fetchMaintenance from "../api/fetch-maintenance";
 import MaintenanceForm from "../forms/maintenance-form";
 import MaintenanceItem from "./maintenance-item";

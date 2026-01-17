@@ -1,8 +1,12 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { eq, and, desc } from "drizzle-orm";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { and, desc, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { heartbeat, heartbeatPing, heartbeatIncident } from "../../../db/schema";
+import {
+  heartbeat,
+  heartbeatIncident,
+  heartbeatPing,
+} from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { HeartbeatResponseSchema } from "./schemas";
 
@@ -50,8 +54,8 @@ export function registerGetHeartbeat(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(heartbeat.id, Number(heartbeatId)),
-          eq(heartbeat.teamId, teamContext.teamId)
-        )
+          eq(heartbeat.teamId, teamContext.teamId),
+        ),
       );
 
     if (!hb) {
@@ -95,7 +99,7 @@ export function registerGetHeartbeat(api: OpenAPIHono<AppEnv>) {
         })),
         incidentCount: incidents.length,
       },
-      200
+      200,
     );
   });
 }

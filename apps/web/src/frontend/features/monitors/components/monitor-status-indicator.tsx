@@ -19,14 +19,14 @@ export default function MonitorStatusIndicator({
       <TooltipTrigger className="shrink-0">
         <div
           className={cn(
-            "size-2 rounded-full flex items-center justify-center",
+            "size-2 -full flex items-center justify-center",
             getBgStatusColor(status),
             className,
           )}
         >
           <div
             className={cn(
-              "size-1.5 rounded-full animate-ping",
+              "size-1.5 -full animate-ping",
               getBgStatusColor(status),
             )}
           />

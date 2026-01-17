@@ -6,13 +6,14 @@ import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { secureHeaders } from "hono/secure-headers";
 import { createAuth } from "../../auth";
-import { handleMonitorChecks } from "./checkers/cron/monitors";
 import { handleDomainChecks } from "./checkers/cron/domains";
 import { handleHeartbeatChecks } from "./checkers/cron/heartbeats";
+import { handleMonitorChecks } from "./checkers/cron/monitors";
 import { authMiddleware, requireAuth } from "./middleware/auth";
 import { protectedRouter } from "./routes/protected";
 import { publicRouter } from "./routes/public";
 import type { AppEnv } from "./types";
+
 export { CheckerDO } from "./checkers/executors/durable-object";
 
 const app = new OpenAPIHono<AppEnv>();
@@ -59,7 +60,7 @@ export default {
   async scheduled(
     controller: ScheduledController,
     env: Env,
-    ctx: ExecutionContext
+    ctx: ExecutionContext,
   ) {
     if (!controller.cron) {
       // Fallback: run both checks if cron is null/undefined

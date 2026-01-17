@@ -1,14 +1,14 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { fetchHeartbeat } from "@/features/heartbeats/api/fetch-heartbeat";
 import { HeartbeatForm } from "@/features/heartbeats/forms/heartbeat-form";
-import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute(
-  "/(dashboard)/$teamId/heartbeats/$heartbeatId/edit"
+  "/(dashboard)/$teamId/heartbeats/$heartbeatId/edit",
 )({
   loader: async ({ params }) => {
     const heartbeat = await fetchHeartbeat(
       Number(params.teamId),
-      Number(params.heartbeatId)
+      Number(params.heartbeatId),
     );
     return { heartbeat };
   },

@@ -1,9 +1,9 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import { cloudflare } from "@cloudflare/vite-plugin";
-import { tanstackRouter } from "@tanstack/router-plugin/vite";
-import tailwindcss from "@tailwindcss/vite";
 import path from "path";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
+import { cloudflare } from "@cloudflare/vite-plugin";
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [
@@ -17,6 +17,9 @@ export default defineConfig({
     tailwindcss(),
     cloudflare(),
   ],
+  server: {
+    allowedHosts: [".trycloudflare.com"],
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src/frontend"),
@@ -25,7 +28,7 @@ export default defineConfig({
       "@features": path.resolve(__dirname, "./src/frontend/features"),
       "@hooks": path.resolve(__dirname, "./src/frontend/hooks"),
       "@routes": path.resolve(__dirname, "./src/frontend/routes"),
-      "src": path.resolve(__dirname, "./src"),
+      src: path.resolve(__dirname, "./src"),
     },
   },
 });

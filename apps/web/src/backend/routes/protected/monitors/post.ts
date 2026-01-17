@@ -1,8 +1,8 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { eq, desc } from "drizzle-orm";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { desc, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { monitor, domainCheckResult, checkResult } from "../../../db/schema";
+import { checkResult, domainCheckResult, monitor } from "../../../db/schema";
 import { encrypt } from "../../../lib/crypto";
 import type { AppEnv } from "../../../types";
 import { CreateMonitorSchema, MonitorResponseSchema } from "./schemas";
@@ -47,7 +47,10 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
 
     let encryptedPassword: string | null = null;
     if (data.type === "http" && data.password) {
-      encryptedPassword = await encrypt(data.password, c.env.BETTER_AUTH_SECRET);
+      encryptedPassword = await encrypt(
+        data.password,
+        c.env.BETTER_AUTH_SECRET,
+      );
     }
 
     const insertData =
@@ -68,7 +71,7 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
             username: data.username ?? null,
             password: encryptedPassword,
             expectedStatusCodes: JSON.stringify(
-              data.expectedStatusCodes ?? [200]
+              data.expectedStatusCodes ?? [200],
             ),
             followRedirects: data.followRedirects ?? true,
             checkDomain: data.checkDomain ?? true,
@@ -139,7 +142,7 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
         lastCheckAt: lastCheck?.checkedAt.getTime() ?? null,
         lastResponseTime: lastCheck?.responseTime ?? null,
       },
-      201
+      201,
     );
   });
 }

@@ -1,5 +1,5 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { eq, and } from "drizzle-orm";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { team, teamMember } from "../../../db/schema";
@@ -50,8 +50,8 @@ export function registerGetTeam(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(teamMember.teamId, Number(teamId)),
-          eq(teamMember.userId, user.id)
-        )
+          eq(teamMember.userId, user.id),
+        ),
       )
       .limit(1);
 
@@ -70,7 +70,7 @@ export function registerGetTeam(api: OpenAPIHono<AppEnv>) {
         createdAt: m.team.createdAt.toISOString(),
         updatedAt: m.team.updatedAt.toISOString(),
       },
-      200
+      200,
     );
   });
 }

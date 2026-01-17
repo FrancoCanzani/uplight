@@ -1,6 +1,6 @@
 export default function calculatePercentiles(
   values: number[],
-  percentiles: number[] = [50, 75, 95, 99]
+  percentiles: number[] = [50, 75, 95, 99],
 ): Record<number, number> {
   if (values.length === 0) {
     return percentiles.reduce((acc, p) => ({ ...acc, [p]: 0 }), {});
@@ -19,7 +19,7 @@ export default function calculatePercentiles(
       result[percentile] = Math.round(sorted[lower]);
     } else {
       result[percentile] = Math.round(
-        sorted[lower] * (1 - weight) + sorted[upper] * weight
+        sorted[lower] * (1 - weight) + sorted[upper] * weight,
       );
     }
   }

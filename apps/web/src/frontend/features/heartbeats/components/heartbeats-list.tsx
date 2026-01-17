@@ -1,8 +1,13 @@
+import { useMemo, useState } from "react";
+import { getRouteApi, Link } from "@tanstack/react-router";
+import { formatDistanceToNowStrict } from "date-fns";
+import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -14,10 +19,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn, getStatusBgColor } from "@lib/utils";
-import { getRouteApi, Link } from "@tanstack/react-router";
-import { formatDistanceToNowStrict } from "date-fns";
-import { Filter } from "lucide-react";
-import { useMemo, useState } from "react";
 import { GRACE_PERIODS } from "../constants";
 import type { HeartbeatResponse, RecentPing } from "../schemas";
 
@@ -77,13 +78,13 @@ function HeartbeatStatusIndicator({ status }: { status: string }) {
       <TooltipTrigger className="shrink-0">
         <div
           className={cn(
-            "size-2 rounded-full flex items-center justify-center",
+            "size-2 -full flex items-center justify-center",
             getStatusBgColor(status),
           )}
         >
           <div
             className={cn(
-              "size-1.5 rounded-full animate-ping",
+              "size-1.5 -full animate-ping",
               getStatusBgColor(status),
             )}
           />
@@ -165,26 +166,30 @@ export default function HeartbeatsList() {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="xs">
-              <Filter className="size-3" />
-              Filter
-              {activeFilterCount > 0 && (
-                <span className="bg-primary text-primary-foreground rounded-full size-4 text-[10px] flex items-center justify-center">
-                  {activeFilterCount}
-                </span>
-              )}
-            </Button>
-          </DropdownMenuTrigger>
+          <DropdownMenuTrigger
+            render={
+              <Button variant="outline" size="xs">
+                <Filter className="size-3" />
+                Filter
+                {activeFilterCount > 0 && (
+                  <span className="bg-primary text-primary-foreground -full size-4 text-[10px] flex items-center justify-center">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </Button>
+            }
+          ></DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-48">
-            <DropdownMenuLabel>Status</DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>Status</DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuCheckboxItem
               checked={selectedStatuses.has("up")}
               onCheckedChange={() => toggleStatus("up")}
             >
               <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-emerald-600" />
+                <div className="size-2 -full bg-emerald-600" />
                 Up ({statusCounts.up})
               </div>
             </DropdownMenuCheckboxItem>
@@ -193,7 +198,7 @@ export default function HeartbeatsList() {
               onCheckedChange={() => toggleStatus("down")}
             >
               <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-red-600" />
+                <div className="size-2 -full bg-red-600" />
                 Down ({statusCounts.down})
               </div>
             </DropdownMenuCheckboxItem>
@@ -202,8 +207,8 @@ export default function HeartbeatsList() {
               onCheckedChange={() => toggleStatus("paused")}
             >
               <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-zinc-400" />
-                Paused ({statusCounts.paused})
+                <div className="size-2 -full bg-zinc-400" />
+                PauseIcond ({statusCounts.paused})
               </div>
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
@@ -211,7 +216,7 @@ export default function HeartbeatsList() {
               onCheckedChange={() => toggleStatus("initializing")}
             >
               <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-amber-500" />
+                <div className="size-2 -full bg-amber-500" />
                 Initializing ({statusCounts.initializing})
               </div>
             </DropdownMenuCheckboxItem>
@@ -238,7 +243,7 @@ export default function HeartbeatsList() {
                   teamId,
                   heartbeatId: hb.id.toString(),
                 }}
-                className="border border-border/50 rounded p-3 hover:bg-surface space-y-2.5 transition-colors cursor-pointer"
+                className="border border-border/50  p-3 hover:bg-surface space-y-2.5 transition-colors cursor-pointer"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2 justify-start">
@@ -254,7 +259,7 @@ export default function HeartbeatsList() {
                   <PingsVisualization pings={hb.recentPings ?? []} />
                 </div>
 
-                <div className="text-xs flex items-center justify-between font-mono text-muted-foreground">
+                <div className="text-xs flex items-center justify-between  text-muted-foreground">
                   {`${pingCount} successful ping${pingCount !== 1 ? "s" : ""}`}
                   {hb.incidentCount > 0 && (
                     <span className="text-red-600">
@@ -264,7 +269,7 @@ export default function HeartbeatsList() {
                   )}
 
                   {hb.lastPingAt && (
-                    <span className="text-xs tracking-tighter text-muted-foreground font-mono">
+                    <span className="text-xs tracking-tighter text-muted-foreground ">
                       Last ping{" "}
                       {formatDistanceToNowStrict(hb.lastPingAt, {
                         addSuffix: true,
@@ -276,7 +281,7 @@ export default function HeartbeatsList() {
             );
           })
         ) : (
-          <div className="text-center py-12 border border-dashed border-border rounded">
+          <div className="text-center py-12 border border-dashed border-border ">
             <p className="text-muted-foreground mb-2">No heartbeats found.</p>
             <p className="text-sm text-muted-foreground">
               Create a heartbeat to monitor your cron jobs and background tasks.

@@ -21,7 +21,7 @@ async function toggleHeartbeatStatus({
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ status }),
-    }
+    },
   );
 
   if (!response.ok) {

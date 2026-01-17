@@ -1,16 +1,16 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { requireTeamMember } from "../../../middleware/team";
 import type { AppEnv } from "../../../types";
+import { registerDeleteMonitor } from "./delete";
 import { registerGetMonitor } from "./get";
 import { registerGetAllMonitors } from "./get-all";
+import { registerGetCheckDetail } from "./get-check-detail";
+import { registerGetChecks } from "./get-checks";
+import { registerGetIncidents } from "./get-incidents";
+import { registerGetStats } from "./get-stats";
+import { registerPatchMonitorStatus } from "./patch";
 import { registerPostMonitor } from "./post";
 import { registerPutMonitor } from "./put";
-import { registerDeleteMonitor } from "./delete";
-import { registerGetStats } from "./get-stats";
-import { registerGetChecks } from "./get-checks";
-import { registerGetCheckDetail } from "./get-check-detail";
-import { registerGetIncidents } from "./get-incidents";
-import { registerPatchMonitorStatus } from "./patch";
 
 const monitors = new OpenAPIHono<AppEnv>();
 

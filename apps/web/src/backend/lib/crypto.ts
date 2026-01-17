@@ -9,7 +9,7 @@ async function deriveKey(secret: string, salt: Uint8Array): Promise<CryptoKey> {
     encoder.encode(secret),
     "PBKDF2",
     false,
-    ["deriveKey"]
+    ["deriveKey"],
   );
 
   return crypto.subtle.deriveKey(
@@ -22,13 +22,13 @@ async function deriveKey(secret: string, salt: Uint8Array): Promise<CryptoKey> {
     keyMaterial,
     { name: ALGORITHM, length: 256 },
     false,
-    ["encrypt", "decrypt"]
+    ["encrypt", "decrypt"],
   );
 }
 
 export async function encrypt(
   plaintext: string,
-  secret: string
+  secret: string,
 ): Promise<string> {
   const encoder = new TextEncoder();
   const salt = crypto.getRandomValues(new Uint8Array(SALT_LENGTH));
@@ -38,11 +38,11 @@ export async function encrypt(
   const ciphertext = await crypto.subtle.encrypt(
     { name: ALGORITHM, iv },
     key,
-    encoder.encode(plaintext)
+    encoder.encode(plaintext),
   );
 
   const combined = new Uint8Array(
-    salt.length + iv.length + ciphertext.byteLength
+    salt.length + iv.length + ciphertext.byteLength,
   );
   combined.set(salt, 0);
   combined.set(iv, salt.length);
@@ -53,7 +53,7 @@ export async function encrypt(
 
 export async function decrypt(
   encrypted: string,
-  secret: string
+  secret: string,
 ): Promise<string> {
   const combined = Uint8Array.from(atob(encrypted), (c) => c.charCodeAt(0));
 
@@ -66,7 +66,7 @@ export async function decrypt(
   const decrypted = await crypto.subtle.decrypt(
     { name: ALGORITHM, iv },
     key,
-    ciphertext
+    ciphertext,
   );
 
   return new TextDecoder().decode(decrypted);

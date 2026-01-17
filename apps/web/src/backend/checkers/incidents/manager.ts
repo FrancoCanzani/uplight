@@ -22,19 +22,19 @@ export async function manageIncidents(
   monitorId: number,
   results: CheckResult[],
   monitorCtx: MonitorContext,
-  env: Env
+  env: Env,
 ): Promise<IncidentEvent[]> {
   const db = createDb(env.DB);
   const events: IncidentEvent[] = [];
   const now = Date.now();
 
   const failedResults = results.filter(
-    (r) => r.result !== "success" && r.cause
+    (r) => r.result !== "success" && r.cause,
   );
   const currentCauses = new Set(
     failedResults
       .map((r) => r.cause)
-      .filter((c): c is IncidentCause => c !== undefined)
+      .filter((c): c is IncidentCause => c !== undefined),
   );
 
   const openIncidents = await db
@@ -43,8 +43,8 @@ export async function manageIncidents(
     .where(
       and(
         eq(incident.monitorId, monitorId),
-        notInArray(incident.status, ["resolved", "recovered"])
-      )
+        notInArray(incident.status, ["resolved", "recovered"]),
+      ),
     );
 
   for (const cause of currentCauses) {
@@ -58,8 +58,8 @@ export async function manageIncidents(
           and(
             eq(incident.monitorId, monitorId),
             eq(incident.cause, cause),
-            gt(incident.startedAt, new Date(now - CONSOLIDATION_WINDOW_MS))
-          )
+            gt(incident.startedAt, new Date(now - CONSOLIDATION_WINDOW_MS)),
+          ),
         )
         .limit(1);
 

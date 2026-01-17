@@ -1,8 +1,8 @@
+import { createFileRoute, getRouteApi } from "@tanstack/react-router";
 import { PageHeader } from "@/components/page-header";
 import fetchMonitor from "@/features/monitors/api/fetch-monitor";
 import { HttpMonitorForm } from "@/features/monitors/forms/http-monitor-form";
 import { TcpMonitorForm } from "@/features/monitors/forms/tcp-monitor-form";
-import { createFileRoute, getRouteApi } from "@tanstack/react-router";
 
 export const Route = createFileRoute(
   "/(dashboard)/$teamId/monitors/$monitorId/edit",
@@ -25,7 +25,10 @@ function EditMonitorPage() {
       <PageHeader
         title="Edit Monitor"
         subtitle={monitor.name}
-        backLink={{ to: "/$teamId/monitors/$monitorId", params: { teamId, monitorId } }}
+        backLink={{
+          to: "/$teamId/monitors/$monitorId",
+          params: { teamId, monitorId },
+        }}
       />
       {monitor.type === "tcp" ? (
         <TcpMonitorForm monitor={monitor} />

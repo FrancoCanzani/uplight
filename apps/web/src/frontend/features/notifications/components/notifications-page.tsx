@@ -1,3 +1,6 @@
+import { useMemo, useState } from "react";
+import { getRouteApi } from "@tanstack/react-router";
+import { Check } from "lucide-react";
 import DiscordLogo from "@/components/logos/discord";
 import GithubLogo from "@/components/logos/github";
 import GmailLogo from "@/components/logos/gmail";
@@ -23,9 +26,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { getRouteApi } from "@tanstack/react-router";
-import { Check } from "lucide-react";
-import { useMemo, useState } from "react";
 import { useDeleteNotifier } from "../api/use-delete-notifier";
 import DiscordNotifierForm from "../forms/discord-notifier-form";
 import EmailNotifierForm from "../forms/email-notifier-form";
@@ -144,7 +144,7 @@ export default function NotificationsPage() {
     Notifier | undefined
   >();
   const [deletingNotifier, setDeletingNotifier] = useState<Notifier | null>(
-    null
+    null,
   );
 
   const deleteMutation = useDeleteNotifier();
@@ -211,7 +211,7 @@ export default function NotificationsPage() {
             </Card>
           );
         })}
-        <div className="border-dashed flex items-center justify-center border rounded-sm">
+        <div className="border-dashed flex items-center justify-center border ">
           <p className="text-xs text-muted-foreground">
             More notifiers coming soon
           </p>

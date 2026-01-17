@@ -1,3 +1,6 @@
+import { useMemo } from "react";
+import { format } from "date-fns";
+import { Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
 import NoDataMessage from "@/components/no-data-message";
 import {
   ChartContainer,
@@ -5,9 +8,6 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { format } from "date-fns";
-import { useMemo } from "react";
-import { Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
 import type { CheckResult } from "../api/fetch-checks";
 import getLocationLabel from "../utils/get-location-label";
 
@@ -115,7 +115,7 @@ export default function ResponseTimeChart({
         <ChartTooltip
           content={
             <ChartTooltipContent
-              className="rounded"
+              className=""
               labelFormatter={(_, payload) => {
                 if (payload?.[0]?.payload?.time) {
                   return format(payload[0].payload.time, "MMMM d 'at' h:mm a");

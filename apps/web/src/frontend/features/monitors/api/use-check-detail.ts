@@ -4,7 +4,7 @@ import { fetchCheckDetail } from "./fetch-check-detail";
 export function useCheckDetail(
   teamId: string,
   monitorId: string,
-  checkId: string | undefined
+  checkId: string | undefined,
 ) {
   return useQuery({
     queryKey: ["check-detail", teamId, monitorId, checkId],

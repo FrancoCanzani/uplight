@@ -1,3 +1,4 @@
+import { useForm } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -8,9 +9,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useForm } from "@tanstack/react-form";
 import { useInviteMember } from "../api/use-invite-member";
-import { InviteMemberSchema, type InviteMember, type TeamRole } from "../schemas";
+import {
+  InviteMemberSchema,
+  type InviteMember,
+  type TeamRole,
+} from "../schemas";
 
 const ROLE_OPTIONS = [
   { value: "member", label: "Member", description: "Can view team resources" },

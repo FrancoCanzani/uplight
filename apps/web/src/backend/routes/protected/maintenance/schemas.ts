@@ -34,4 +34,3 @@ export const MaintenanceResponseSchema = z
 export type CreateMaintenance = z.infer<typeof CreateMaintenanceSchema>;
 export type UpdateMaintenance = z.infer<typeof UpdateMaintenanceSchema>;
 export type MaintenanceResponse = z.infer<typeof MaintenanceResponseSchema>;
-

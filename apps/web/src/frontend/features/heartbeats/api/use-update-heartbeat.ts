@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
-import type { UpdateHeartbeat, HeartbeatResponse } from "../schemas";
+import type { HeartbeatResponse, UpdateHeartbeat } from "../schemas";
 
 async function updateHeartbeat({
   teamId,

@@ -1,5 +1,5 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { eq, and } from "drizzle-orm";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { notifier } from "../../../db/schema";
@@ -38,8 +38,8 @@ export function registerDeleteNotifier(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(notifier.id, Number(notifierId)),
-          eq(notifier.teamId, teamContext.teamId)
-        )
+          eq(notifier.teamId, teamContext.teamId),
+        ),
       )
       .limit(1);
 

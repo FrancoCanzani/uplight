@@ -1,9 +1,8 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { z } from "@hono/zod-openapi";
-import { and, eq, gte, desc } from "drizzle-orm";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { and, desc, eq, gte } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { monitor, checkResult } from "../../../db/schema";
+import { checkResult, monitor } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 
 const StatsResponseSchema = z
@@ -19,7 +18,7 @@ const StatsResponseSchema = z
         status: z.string(),
         responseTime: z.number(),
         lastCheckAt: z.number(),
-      })
+      }),
     ),
   })
   .openapi("MonitorStats");
@@ -64,8 +63,8 @@ export function registerGetStats(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(monitor.teamId, teamContext.teamId),
-          eq(monitor.id, Number(monitorId))
-        )
+          eq(monitor.id, Number(monitorId)),
+        ),
       )
       .limit(1);
 
@@ -81,14 +80,14 @@ export function registerGetStats(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(checkResult.monitorId, Number(monitorId)),
-          gte(checkResult.checkedAt, daysAgo)
-        )
+          gte(checkResult.checkedAt, daysAgo),
+        ),
       )
       .orderBy(desc(checkResult.checkedAt));
 
     const totalChecks = checks.length;
     const successfulChecks = checks.filter(
-      (c) => c.result === "success" || c.result === "maintenance"
+      (c) => c.result === "success" || c.result === "maintenance",
     ).length;
     const uptimePercentage =
       totalChecks > 0 ? (successfulChecks / totalChecks) * 100 : 100;
@@ -121,7 +120,7 @@ export function registerGetStats(api: OpenAPIHono<AppEnv>) {
       ([location, stats]) => ({
         location,
         ...stats,
-      })
+      }),
     );
 
     return c.json(
@@ -133,7 +132,7 @@ export function registerGetStats(api: OpenAPIHono<AppEnv>) {
         lastCheckAt,
         locationStats,
       },
-      200
+      200,
     );
   });
 }

@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { useForm } from "@tanstack/react-form";
+import { useParams } from "@tanstack/react-router";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -29,9 +32,6 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@lib/utils";
-import { useForm } from "@tanstack/react-form";
-import { useParams } from "@tanstack/react-router";
-import { useState } from "react";
 import { useCreateMonitor } from "../api/use-create-monitor";
 import { useUpdateMonitor } from "../api/use-update-monitor";
 import {
@@ -114,7 +114,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
   const isEditing = !!monitor;
   const defaultValues = monitor ? monitorToFormValues(monitor) : emptyValues;
   const [contentCheckEnabled, setContentCheckEnabled] = useState(
-    !!defaultValues.contentCheck
+    !!defaultValues.contentCheck,
   );
   const createMonitor = useCreateMonitor();
   const updateMonitor = useUpdateMonitor();
@@ -151,7 +151,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
       <FieldGroup className="space-y-6">
         <div className="space-y-4">
           <div>
-            <FieldLabel>Basic Information</FieldLabel>
+            <FieldLabel>Basic InfoIconrmation</FieldLabel>
             <FieldDescription>
               Provide a name and URL for the monitor.
             </FieldDescription>
@@ -265,7 +265,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 const selectedInterval = INTERVALS.find(
-                  (interval) => interval.value === field.state.value
+                  (interval) => interval.value === field.state.value,
                 );
                 return (
                   <Field data-invalid={isInvalid}>
@@ -385,7 +385,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 const selectedOptions = getSelectedOptions(
-                  field.state.value || []
+                  field.state.value || [],
                 );
                 const displayText =
                   selectedOptions.length > 0
@@ -401,15 +401,15 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                       <Popover>
                         <PopoverTrigger
                           className={cn(
-                            "bg-input/20 dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 h-9 rounded-sm border px-2 py-0.5 text-sm transition-colors focus-visible:ring-2 aria-invalid:ring-2 md:text-xs/relaxed text-left flex-1 min-w-0 outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-between",
-                            isInvalid && "aria-invalid"
+                            "bg-input/20 dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 h-9  border px-2 py-0.5 text-sm transition-colors focus-visible:ring-2 aria-invalid:ring-2 md:text-xs/relaxed text-left flex-1 min-w-0 outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-between",
+                            isInvalid && "aria-invalid",
                           )}
                           aria-invalid={isInvalid}
                         >
                           <span
                             className={cn(
                               displayText === "Select status codes" &&
-                                "text-muted-foreground"
+                                "text-muted-foreground",
                             )}
                           >
                             {displayText}
@@ -433,7 +433,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                             <FieldGroup>
                               {STATUS_CODE_OPTIONS.map((option) => {
                                 const isSelected = selectedOptions.includes(
-                                  option.value
+                                  option.value,
                                 );
                                 return (
                                   <Field
@@ -446,7 +446,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                                       onCheckedChange={(checked) => {
                                         const currentOptions =
                                           getSelectedOptions(
-                                            field.state.value || []
+                                            field.state.value || [],
                                           );
                                         let newOptions: string[];
                                         if (checked) {
@@ -456,7 +456,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                                           ];
                                         } else {
                                           newOptions = currentOptions.filter(
-                                            (v) => v !== option.value
+                                            (v) => v !== option.value,
                                           );
                                         }
                                         const newCodes =
@@ -555,7 +555,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                               } else {
                                 const currentValue = field.state.value;
                                 const newValue = currentValue.filter(
-                                  (loc) => loc !== location.id
+                                  (loc) => loc !== location.id,
                                 );
                                 field.handleChange(newValue);
                               }
@@ -685,7 +685,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                   onChange={(e) => field.handleChange(e.target.value)}
                   aria-invalid={isInvalid}
                   placeholder='{"key": "value"}'
-                  className="min-h-[100px] font-mono text-xs"
+                  className="min-h-[100px]  text-xs"
                 />
                 <FieldDescription>
                   Optional JSON body for POST/PUT/PATCH requests
@@ -874,7 +874,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                   return (
                     <Field data-invalid={isInvalid}>
                       <FieldLabel htmlFor="http-content-check-content">
-                        Content to Search
+                        Content to SearchIcon
                       </FieldLabel>
                       <Textarea
                         id="http-content-check-content"
@@ -883,7 +883,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                         onChange={(e) => field.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
                         placeholder='"status": "ok"'
-                        className="min-h-20 font-mono text-xs"
+                        className="min-h-20  text-xs"
                       />
                       <FieldDescription>
                         The text to search for in the response body (max 1000

@@ -1,5 +1,5 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { eq, and } from "drizzle-orm";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { heartbeat } from "../../../db/schema";
@@ -11,7 +11,7 @@ const route = createRoute({
   path: "/:teamId/:heartbeatId/status",
   tags: ["heartbeats"],
   summary: "Update heartbeat status",
-  description: "Pause or resume a heartbeat monitor",
+  description: "PauseIcon or resume a heartbeat monitor",
   request: {
     params: z.object({
       teamId: z.string(),
@@ -60,8 +60,8 @@ export function registerPatchHeartbeatStatus(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(heartbeat.id, Number(heartbeatId)),
-          eq(heartbeat.teamId, teamContext.teamId)
-        )
+          eq(heartbeat.teamId, teamContext.teamId),
+        ),
       );
 
     if (!existing) {
@@ -88,7 +88,7 @@ export function registerPatchHeartbeatStatus(api: OpenAPIHono<AppEnv>) {
         updatedAt: updated.updatedAt.toISOString(),
         pingUrl: `/api/public/ping/${updated.slug}`,
       },
-      200
+      200,
     );
   });
 }

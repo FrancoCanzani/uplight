@@ -1,3 +1,12 @@
+import { useState } from "react";
+import { useForm } from "@tanstack/react-form";
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router";
+import { z } from "zod";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,15 +26,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { fetchTeams } from "@/features/teams/api/use-teams";
 import { signUp } from "@/lib/auth/client";
-import { useForm } from "@tanstack/react-form";
-import {
-  createFileRoute,
-  Link,
-  redirect,
-  useNavigate,
-} from "@tanstack/react-router";
-import { useState } from "react";
-import { z } from "zod";
 
 const signUpSchema = z
   .object({
@@ -96,7 +96,7 @@ function SignUp() {
         }
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "An unexpected error occurred"
+          err instanceof Error ? err.message : "An unexpected error occurred",
         );
       } finally {
         setIsLoading(false);

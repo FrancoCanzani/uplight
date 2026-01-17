@@ -1,3 +1,4 @@
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import {
   Select,
   SelectContent,
@@ -5,7 +6,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getRouteApi, useNavigate } from "@tanstack/react-router";
 
 const TIME_PERIODS = [
   { value: "1", label: "Last day" },

@@ -17,10 +17,10 @@ export interface MonitorStats {
 export default async function fetchStats(
   teamId: string,
   monitorId: string,
-  days: number = 14
+  days: number = 14,
 ): Promise<MonitorStats> {
   const response = await fetch(
-    `/api/monitors/${teamId}/${monitorId}/stats?days=${days}`
+    `/api/monitors/${teamId}/${monitorId}/stats?days=${days}`,
   );
 
   if (!response.ok) {

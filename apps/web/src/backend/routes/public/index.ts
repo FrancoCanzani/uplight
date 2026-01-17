@@ -1,7 +1,7 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
+import type { AppEnv } from "../../types";
 import { registerHealth } from "./health";
 import { registerHeartbeat } from "./heartbeat";
-import type { AppEnv } from "../../types";
 
 const publicRouter = new OpenAPIHono<AppEnv>();
 

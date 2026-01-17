@@ -1,11 +1,11 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { monitors } from "./monitors";
-import { teams } from "./teams";
-import { maintenance } from "./maintenance";
-import { incidents } from "./incidents";
-import { heartbeats } from "./heartbeats";
-import { notifications } from "./notifications";
 import type { AppEnv } from "../../types";
+import { heartbeats } from "./heartbeats";
+import { incidents } from "./incidents";
+import { maintenance } from "./maintenance";
+import { monitors } from "./monitors";
+import { notifications } from "./notifications";
+import { teams } from "./teams";
 
 const protectedRouter = new OpenAPIHono<AppEnv>();
 

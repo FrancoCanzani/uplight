@@ -15,7 +15,7 @@ async function fetchIncidentActivities({
   incidentId: number;
 }): Promise<FetchIncidentActivitiesResponse> {
   const response = await fetch(
-    `/api/incidents/${teamId}/${incidentId}/activities`
+    `/api/incidents/${teamId}/${incidentId}/activities`,
   );
 
   if (!response.ok) {
@@ -56,7 +56,7 @@ async function addIncidentComment({
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ content }),
-    }
+    },
   );
 
   if (!response.ok) {

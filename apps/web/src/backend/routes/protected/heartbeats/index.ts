@@ -1,12 +1,12 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { requireTeamMember } from "../../../middleware/team";
 import type { AppEnv } from "../../../types";
+import { registerDeleteHeartbeat } from "./delete";
 import { registerGetHeartbeat } from "./get";
 import { registerGetAllHeartbeats } from "./get-all";
+import { registerPatchHeartbeatStatus } from "./patch";
 import { registerPostHeartbeat } from "./post";
 import { registerPutHeartbeat } from "./put";
-import { registerDeleteHeartbeat } from "./delete";
-import { registerPatchHeartbeatStatus } from "./patch";
 
 const heartbeats = new OpenAPIHono<AppEnv>();
 

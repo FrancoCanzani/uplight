@@ -45,7 +45,7 @@ const CAUSE_SOLUTIONS: Record<IncidentCause, string> = {
 };
 
 export async function parseIncidentWithAI(
-  ctx: IncidentContext
+  ctx: IncidentContext,
 ): Promise<ParsedIncident> {
   const { output } = await generateText({
     model: "openai/gpt-5-mini",

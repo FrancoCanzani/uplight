@@ -2,7 +2,7 @@ import type { MonitorResponse } from "../schemas";
 
 export default async function fetchMonitor(
   teamId: string,
-  monitorId: string
+  monitorId: string,
 ): Promise<MonitorResponse> {
   const response = await fetch(`/api/monitors/${teamId}/${monitorId}`);
 

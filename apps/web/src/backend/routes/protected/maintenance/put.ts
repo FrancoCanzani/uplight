@@ -1,10 +1,10 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { eq, and } from "drizzle-orm";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { maintenance, monitor } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
-import { UpdateMaintenanceSchema, MaintenanceResponseSchema } from "./schemas";
+import { MaintenanceResponseSchema, UpdateMaintenanceSchema } from "./schemas";
 
 const route = createRoute({
   method: "put",
@@ -54,8 +54,8 @@ export function registerPutMaintenance(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(maintenance.id, Number(maintenanceId)),
-          eq(monitor.teamId, teamContext.teamId)
-        )
+          eq(monitor.teamId, teamContext.teamId),
+        ),
       )
       .limit(1);
 
@@ -84,7 +84,7 @@ export function registerPutMaintenance(api: OpenAPIHono<AppEnv>) {
         endsAt: updated.endsAt.getTime(),
         createdAt: updated.createdAt.getTime(),
       },
-      200
+      200,
     );
   });
 }

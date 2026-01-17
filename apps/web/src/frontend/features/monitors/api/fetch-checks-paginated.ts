@@ -48,7 +48,7 @@ export default async function fetchChecksPaginated({
   if (dateTo) params.set("dateTo", dateTo);
 
   const response = await fetch(
-    `/api/monitors/${teamId}/${monitorId}/checks?${params.toString()}`
+    `/api/monitors/${teamId}/${monitorId}/checks?${params.toString()}`,
   );
 
   if (!response.ok) {

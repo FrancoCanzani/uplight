@@ -26,15 +26,15 @@ export default function ResponseTimeStats({
     <div className="flex items-center gap-4 text-xs">
       <div className="flex items-center gap-1.5">
         <span className="text-muted-foreground">Avg</span>
-        <span className="font-mono tabular-nums">{stats.avg}ms</span>
+        <span className=" tabular-nums">{stats.avg}ms</span>
       </div>
       <div className="flex items-center gap-1.5">
         <span className="text-muted-foreground">Min</span>
-        <span className="font-mono tabular-nums">{stats.min}ms</span>
+        <span className=" tabular-nums">{stats.min}ms</span>
       </div>
       <div className="flex items-center gap-1.5">
         <span className="text-muted-foreground">Max</span>
-        <span className="font-mono tabular-nums">{stats.max}ms</span>
+        <span className=" tabular-nums">{stats.max}ms</span>
       </div>
     </div>
   );

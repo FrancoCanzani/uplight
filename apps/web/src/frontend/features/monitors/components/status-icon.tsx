@@ -1,13 +1,13 @@
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Loader2,
+  Pause,
+  Wrench,
+  XCircle,
+} from "lucide-react";
 import { MonitorStatus } from "@/features/monitors/schemas";
 import { cn } from "@/lib/utils";
-import {
-  CheckCircle2,
-  XCircle,
-  AlertTriangle,
-  Wrench,
-  Pause,
-  Loader2,
-} from "lucide-react";
 
 const config = {
   up: { icon: CheckCircle2, color: "text-emerald-500" },

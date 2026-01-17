@@ -1,0 +1,20 @@
+{
+  "plugins": [
+    "prettier-plugin-tailwindcss",
+    "@ianvs/prettier-plugin-sort-imports",
+    "prettier-plugin-packagejson"
+  ],
+  "importOrder": [
+    "^react",
+    "^@tanstack",
+    "<THIRD_PARTY_MODULES>",
+    "^@/",
+    "^@components/",
+    "^@features/",
+    "^@lib/",
+    "^@hooks/",
+    "^@routes/",
+    "^[./]"
+  ],
+  "importOrderSeparation": true
+}

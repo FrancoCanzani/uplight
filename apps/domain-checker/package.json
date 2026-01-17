@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "go run main.go",
     "build": "go build -o bin/domain-checker main.go",
     "check-types": "go vet ./...",
-    "lint": "go fmt ./... && go vet ./...",
-    "deploy": "flyctl deploy"
+    "deploy": "flyctl deploy",
+    "dev": "go run main.go",
+    "lint": "go fmt ./... && go vet ./..."
   }
 }

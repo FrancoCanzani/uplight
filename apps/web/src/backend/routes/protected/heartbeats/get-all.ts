@@ -1,8 +1,12 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { desc, eq, inArray } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { heartbeat, heartbeatIncident, heartbeatPing } from "../../../db/schema";
+import {
+  heartbeat,
+  heartbeatIncident,
+  heartbeatPing,
+} from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { HeartbeatResponseSchema } from "./schemas";
 

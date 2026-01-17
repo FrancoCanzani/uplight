@@ -1,4 +1,3 @@
-import { cn } from "@lib/utils";
 import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
 import { EditorContent, useEditor } from "@tiptap/react";
@@ -12,6 +11,7 @@ import {
   ListOrdered,
   Underline as UnderlineIcon,
 } from "lucide-react";
+import { cn } from "@lib/utils";
 import { Button } from "./button";
 
 type EditorProps = {
@@ -28,7 +28,7 @@ function FloatingMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
   return (
     <BubbleMenu
       editor={editor}
-      className="flex items-center gap-0.5 rounded-md border border-border bg-popover p-1 shadow-md"
+      className="flex items-center gap-0.5  border border-border bg-popover p-1 shadow-md"
     >
       <Button
         type="button"
@@ -118,7 +118,7 @@ export default function TiptapEditor({
           "[&_p.is-editor-empty:first-child::before]:text-muted-foreground",
           "[&_p.is-editor-empty:first-child::before]:float-left",
           "[&_p.is-editor-empty:first-child::before]:pointer-events-none",
-          "[&_p.is-editor-empty:first-child::before]:h-0"
+          "[&_p.is-editor-empty:first-child::before]:h-0",
         ),
         "data-placeholder": placeholder,
       },

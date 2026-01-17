@@ -1,4 +1,4 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { team, teamMember } from "../../../db/schema";
@@ -66,7 +66,7 @@ export function registerPostTeam(api: OpenAPIHono<AppEnv>) {
         createdAt: createdTeam.createdAt,
         updatedAt: createdTeam.updatedAt,
       },
-      201
+      201,
     );
   });
 }

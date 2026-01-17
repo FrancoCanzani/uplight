@@ -1,4 +1,4 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
@@ -68,8 +68,8 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(monitor.teamId, teamContext.teamId),
-          eq(monitor.id, Number(monitorId))
-        )
+          eq(monitor.id, Number(monitorId)),
+        ),
       )
       .limit(1);
 
@@ -157,7 +157,7 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
         hasMore,
         total: totalResult.length,
       },
-      200
+      200,
     );
   });
 }

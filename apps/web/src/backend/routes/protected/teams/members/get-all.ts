@@ -1,9 +1,9 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { HTTPException } from "hono/http-exception";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { eq, sql } from "drizzle-orm";
+import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../../db";
-import { teamMember } from "../../../../db/schema";
 import { user } from "../../../../db/auth-schema";
+import { teamMember } from "../../../../db/schema";
 import type { AppEnv } from "../../../../types";
 import { TeamMemberResponseSchema } from "../schemas";
 
@@ -58,7 +58,7 @@ export function registerGetAllTeamMembers(api: OpenAPIHono<AppEnv>) {
           WHEN 'admin' THEN 2
           WHEN 'member' THEN 3
         END`,
-        teamMember.createdAt
+        teamMember.createdAt,
       );
 
     const result = members.map((member) => ({

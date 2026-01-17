@@ -1,3 +1,6 @@
+import { useMemo } from "react";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,9 +13,6 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import getLocationLabel from "@/features/monitors/utils/get-location-label";
 import { formatDate } from "@/lib/utils";
-import { getRouteApi, useNavigate } from "@tanstack/react-router";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { useMemo } from "react";
 import { useCheckDetail } from "../api/use-check-detail";
 import { useInfiniteChecks } from "../api/use-infinite-checks";
 
@@ -56,8 +56,10 @@ export function CheckDetailSheet() {
       to: "/$teamId/monitors/$monitorId",
       params: { teamId, monitorId },
       search: (prev) => {
-        const { checkId, ...rest } = prev || {};
-        return rest;
+        if (!prev) return {};
+        return Object.fromEntries(
+          Object.entries(prev).filter(([key]) => key !== "checkId"),
+        );
       },
     });
   };
@@ -110,7 +112,7 @@ export function CheckDetailSheet() {
                 onClick={handlePrev}
                 disabled={!hasPrev}
               >
-                <ChevronLeftIcon className="size-3" />
+                <ChevronLeft className="size-3" />
                 Previous
               </Button>
               <Button
@@ -120,7 +122,7 @@ export function CheckDetailSheet() {
                 disabled={!hasNext}
               >
                 Next
-                <ChevronRightIcon className="size-3" />
+                <ChevronRight className="size-3" />
               </Button>
             </div>
 
@@ -166,7 +168,7 @@ export function CheckDetailSheet() {
 
             {checkDetail.errorMessage && (
               <Section title="Error">
-                <div className="p-2 bg-destructive/10 border rounded text-xs font-mono break-words">
+                <div className="p-2 bg-destructive/10 border  text-xs  break-words">
                   {checkDetail.errorMessage}
                 </div>
               </Section>
@@ -174,13 +176,13 @@ export function CheckDetailSheet() {
 
             {checkDetail.responseHeaders && (
               <Section title="Response Headers">
-                <div className="p-4 bg-muted/50 border rounded-lg overflow-x-auto">
+                <div className="p-4 bg-muted/50 border  overflow-x-auto">
                   <div className="space-y-1.5">
                     {Object.entries(checkDetail.responseHeaders).map(
                       ([key, value]) => (
                         <div
                           key={key}
-                          className="flex items-start gap-4 text-xs font-mono border-b border-border/50 pb-1.5 last:border-0 last:pb-0"
+                          className="flex items-start gap-4 text-xs  border-b border-border/50 pb-1.5 last:border-0 last:pb-0"
                         >
                           <div className="font-semibold text-foreground shrink-0 min-w-[180px]">
                             {key}:
@@ -189,7 +191,7 @@ export function CheckDetailSheet() {
                             {value}
                           </div>
                         </div>
-                      )
+                      ),
                     )}
                   </div>
                 </div>
@@ -198,8 +200,8 @@ export function CheckDetailSheet() {
 
             {checkDetail.responseBody && (
               <Section title="Response Body">
-                <div className="p-4 bg-muted/50 border rounded-lg overflow-x-auto max-h-96 overflow-y-auto">
-                  <pre className="text-xs font-mono whitespace-pre-wrap break-words text-foreground">
+                <div className="p-4 bg-muted/50 border  overflow-x-auto max-h-96 overflow-y-auto">
+                  <pre className="text-xs  whitespace-pre-wrap break-words text-foreground">
                     {checkDetail.responseBody}
                   </pre>
                 </div>
@@ -262,7 +264,7 @@ function ConfigItem({
     <div className="flex items-start justify-between gap-4">
       <span className="text-muted-foreground shrink-0">{label}</span>
       <span
-        className={`text-right ${mono ? "font-mono text-[11px]" : ""} break-all`}
+        className={`text-right ${mono ? " text-[11px]" : ""} break-all`}
       >
         {value}
       </span>

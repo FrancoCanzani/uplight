@@ -134,7 +134,9 @@ export const heartbeatPing = sqliteTable(
     heartbeatId: integer()
       .notNull()
       .references(() => heartbeat.id, { onDelete: "cascade" }),
-    method: text({ enum: ["GET", "POST", "HEAD", "PUT"] }).notNull().default("GET"),
+    method: text({ enum: ["GET", "POST", "HEAD", "PUT"] })
+      .notNull()
+      .default("GET"),
     userAgent: text(),
     ip: text(),
     pingedAt: integer({ mode: "timestamp_ms" }).notNull(),

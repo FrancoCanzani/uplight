@@ -1,5 +1,5 @@
-import { formatDate } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
+import { formatDate } from "@/lib/utils";
 import type { CheckResult } from "../api/fetch-checks-paginated";
 import getLocationLabel from "../utils/get-location-label";
 import { mapCheckStatusToMonitorStatus } from "../utils/map-check-status";
@@ -24,7 +24,7 @@ export const checksTableColumns: ColumnDef<CheckResult>[] = [
     header: "Code",
     cell: ({ row }) => {
       const code = row.getValue("statusCode") as number | null;
-      return <span className="font-mono tabular-nums">{code ?? "—"}</span>;
+      return <span className=" tabular-nums">{code ?? "—"}</span>;
     },
   },
   {
@@ -40,7 +40,7 @@ export const checksTableColumns: ColumnDef<CheckResult>[] = [
     header: "Response (ms)",
     cell: ({ row }) => {
       const time = row.getValue("responseTime") as number;
-      return <span className="font-mono tabular-nums">{time}ms</span>;
+      return <span className=" tabular-nums">{time}ms</span>;
     },
   },
   {
@@ -51,7 +51,7 @@ export const checksTableColumns: ColumnDef<CheckResult>[] = [
       return (
         <time
           dateTime={new Date(timestamp).toLocaleString()}
-          className="font-mono tracking-tight"
+          className=" tracking-tight"
         >
           {formatDate(timestamp)}
         </time>

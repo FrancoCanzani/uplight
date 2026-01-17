@@ -1,4 +1,7 @@
+import { useState } from "react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -6,14 +9,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTeamMembers } from "../api/use-team-members";
-import { TeamMemberItem } from "./team-member-item";
 import { InviteMemberForm } from "../forms/invite-member-form";
-import { canManageMembers } from "../utils/permissions";
 import type { TeamRole } from "../schemas";
-import { Plus } from "lucide-react";
-import { useState } from "react";
+import { canManageMembers } from "../utils/permissions";
+import { TeamMemberItem } from "./team-member-item";
 
 export function TeamMembersList({
   teamId,
@@ -74,4 +74,3 @@ export function TeamMembersList({
     </Card>
   );
 }
-

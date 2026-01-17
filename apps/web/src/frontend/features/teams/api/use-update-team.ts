@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
-import type { UpdateTeam, TeamResponse } from "../schemas";
+import type { TeamResponse, UpdateTeam } from "../schemas";
 
 async function updateTeam(
   teamId: string,
-  data: UpdateTeam
+  data: UpdateTeam,
 ): Promise<TeamResponse> {
   const response = await fetch(`/api/teams/${teamId}`, {
     method: "PUT",
@@ -42,4 +42,3 @@ export function useUpdateTeam() {
     },
   });
 }
-

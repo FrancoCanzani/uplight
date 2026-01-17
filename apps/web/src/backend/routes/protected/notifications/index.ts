@@ -1,10 +1,10 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { requireTeamMember } from "../../../middleware/team";
 import type { AppEnv } from "../../../types";
-import { registerPostNotifier } from "./post";
-import { registerGetAllNotifiers } from "./get-all";
-import { registerPutNotifier } from "./put";
 import { registerDeleteNotifier } from "./delete";
+import { registerGetAllNotifiers } from "./get-all";
+import { registerPostNotifier } from "./post";
+import { registerPutNotifier } from "./put";
 
 const notifications = new OpenAPIHono<AppEnv>();
 

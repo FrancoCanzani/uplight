@@ -1,8 +1,7 @@
 "use client";
 
-import { Slider as SliderPrimitive } from "@base-ui/react/slider";
 import * as React from "react";
-
+import { Slider as SliderPrimitive } from "@base-ui/react/slider";
 import { cn } from "@lib/utils";
 
 function Slider({
@@ -42,7 +41,7 @@ function Slider({
       >
         <SliderPrimitive.Track
           data-slot="slider-track"
-          className="bg-muted rounded-sm data-horizontal:h-3 data-horizontal:w-full data-vertical:h-full data-vertical:w-3 relative overflow-hidden select-none"
+          className="bg-muted  data-horizontal:h-3 data-horizontal:w-full data-vertical:h-full data-vertical:w-3 relative overflow-hidden select-none"
         >
           <SliderPrimitive.Indicator
             data-slot="slider-range"
@@ -53,7 +52,7 @@ function Slider({
           <SliderPrimitive.Thumb
             data-slot="slider-thumb"
             key={index}
-            className="border-primary ring-ring/30 size-4 rounded-sm border bg-white shadow-sm transition-colors hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden block shrink-0 select-none disabled:pointer-events-none disabled:opacity-50"
+            className="border-primary ring-ring/30 size-4  border bg-white shadow-sm transition-colors hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden block shrink-0 select-none disabled:pointer-events-none disabled:opacity-50"
           />
         ))}
       </SliderPrimitive.Control>

@@ -15,7 +15,7 @@ export function canManageMembers(role: TeamRole | undefined): boolean {
 export function canChangeRole(
   currentUserRole: TeamRole | undefined,
   targetMemberRole: TeamRole,
-  newRole: TeamRole
+  newRole: TeamRole,
 ): boolean {
   if (targetMemberRole === "owner" || newRole === "owner") {
     return currentUserRole === "owner";
@@ -25,7 +25,7 @@ export function canChangeRole(
 
 export function canRemoveMember(
   currentUserRole: TeamRole | undefined,
-  targetMemberRole: TeamRole
+  targetMemberRole: TeamRole,
 ): boolean {
   if (targetMemberRole === "owner") {
     return currentUserRole === "owner";

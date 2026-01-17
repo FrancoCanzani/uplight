@@ -1,7 +1,7 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createRouter, RouterProvider } from "@tanstack/react-router";
 import "./index.css";
 import { useSession } from "./lib/auth/client";
 import { routeTree } from "./routeTree.gen";
@@ -45,6 +45,6 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <InnerApp />
-    </StrictMode>
+    </StrictMode>,
   );
 }

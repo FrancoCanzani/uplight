@@ -1,3 +1,5 @@
+import { format, parseISO } from "date-fns";
+import { Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,8 +11,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn, formatDate } from "@lib/utils";
-import { format, parseISO } from "date-fns";
-import { Info } from "lucide-react";
 import type { MonitorResponse } from "../schemas";
 import getLocationLabel from "../utils/get-location-label";
 import { getSelectedOptions } from "../utils/get-selected-options";
@@ -124,7 +124,7 @@ export default function MonitorInfoSheet({
                   label="Expires"
                   value={format(
                     parseISO(monitor.domainCheck.whoisExpirationDate),
-                    "MMM d, yyyy h:mm a"
+                    "MMM d, yyyy h:mm a",
                   )}
                 />
               )}
@@ -143,7 +143,7 @@ export default function MonitorInfoSheet({
                             ? "text-green-700"
                             : whoisStatus.status === "warn"
                               ? "text-amber-400"
-                              : "text-destructive"
+                              : "text-destructive",
                         )}
                       >
                         {whoisStatus.status === "ok"
@@ -167,7 +167,7 @@ export default function MonitorInfoSheet({
                   label="SSL Expires"
                   value={format(
                     new Date(monitor.domainCheck.sslExpiry),
-                    "MMM d, yyyy h:mm a"
+                    "MMM d, yyyy h:mm a",
                   )}
                 />
               )}
@@ -186,7 +186,7 @@ export default function MonitorInfoSheet({
                             ? "text-green-700"
                             : sslStatus.status === "warn"
                               ? "text-amber-400"
-                              : "text-destructive"
+                              : "text-destructive",
                         )}
                       >
                         {sslStatus.status === "ok"
@@ -203,7 +203,7 @@ export default function MonitorInfoSheet({
                 label="Last Checked"
                 value={format(
                   new Date(monitor.domainCheck.checkedAt),
-                  "MMM d, yyyy h:mm a"
+                  "MMM d, yyyy h:mm a",
                 )}
               />
             </Section>
@@ -254,9 +254,7 @@ function ConfigItem({
   return (
     <div className="flex items-start justify-between gap-4">
       <span className="text-muted-foreground shrink-0">{label}</span>
-      <span
-        className={`text-right ${mono ? "font-mono text-[11px]" : ""} break-all`}
-      >
+      <span className={`text-right ${mono ? " text-[11px]" : ""} break-all`}>
         {value}
       </span>
     </div>

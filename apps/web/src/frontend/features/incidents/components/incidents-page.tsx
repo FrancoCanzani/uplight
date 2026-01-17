@@ -1,3 +1,13 @@
+import { useMemo, useState } from "react";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
+import { formatDistanceToNowStrict } from "date-fns";
+import {
+  Activity,
+  ChevronDown,
+  ChevronRight,
+  HeartPulse,
+  MoreHorizontal,
+} from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,16 +19,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn, formatCause, formatDuration } from "@lib/utils";
-import { getRouteApi, useNavigate } from "@tanstack/react-router";
-import { formatDistanceToNowStrict } from "date-fns";
-import {
-  Activity,
-  ChevronDown,
-  ChevronRight,
-  HeartPulse,
-  MoreHorizontal,
-} from "lucide-react";
-import { useMemo, useState } from "react";
 import { useUpdateIncidentStatus } from "../api/use-update-incident-status";
 import type { Incident, IncidentStatus } from "../types";
 import { calculateIncidentStats } from "../utils/calculate-stats";
@@ -138,11 +138,11 @@ export default function IncidentsPage() {
           <div className="flex items-center gap-6 text-sm">
             <div>
               <div className="text-muted-foreground text-xs">Open</div>
-              <div className="font-mono">{stats.openCount}</div>
+              <div className="">{stats.openCount}</div>
             </div>
             <div>
               <div className="text-muted-foreground text-xs">Resolve Time</div>
-              <div className="font-mono">
+              <div className="">
                 {stats.resolveTime > 0
                   ? formatDuration(stats.resolveTime)
                   : "-"}
@@ -152,7 +152,7 @@ export default function IncidentsPage() {
               <div className="text-muted-foreground text-xs">
                 Acknowledge Time
               </div>
-              <div className="font-mono">
+              <div className="">
                 {stats.acknowledgeTime > 0
                   ? formatDuration(stats.acknowledgeTime)
                   : "-"}
@@ -260,7 +260,7 @@ export default function IncidentsPage() {
                         onClick={(e) => e.stopPropagation()}
                         className="flex items-center gap-2 opacity-50 group-hover:opacity-100 transition-opacity"
                       >
-                        <span className="text-xs font-mono text-muted-foreground">
+                        <span className="text-xs  text-muted-foreground">
                           {formatDistanceToNowStrict(
                             new Date(incident.startedAt),
                             {
@@ -270,11 +270,13 @@ export default function IncidentsPage() {
                         </span>
                         {incident.type === "monitor" && (
                           <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="xs">
-                                <MoreHorizontal className="size-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
+                            <DropdownMenuTrigger
+                              render={
+                                <Button variant="ghost" size="xs">
+                                  <MoreHorizontal className="size-4" />
+                                </Button>
+                              }
+                            ></DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               {STATUS_ORDER.map((status) => (
                                 <DropdownMenuItem

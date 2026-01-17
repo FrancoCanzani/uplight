@@ -1,7 +1,7 @@
 import type { MonitorStatus } from "../schemas";
 
 export function mapCheckStatusToMonitorStatus(
-  checkResult: string
+  checkResult: string,
 ): MonitorStatus {
   switch (checkResult) {
     case "success":

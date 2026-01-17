@@ -1,6 +1,6 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { and, eq, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
-import { eq, and, sql } from "drizzle-orm";
 import { createDb } from "../../../../db";
 import { teamMember } from "../../../../db/schema";
 import type { AppEnv } from "../../../../types";
@@ -48,8 +48,8 @@ export function registerDeleteTeamMember(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(teamMember.teamId, teamContext.teamId),
-          eq(teamMember.userId, userId)
-        )
+          eq(teamMember.userId, userId),
+        ),
       )
       .limit(1);
 
@@ -72,8 +72,8 @@ export function registerDeleteTeamMember(api: OpenAPIHono<AppEnv>) {
         .where(
           and(
             eq(teamMember.teamId, teamContext.teamId),
-            eq(teamMember.role, "owner")
-          )
+            eq(teamMember.role, "owner"),
+          ),
         );
 
       if (ownerCount.count <= 1) {
@@ -87,8 +87,8 @@ export function registerDeleteTeamMember(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(teamMember.teamId, teamContext.teamId),
-          eq(teamMember.userId, userId)
-        )
+          eq(teamMember.userId, userId),
+        ),
       );
 
     return c.body(null, 204);

@@ -1,12 +1,12 @@
-import { Badge } from "@/components/ui/badge";
+import { getRouteApi, Link } from "@tanstack/react-router";
+import { format, formatDistanceToNowStrict } from "date-fns";
+import { Copy, Pause, Pencil, Play, Trash } from "lucide-react";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn, getStatusBgColor, getStatusTextColor } from "@lib/utils";
-import { Link, getRouteApi } from "@tanstack/react-router";
-import { format, formatDistanceToNowStrict } from "date-fns";
-import { Copy, Pause, Pencil, Play, Trash2 } from "lucide-react";
-import { toast } from "sonner";
 import { useDeleteHeartbeat } from "../api/use-delete-heartbeat";
 import { useToggleHeartbeatStatus } from "../api/use-toggle-heartbeat-status";
 import { GRACE_PERIODS, PERIODS } from "../constants";
@@ -109,30 +109,38 @@ export default function HeartbeatPage() {
               onClick={handleDelete}
               disabled={deleteHeartbeat.isPending}
             >
-              <Trash2 className="size-3" />
+              <Trash className="size-3" />
               Delete
             </Button>
           </div>
         }
       />
 
-      <div className="space-y-4 bg-surface rounded p-4">
+      <div className="space-y-4 bg-surface  p-4">
         <h2 className="text-sm font-medium">Status</h2>
         <div className="grid grid-cols-3 gap-4">
           <div>
             <p className="text-xs text-muted-foreground">Current Status</p>
             <div className="flex items-center gap-2">
               <div
-                className={cn("size-2.5 rounded-full", getStatusBgColor(heartbeat.status))}
+                className={cn(
+                  "size-2.5 -full",
+                  getStatusBgColor(heartbeat.status),
+                )}
               />
-              <p className={cn("text-sm font-medium capitalize", getStatusTextColor(heartbeat.status))}>
+              <p
+                className={cn(
+                  "text-sm font-medium capitalize",
+                  getStatusTextColor(heartbeat.status),
+                )}
+              >
                 {heartbeat.status}
               </p>
             </div>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Last Ping</p>
-            <p className="text-sm font-mono">
+            <p className="text-sm ">
               {heartbeat.lastPingAt
                 ? formatDistanceToNowStrict(heartbeat.lastPingAt, {
                     addSuffix: true,
@@ -142,7 +150,7 @@ export default function HeartbeatPage() {
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Created</p>
-            <p className="text-sm font-mono">
+            <p className="text-sm ">
               {formatDistanceToNowStrict(new Date(heartbeat.createdAt), {
                 addSuffix: true,
               })}
@@ -151,7 +159,7 @@ export default function HeartbeatPage() {
         </div>
       </div>
 
-      <div className="space-y-4 bg-surface rounded p-4">
+      <div className="space-y-4 bg-surface  p-4">
         <div>
           <h2 className="text-sm font-medium mb-2">Ping URL</h2>
           <p className="text-xs text-muted-foreground mb-3">
@@ -159,7 +167,7 @@ export default function HeartbeatPage() {
             or background worker to report that it's running.
           </p>
           <div className="flex items-center gap-2">
-            <code className="flex-1 bg-background rounded px-3 py-2 text-xs font-mono break-all">
+            <code className="flex-1 bg-background  px-3 py-2 text-xs  break-all">
               {pingUrl}
             </code>
             <Button variant="outline" size="xs" onClick={copyPingUrl}>
@@ -186,7 +194,7 @@ export default function HeartbeatPage() {
                   <Copy className="size-2.5" />
                 </Button>
               </div>
-              <code className="block bg-background rounded px-3 py-2 text-xs font-mono break-all">
+              <code className="block bg-background  px-3 py-2 text-xs  break-all">
                 curl -fsS {pingUrl}
               </code>
             </div>
@@ -200,19 +208,23 @@ export default function HeartbeatPage() {
                   size="xs"
                   className="h-5 px-1.5"
                   onClick={() =>
-                    copyCode(`0 * * * * /path/to/script.sh && curl -fsS ${pingUrl}`)
+                    copyCode(
+                      `0 * * * * /path/to/script.sh && curl -fsS ${pingUrl}`,
+                    )
                   }
                 >
                   <Copy className="size-2.5" />
                 </Button>
               </div>
-              <code className="block bg-background rounded px-3 py-2 text-xs font-mono break-all">
+              <code className="block bg-background  px-3 py-2 text-xs  break-all">
                 0 * * * * /path/to/script.sh && curl -fsS {pingUrl}
               </code>
             </div>
             <div>
               <div className="flex items-center justify-between mb-1">
-                <p className="text-xs text-muted-foreground">Node.js / JavaScript</p>
+                <p className="text-xs text-muted-foreground">
+                  Node.js / JavaScript
+                </p>
                 <Button
                   variant="ghost"
                   size="xs"
@@ -222,7 +234,7 @@ export default function HeartbeatPage() {
                   <Copy className="size-2.5" />
                 </Button>
               </div>
-              <code className="block bg-background rounded px-3 py-2 text-xs font-mono break-all">
+              <code className="block bg-background  px-3 py-2 text-xs  break-all">
                 {nodeExample}
               </code>
             </div>
@@ -238,7 +250,7 @@ export default function HeartbeatPage() {
                   <Copy className="size-2.5" />
                 </Button>
               </div>
-              <code className="block bg-background rounded px-3 py-2 text-xs font-mono whitespace-pre break-all">
+              <code className="block bg-background  px-3 py-2 text-xs  whitespace-pre break-all">
                 {pythonExample}
               </code>
             </div>
@@ -246,7 +258,7 @@ export default function HeartbeatPage() {
         </div>
       </div>
 
-      <div className="space-y-4 bg-surface rounded p-4">
+      <div className="space-y-4 bg-surface  p-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-medium">Recent Pings</h2>
           <span className="text-xs text-muted-foreground">
@@ -277,23 +289,29 @@ export default function HeartbeatPage() {
                 {heartbeat.recentPings.map((ping) => {
                   const pingDate = new Date(ping.pingedAt);
                   return (
-                    <tr key={ping.id} className="border-b border-border/50 last:border-0">
-                      <td className="py-2.5 pr-4 font-mono text-xs text-muted-foreground">
+                    <tr
+                      key={ping.id}
+                      className="border-b border-border/50 last:border-0"
+                    >
+                      <td className="py-2.5 pr-4  text-xs text-muted-foreground">
                         #{ping.id}
                       </td>
-                      <td className="py-2.5 pr-4 font-mono text-xs">
+                      <td className="py-2.5 pr-4  text-xs">
                         {format(pingDate, "MMM dd")}
                       </td>
-                      <td className="py-2.5 pr-4 font-mono text-xs">
+                      <td className="py-2.5 pr-4  text-xs">
                         {format(pingDate, "HH:mm:ss")}
                       </td>
                       <td className="py-2.5 pr-4">
-                        <Badge variant="success" className="text-[10px] px-1.5 py-0">
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] px-1.5 py-0"
+                        >
                           OK
                         </Badge>
                       </td>
                       <td className="py-2.5 pr-4 text-xs">
-                        <span className="font-mono">{ping.method}</span>
+                        <span className="">{ping.method}</span>
                         {ping.ip && (
                           <span className="text-muted-foreground ml-1.5">
                             from {ping.ip}

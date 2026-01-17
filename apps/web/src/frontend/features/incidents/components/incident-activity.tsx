@@ -1,6 +1,6 @@
-import { getRouteApi } from "@tanstack/react-router";
-import { format, formatDistanceToNow, isSameDay } from "date-fns";
 import { useState } from "react";
+import { getRouteApi } from "@tanstack/react-router";
+import { format, isSameDay } from "date-fns";
 import { Button } from "../../../components/ui/button";
 import { Textarea } from "../../../components/ui/textarea";
 import {
@@ -22,7 +22,7 @@ function resolveUserName(userId: string, teamMembers: TeamMember[]): string {
 
 function getActivityText(
   activity: IncidentActivityType,
-  teamMembers: TeamMember[]
+  teamMembers: TeamMember[],
 ): string {
   if (activity.type === "comment") {
     return "commented";
@@ -125,12 +125,16 @@ export function IncidentActivity({
     if (!comment.trim()) return;
 
     addComment.mutate(
-      { teamId: Number(teamId), incidentId: Number(incidentId), content: comment },
+      {
+        teamId: Number(teamId),
+        incidentId: Number(incidentId),
+        content: comment,
+      },
       {
         onSuccess: () => {
           setComment("");
         },
-      }
+      },
     );
   };
 

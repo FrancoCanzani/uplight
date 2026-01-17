@@ -1,3 +1,6 @@
+import { useMemo } from "react";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
+import { FilterX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,9 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getRouteApi, useNavigate } from "@tanstack/react-router";
-import { FilterX } from "lucide-react";
-import { useMemo } from "react";
 import { useInfiniteChecks } from "../api/use-infinite-checks";
 import getLocationLabel from "../utils/get-location-label";
 
@@ -76,7 +76,7 @@ export function ChecksFilters({
 
   const updateFilter = (
     key: "checkResult" | "checkLocation" | "checkDateFrom" | "checkDateTo",
-    value: string | undefined
+    value: string | undefined,
   ) => {
     navigate({
       to: "/$teamId/monitors/$monitorId",
@@ -143,14 +143,16 @@ export function ChecksFilters({
       to: "/$teamId/monitors/$monitorId",
       params: { teamId, monitorId },
       search: (prev) => {
-        const {
-          checkResult,
-          checkLocation,
-          checkDateFrom,
-          checkDateTo,
-          ...rest
-        } = prev || {};
-        return rest;
+        if (!prev) return {};
+        const excludedKeys = new Set([
+          "checkResult",
+          "checkLocation",
+          "checkDateFrom",
+          "checkDateTo",
+        ]);
+        return Object.fromEntries(
+          Object.entries(prev).filter(([key]) => !excludedKeys.has(key)),
+        );
       },
     });
   };

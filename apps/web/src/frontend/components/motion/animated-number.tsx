@@ -1,5 +1,5 @@
-import { useMotionValue, useMotionValueEvent, useSpring } from "motion/react";
 import { useEffect, useState } from "react";
+import { useMotionValue, useMotionValueEvent, useSpring } from "motion/react";
 
 export default function AnimatedNumber({
   value,
@@ -25,7 +25,7 @@ export default function AnimatedNumber({
   }, [value, motionValue]);
 
   return (
-    <span className="tabular-nums font-mono font-light">
+    <span className="tabular-nums  font-light">
       {display}
       {suffix}
     </span>

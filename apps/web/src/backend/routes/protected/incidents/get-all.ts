@@ -1,4 +1,4 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { and, eq, gte, inArray, lte } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
@@ -169,7 +169,15 @@ export function registerGetAllIncidents(api: OpenAPIHono<AppEnv>) {
           severity: i.severity,
           incidentType: i.incidentType,
           status: i.status,
-          assignees: i.assignees ? (() => { try { return JSON.parse(i.assignees); } catch { return []; } })() : [],
+          assignees: i.assignees
+            ? (() => {
+                try {
+                  return JSON.parse(i.assignees);
+                } catch {
+                  return [];
+                }
+              })()
+            : [],
           postMortemTitle: i.postMortemTitle,
           postMortemContent: i.postMortemContent,
           startedAt: i.startedAt.getTime(),

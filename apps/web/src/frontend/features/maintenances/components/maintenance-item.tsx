@@ -1,8 +1,8 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { useParams } from "@tanstack/react-router";
 import { format } from "date-fns";
-import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useDeleteMaintenance } from "../api/use-delete-maintenance";
 import MaintenanceForm from "../forms/maintenance-form";
 import type { Maintenance } from "../schemas";
@@ -28,7 +28,7 @@ export default function MaintenanceItem({ item }: { item: Maintenance }) {
 
   return (
     <div
-      className={`p-2 border rounded-sm ${isActive ? "border-l-green-700 border-l-4 rounded-l" : ""}`}
+      className={`p-2 border  ${isActive ? "border-l-green-700 border-l-4 -l" : ""}`}
     >
       <div className="flex justify-between items-center">
         <div className="space-y-2">

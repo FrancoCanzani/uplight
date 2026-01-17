@@ -1,3 +1,4 @@
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import {
   Select,
   SelectContent,
@@ -5,7 +6,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { LOCATIONS } from "../constants";
 
 export default function RegionFilter({
@@ -39,7 +39,7 @@ export default function RegionFilter({
   };
 
   const filteredLocations = LOCATIONS.filter((loc) =>
-    availableRegions.includes(loc.id)
+    availableRegions.includes(loc.id),
   );
 
   const currentLabel = currentRegion

@@ -1,7 +1,7 @@
 import type { HeartbeatResponse } from "../schemas";
 
 export async function fetchHeartbeats(
-  teamId: number
+  teamId: number,
 ): Promise<HeartbeatResponse[]> {
   const response = await fetch(`/api/heartbeats/${teamId}`);
 

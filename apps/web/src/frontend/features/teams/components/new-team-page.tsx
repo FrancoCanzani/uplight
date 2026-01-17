@@ -1,9 +1,9 @@
+import { useForm } from "@tanstack/react-form";
+import { getRouteApi, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useForm } from "@tanstack/react-form";
-import { Link, getRouteApi } from "@tanstack/react-router";
 import { useCreateTeam } from "../api/use-create-team";
 import { CreateTeamSchema, type CreateTeam } from "../schemas";
 
@@ -30,7 +30,10 @@ export function NewTeamPage() {
     <div className="max-w-xl w-full mx-auto space-y-8">
       <PageHeader
         title="New Team"
-        backLink={{ to: "/$teamId/team", params: { teamId: String(currentTeam.id) } }}
+        backLink={{
+          to: "/$teamId/team",
+          params: { teamId: String(currentTeam.id) },
+        }}
       />
       <form
         onSubmit={(e: React.FormEvent<HTMLFormElement>) => {

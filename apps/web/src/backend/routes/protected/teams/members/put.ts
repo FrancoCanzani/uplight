@@ -1,11 +1,11 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { and, eq, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
-import { eq, and, sql } from "drizzle-orm";
 import { createDb } from "../../../../db";
-import { teamMember } from "../../../../db/schema";
 import { user } from "../../../../db/auth-schema";
+import { teamMember } from "../../../../db/schema";
 import type { AppEnv } from "../../../../types";
-import { UpdateMemberRoleSchema, TeamMemberResponseSchema } from "../schemas";
+import { TeamMemberResponseSchema, UpdateMemberRoleSchema } from "../schemas";
 
 const route = createRoute({
   method: "put",
@@ -63,8 +63,8 @@ export function registerPutTeamMember(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(teamMember.teamId, teamContext.teamId),
-          eq(teamMember.userId, userId)
-        )
+          eq(teamMember.userId, userId),
+        ),
       )
       .limit(1);
 
@@ -92,8 +92,8 @@ export function registerPutTeamMember(api: OpenAPIHono<AppEnv>) {
         .where(
           and(
             eq(teamMember.teamId, teamContext.teamId),
-            eq(teamMember.role, "owner")
-          )
+            eq(teamMember.role, "owner"),
+          ),
         );
 
       if (ownerCount.count <= 1) {
@@ -110,8 +110,8 @@ export function registerPutTeamMember(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(teamMember.teamId, teamContext.teamId),
-          eq(teamMember.userId, userId)
-        )
+          eq(teamMember.userId, userId),
+        ),
       );
 
     // Get updated member with user details
@@ -128,8 +128,8 @@ export function registerPutTeamMember(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(teamMember.teamId, teamContext.teamId),
-          eq(teamMember.userId, userId)
-        )
+          eq(teamMember.userId, userId),
+        ),
       )
       .limit(1);
 
@@ -141,7 +141,7 @@ export function registerPutTeamMember(api: OpenAPIHono<AppEnv>) {
         role: updatedMember.role,
         createdAt: updatedMember.createdAt.toISOString(),
       },
-      200
+      200,
     );
   });
 }

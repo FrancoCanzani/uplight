@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { TeamMemberResponse } from "../schemas";
 
 export async function fetchTeamMembers(
-  teamId: string
+  teamId: string,
 ): Promise<TeamMemberResponse[]> {
   const response = await fetch(`/api/teams/${teamId}/members`);
 
@@ -20,4 +20,3 @@ export function useTeamMembers(teamId: string) {
     queryFn: () => fetchTeamMembers(teamId),
   });
 }
-

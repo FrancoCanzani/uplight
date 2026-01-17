@@ -14,7 +14,7 @@ function createAuth(env?: Env) {
           {
             provider: "sqlite",
             schema: authSchema,
-          }
+          },
         )
       : drizzleAdapter({} as D1Database, {
           provider: "sqlite",

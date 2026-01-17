@@ -10,10 +10,10 @@ export interface Incident {
 export default async function fetchIncidents(
   teamId: string,
   monitorId: string,
-  limit: number = 1
+  limit: number = 1,
 ): Promise<Incident | null> {
   const response = await fetch(
-    `/api/monitors/${teamId}/${monitorId}/incidents?limit=${limit}`
+    `/api/monitors/${teamId}/${monitorId}/incidents?limit=${limit}`,
   );
 
   if (!response.ok) {

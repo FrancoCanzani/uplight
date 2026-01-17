@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { getRouteApi } from "@tanstack/react-router";
+import { useDebounce } from "use-debounce";
 import { PageHeader } from "@/components/page-header";
 import {
   Select,
@@ -6,17 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TiptapEditor from "@/components/ui/tiptap-editor";
 import { formatCause, formatDate, formatDuration } from "@lib/utils";
-import { getRouteApi } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { useDebounce } from "use-debounce";
 import { useTeamMembers } from "../../teams/api/use-team-members";
 import { useUpdateIncident } from "../api/use-update-incident";
 import useUpdateIncidentPostMortem from "../api/use-update-incident-post-mortem";
@@ -33,10 +28,10 @@ export default function IncidentPage() {
   const updateIncident = useUpdateIncident();
 
   const [postMortemTitle, setPostMortemTitle] = useState(
-    incident.postMortemTitle ?? ""
+    incident.postMortemTitle ?? "",
   );
   const [postMortemContent, setPostMortemContent] = useState(
-    incident.postMortemContent ?? ""
+    incident.postMortemContent ?? "",
   );
 
   const [debouncedTitle] = useDebounce(postMortemTitle, 1000);
@@ -67,7 +62,7 @@ export default function IncidentPage() {
               setShowSaved(true);
               setTimeout(() => setShowSaved(false), 2000);
             },
-          }
+          },
         );
       }
     }
@@ -110,150 +105,162 @@ export default function IncidentPage() {
       <div className="lg:flex lg:gap-6">
         <div className="flex-1 min-w-0">
           <Tabs defaultValue="overview">
-          <TabsList variant="line">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="postmortem">Post-mortem</TabsTrigger>
-          </TabsList>
+            <TabsList variant="line">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="postmortem">Post-mortem</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="overview" className="mt-6 space-y-8">
-            {(incident.description || incident.hint) && (
-              <div className="space-y-4 text-sm">
-                {incident.description && (
-                  <div>
-                    <p className="text-muted-foreground text-xs mb-1">Description</p>
-                    <p className="leading-relaxed">{incident.description}</p>
-                  </div>
-                )}
-                {incident.hint && (
-                  <div>
-                    <p className="text-muted-foreground text-xs mb-1">Suggested action</p>
-                    <p className="leading-relaxed">{incident.hint}</p>
-                  </div>
-                )}
-              </div>
-            )}
+            <TabsContent value="overview" className="mt-6 space-y-8">
+              {(incident.description || incident.hint) && (
+                <div className="space-y-4 text-sm">
+                  {incident.description && (
+                    <div>
+                      <p className="text-muted-foreground text-xs mb-1">
+                        Description
+                      </p>
+                      <p className="leading-relaxed">{incident.description}</p>
+                    </div>
+                  )}
+                  {incident.hint && (
+                    <div>
+                      <p className="text-muted-foreground text-xs mb-1">
+                        Suggested action
+                      </p>
+                      <p className="leading-relaxed">{incident.hint}</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
-            <IncidentActivity teamMembers={teamMembers} />
-          </TabsContent>
+              <IncidentActivity teamMembers={teamMembers} />
+            </TabsContent>
 
-          <TabsContent value="postmortem" className="mt-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  Document what happened and how it was resolved.
-                </p>
-                {showSaved && (
-                  <span className="text-xs text-muted-foreground animate-pulse">
-                    Saved
-                  </span>
-                )}
-              </div>
+            <TabsContent value="postmortem" className="mt-6">
               <div className="space-y-4">
-                <input
-                  value={postMortemTitle}
-                  onChange={(e) => setPostMortemTitle(e.target.value)}
-                  placeholder="Post-mortem title..."
-                  className="w-full text-lg font-medium outline-none bg-transparent"
-                />
-                <TiptapEditor
-                  content={postMortemContent}
-                  onChange={setPostMortemContent}
-                  placeholder="Describe what happened, the impact, and how it was resolved..."
-                />
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    Document what happened and how it was resolved.
+                  </p>
+                  {showSaved && (
+                    <span className="text-xs text-muted-foreground animate-pulse">
+                      Saved
+                    </span>
+                  )}
+                </div>
+                <div className="space-y-4">
+                  <input
+                    value={postMortemTitle}
+                    onChange={(e) => setPostMortemTitle(e.target.value)}
+                    placeholder="Post-mortem title..."
+                    className="w-full text-lg font-medium outline-none bg-transparent"
+                  />
+                  <TiptapEditor
+                    content={postMortemContent}
+                    onChange={setPostMortemContent}
+                    placeholder="Describe what happened, the impact, and how it was resolved..."
+                  />
+                </div>
               </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        <aside className="mt-8 pt-6 border-t lg:mt-0 lg:pt-0 lg:border-t-0 lg:w-72 lg:shrink-0 lg:border-l lg:p-6">
+          <div className="space-y-5">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Status</span>
+              <IncidentStatusSelector currentStatus={incident.status} />
             </div>
-          </TabsContent>
-        </Tabs>
-      </div>
 
-      <aside className="mt-8 pt-6 border-t lg:mt-0 lg:pt-0 lg:border-t-0 lg:w-72 lg:shrink-0 lg:border-l lg:p-6">
-        <div className="space-y-5">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Status</span>
-            <IncidentStatusSelector currentStatus={incident.status} />
-          </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Severity</span>
+              <IncidentSeveritySelector
+                currentSeverity={incident.severity}
+                compact
+              />
+            </div>
 
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Severity</span>
-            <IncidentSeveritySelector
-              currentSeverity={incident.severity}
-              compact
-            />
-          </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Type</span>
+              <IncidentTypeSelector
+                currentType={incident.incidentType}
+                compact
+              />
+            </div>
 
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Type</span>
-            <IncidentTypeSelector
-              currentType={incident.incidentType}
-              compact
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Assigned to</span>
-            <Select
-              value={currentAssignee || "unassigned"}
-              onValueChange={handleAssigneeChange}
-              disabled={updateIncident.isPending}
-            >
-              <SelectTrigger className="w-auto h-7 text-xs border-0 bg-transparent px-2">
-                <SelectValue>
-                  {currentAssignee
-                    ? teamMembers.find((m) => m.userId === currentAssignee)?.name ||
-                      teamMembers.find((m) => m.userId === currentAssignee)?.email ||
-                      "Unknown"
-                    : "Unassigned"}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="unassigned">
-                  <span className="text-muted-foreground">Unassigned</span>
-                </SelectItem>
-                {teamMembers.map((member) => (
-                  <SelectItem key={member.userId} value={member.userId}>
-                    {member.name || member.email}
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Assigned to</span>
+              <Select
+                value={currentAssignee || "unassigned"}
+                onValueChange={handleAssigneeChange}
+                disabled={updateIncident.isPending}
+              >
+                <SelectTrigger className="w-auto h-7 text-xs border-0 bg-transparent px-2">
+                  <SelectValue>
+                    {currentAssignee
+                      ? teamMembers.find((m) => m.userId === currentAssignee)
+                          ?.name ||
+                        teamMembers.find((m) => m.userId === currentAssignee)
+                          ?.email ||
+                        "Unknown"
+                      : "Unassigned"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unassigned">
+                    <span className="text-muted-foreground">Unassigned</span>
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="border-t pt-5 space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Started</span>
-              <span className="tabular-nums">{formatDate(incident.startedAt)}</span>
+                  {teamMembers.map((member) => (
+                    <SelectItem key={member.userId} value={member.userId}>
+                      {member.name || member.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Duration</span>
-              <span className="tabular-nums">{formatDuration(duration)}</span>
-            </div>
-
-            {incident.acknowledgedAt && (
+            <div className="border-t pt-5 space-y-3">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Acknowledged</span>
-                <span className="tabular-nums">{formatDate(incident.acknowledgedAt)}</span>
-              </div>
-            )}
-
-            {incident.recoveredAt && (
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Recovered</span>
-                <span className="tabular-nums text-green-600">
-                  {formatDate(incident.recoveredAt)}
+                <span className="text-muted-foreground">Started</span>
+                <span className="tabular-nums">
+                  {formatDate(incident.startedAt)}
                 </span>
               </div>
-            )}
 
-            {incident.resolvedAt && (
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Resolved</span>
-                <span className="tabular-nums">{formatDate(incident.resolvedAt)}</span>
+                <span className="text-muted-foreground">Duration</span>
+                <span className="tabular-nums">{formatDuration(duration)}</span>
               </div>
-            )}
+
+              {incident.acknowledgedAt && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Acknowledged</span>
+                  <span className="tabular-nums">
+                    {formatDate(incident.acknowledgedAt)}
+                  </span>
+                </div>
+              )}
+
+              {incident.recoveredAt && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Recovered</span>
+                  <span className="tabular-nums text-green-600">
+                    {formatDate(incident.recoveredAt)}
+                  </span>
+                </div>
+              )}
+
+              {incident.resolvedAt && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Resolved</span>
+                  <span className="tabular-nums">
+                    {formatDate(incident.resolvedAt)}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </aside>
+        </aside>
       </div>
     </div>
   );

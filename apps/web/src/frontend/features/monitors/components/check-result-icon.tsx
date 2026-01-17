@@ -1,13 +1,13 @@
-import { cn } from "@/lib/utils";
 import {
-  CheckCircle2,
-  XCircle,
   AlertTriangle,
-  Clock,
-  Wrench,
-  Loader2,
+  CheckCircle2,
   Circle,
+  Clock,
+  Loader2,
+  Wrench,
+  XCircle,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function CheckResultIcon({
   result,

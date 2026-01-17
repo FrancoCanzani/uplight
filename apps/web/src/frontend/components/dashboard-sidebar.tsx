@@ -1,4 +1,10 @@
 import {
+  getRouteApi,
+  Link,
+  useLocation,
+  useNavigate,
+} from "@tanstack/react-router";
+import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -12,12 +18,6 @@ import {
 import { TeamSwitcher } from "@/features/teams/components/team-switcher";
 import { signOut } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
-import {
-  getRouteApi,
-  Link,
-  useLocation,
-  useNavigate,
-} from "@tanstack/react-router";
 import { ActivityIcon } from "./motion/icons/activity";
 import { BadgeAlertIcon } from "./motion/icons/badge-alert";
 import { BellIcon } from "./motion/icons/bell";

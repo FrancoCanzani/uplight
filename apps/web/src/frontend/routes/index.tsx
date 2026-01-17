@@ -1,7 +1,7 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useTeams } from "@/features/teams/api/use-teams";
 import { useSession } from "@/lib/auth/client";
-import { createFileRoute, Link } from "@tanstack/react-router";
 import "../index.css";
 
 export const Route = createFileRoute("/")({
@@ -15,7 +15,7 @@ function Index() {
 
   return (
     <div className="min-h-screen p-4 sm:p-8 bg-surface">
-      <div className="border rounded shadow-xs bg-background">
+      <div className="border  shadow-xs bg-background">
         <div className="max-w-2xl mx-auto space-y-8">
           <header className="p-4 py-8 flex items-center justify-between">
             <h1 className="font-medium uppercase tracking-wide text-xl">
@@ -69,7 +69,7 @@ function Index() {
 
             <p>If this speaks to you, try it now:</p>
 
-            <div className="border text-sm py-2 px-3 rounded flex items-center justify-between">
+            <div className="border text-sm py-2 px-3  flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-xl">✦</span>
                 <div>
@@ -80,16 +80,12 @@ function Index() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <span className="border px-3 py-1.5 rounded text-xs">
-                  $7 / month
-                </span>
-                <span className="border px-3 py-1.5 rounded text-xs">
-                  $70 / year
-                </span>
+                <span className="border px-3 py-1.5  text-xs">$7 / month</span>
+                <span className="border px-3 py-1.5  text-xs">$70 / year</span>
               </div>
             </div>
 
-            <div className="border text-sm py-2 px-3 rounded flex items-center justify-between">
+            <div className="border text-sm py-2 px-3  flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-xl text-muted-foreground">○</span>
                 <div>
@@ -99,7 +95,7 @@ function Index() {
                   </p>
                 </div>
               </div>
-              <span className="border px-3 py-1.5 rounded text-xs">
+              <span className="border px-3 py-1.5  text-xs">
                 Free / forever
               </span>
             </div>

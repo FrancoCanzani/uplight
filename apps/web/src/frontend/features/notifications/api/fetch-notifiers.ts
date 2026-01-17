@@ -1,7 +1,7 @@
 import type { Notifier } from "../schemas";
 
 export default async function fetchNotifiers(
-  teamId: string
+  teamId: string,
 ): Promise<Notifier[]> {
   const response = await fetch(`/api/notifications/${teamId}`);
 

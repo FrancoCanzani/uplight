@@ -10,4 +10,3 @@ export function expandStatusCodes(selectedValues: string[]): number[] {
   }
   return Array.from(codes).sort((a, b) => a - b);
 }
-

@@ -60,6 +60,7 @@ This application uses [Better Auth](https://www.better-auth.com/) with email/pas
 **Database Tables**: `user`, `account`, `session`, `verification`
 
 **Usage**:
+
 - Signup: `signUp.email()` from `@/lib/auth/client`
 - Login: `signIn.email()` from `@/lib/auth/client`
 - Session: `useSession()` hook provides current user and session state
@@ -67,17 +68,20 @@ This application uses [Better Auth](https://www.better-auth.com/) with email/pas
 ### Initial Setup (After Cloning)
 
 1. **Install dependencies**:
+
    ```bash
    bun install
    ```
 
 2. **Set up local database**:
+
    ```bash
    # Apply migrations to local D1 database
    bun run db:migrate:local
    ```
 
 3. **Configure environment variables** (create `.env.local`):
+
    ```bash
    # Optional: For Drizzle Kit to connect to remote D1
    CLOUDFLARE_ACCOUNT_ID=your_account_id
@@ -97,6 +101,7 @@ The local database is automatically created in `.wrangler/state/v3/d1/` when you
 ### Production Deployment
 
 1. **Set Cloudflare secrets** (one-time setup):
+
    ```bash
    # Generate a secure random string for BETTER_AUTH_SECRET
    bunx wrangler secret put BETTER_AUTH_SECRET --env production
@@ -105,6 +110,7 @@ The local database is automatically created in `.wrangler/state/v3/d1/` when you
    ```
 
 2. **Apply migrations to production database**:
+
    ```bash
    # This applies all migrations from the drizzle/ folder
    bunx wrangler d1 migrations apply uplight-prod --remote --env production

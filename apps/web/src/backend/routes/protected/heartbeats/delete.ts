@@ -1,5 +1,5 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { eq, and } from "drizzle-orm";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { heartbeat } from "../../../db/schema";
@@ -51,8 +51,8 @@ export function registerDeleteHeartbeat(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(heartbeat.id, Number(heartbeatId)),
-          eq(heartbeat.teamId, teamContext.teamId)
-        )
+          eq(heartbeat.teamId, teamContext.teamId),
+        ),
       );
 
     if (!existing) {

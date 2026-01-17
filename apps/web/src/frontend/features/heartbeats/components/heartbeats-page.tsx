@@ -1,6 +1,6 @@
+import { getRouteApi, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { getRouteApi, Link } from "@tanstack/react-router";
 import HeartbeatsList from "./heartbeats-list";
 
 export default function HeartbeatsPage() {

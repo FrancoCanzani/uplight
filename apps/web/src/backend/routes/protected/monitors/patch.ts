@@ -1,9 +1,9 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
-import type { AppEnv } from "../../../types";
 import { createDb } from "../../../db";
 import { monitor } from "../../../db/schema";
-import { eq, and } from "drizzle-orm";
+import type { AppEnv } from "../../../types";
 
 const PatchMonitorParamsSchema = z.object({
   teamId: z.string().openapi({ param: { name: "teamId", in: "path" } }),
@@ -64,8 +64,8 @@ export function registerPatchMonitorStatus(app: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(monitor.id, parseInt(monitorId, 10)),
-          eq(monitor.teamId, teamContext.teamId)
-        )
+          eq(monitor.teamId, teamContext.teamId),
+        ),
       )
       .returning({ id: monitor.id, status: monitor.status });
 

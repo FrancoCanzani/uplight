@@ -1,17 +1,17 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { eq, and } from "drizzle-orm";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { notifier } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import {
-  UpdateNotifierSchema,
-  NotifierResponseSchema,
-  EmailConfigSchema,
-  SlackConfigSchema,
   DiscordConfigSchema,
-  WebhookConfigSchema,
+  EmailConfigSchema,
   GitHubConfigSchema,
+  NotifierResponseSchema,
+  SlackConfigSchema,
+  UpdateNotifierSchema,
+  WebhookConfigSchema,
 } from "./schemas";
 
 const route = createRoute({
@@ -62,8 +62,8 @@ export function registerPutNotifier(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(notifier.id, Number(notifierId)),
-          eq(notifier.teamId, teamContext.teamId)
-        )
+          eq(notifier.teamId, teamContext.teamId),
+        ),
       )
       .limit(1);
 
@@ -110,7 +110,7 @@ export function registerPutNotifier(api: OpenAPIHono<AppEnv>) {
             createdAt: result.createdAt.getTime(),
             updatedAt: result.updatedAt.getTime(),
           },
-          200
+          200,
         );
       }
       case "slack": {
@@ -125,7 +125,7 @@ export function registerPutNotifier(api: OpenAPIHono<AppEnv>) {
             createdAt: result.createdAt.getTime(),
             updatedAt: result.updatedAt.getTime(),
           },
-          200
+          200,
         );
       }
       case "discord": {
@@ -140,7 +140,7 @@ export function registerPutNotifier(api: OpenAPIHono<AppEnv>) {
             createdAt: result.createdAt.getTime(),
             updatedAt: result.updatedAt.getTime(),
           },
-          200
+          200,
         );
       }
       case "webhook": {
@@ -155,7 +155,7 @@ export function registerPutNotifier(api: OpenAPIHono<AppEnv>) {
             createdAt: result.createdAt.getTime(),
             updatedAt: result.updatedAt.getTime(),
           },
-          200
+          200,
         );
       }
       case "github": {
@@ -170,7 +170,7 @@ export function registerPutNotifier(api: OpenAPIHono<AppEnv>) {
             createdAt: result.createdAt.getTime(),
             updatedAt: result.updatedAt.getTime(),
           },
-          200
+          200,
         );
       }
       default:

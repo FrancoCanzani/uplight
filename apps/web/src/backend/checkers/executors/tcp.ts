@@ -1,9 +1,9 @@
 import { connect } from "cloudflare:sockets";
-import type { TcpCheckRequest, RawCheckResult } from "../types";
+import type { RawCheckResult, TcpCheckRequest } from "../types";
 
 export async function performTcpCheck(
   request: TcpCheckRequest,
-  timeout: number
+  timeout: number,
 ): Promise<RawCheckResult> {
   const startTime = performance.now();
 

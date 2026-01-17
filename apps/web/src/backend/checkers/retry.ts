@@ -24,7 +24,7 @@ export function sleep(ms: number): Promise<void> {
 
 export async function withRetry(
   checkFn: () => Promise<RawCheckResult>,
-  config: CheckConfig
+  config: CheckConfig,
 ): Promise<RawCheckResult & { retryCount: number }> {
   let lastResult: RawCheckResult | null = null;
   let retryCount = 0;

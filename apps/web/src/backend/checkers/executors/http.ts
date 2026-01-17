@@ -1,5 +1,5 @@
-import type { HttpCheckRequest, RawCheckResult, IncidentCause } from "../types";
-import { truncate, headersToRecord } from "../../lib/utils";
+import { headersToRecord, truncate } from "../../lib/utils";
+import type { HttpCheckRequest, IncidentCause, RawCheckResult } from "../types";
 
 const MAX_BODY_SIZE = 1024 * 1024;
 const BODY_TRUNCATE = 2048;
@@ -22,7 +22,7 @@ function isSslError(error: Error): boolean {
 
 export async function performHttpCheck(
   request: HttpCheckRequest,
-  timeout: number
+  timeout: number,
 ): Promise<RawCheckResult> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);

@@ -10,7 +10,7 @@ export default function NoDataMessage({
   return (
     <p
       className={cn(
-        "text-muted-foreground border border-dashed rounded text-xs py-8 text-center",
+        "text-muted-foreground border border-dashed  text-xs py-8 text-center",
         className,
       )}
     >

@@ -1,6 +1,5 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { eq, and } from "drizzle-orm";
-import { z } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { maintenance, monitor } from "../../../db/schema";
@@ -41,8 +40,8 @@ export function registerGetAllMaintenance(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(monitor.id, Number(monitorId)),
-          eq(monitor.teamId, teamContext.teamId)
-        )
+          eq(monitor.teamId, teamContext.teamId),
+        ),
       )
       .limit(1);
 
@@ -64,7 +63,7 @@ export function registerGetAllMaintenance(api: OpenAPIHono<AppEnv>) {
         endsAt: m.endsAt.getTime(),
         createdAt: m.createdAt.getTime(),
       })),
-      200
+      200,
     );
   });
 }

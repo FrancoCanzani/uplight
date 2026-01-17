@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import { getRouteApi } from "@tanstack/react-router";
 import AnimatedNumber from "@/components/motion/animated-number";
 import { PageHeader } from "@/components/page-header";
 import {
@@ -7,8 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { formatDate } from "@lib/utils";
-import { getRouteApi } from "@tanstack/react-router";
-import { useMemo } from "react";
 import calculatePercentiles from "../utils/calculate-percentiles";
 import getLocationLabel from "../utils/get-location-label";
 import CheckStatusChart from "./check-status-chart";
@@ -60,7 +60,10 @@ export default function MonitorPage() {
     <div className="space-y-12 w-full lg:max-w-4xl mx-auto">
       <PageHeader
         title={monitor.name}
-        subtitle={monitor.url || (monitor.host ? `${monitor.host}:${monitor.port}` : undefined)}
+        subtitle={
+          monitor.url ||
+          (monitor.host ? `${monitor.host}:${monitor.port}` : undefined)
+        }
         backLink={{ to: "/$teamId/monitors", params: { teamId } }}
         actions={
           <>
@@ -170,7 +173,7 @@ export default function MonitorPage() {
         <Card size="xs">
           <CardHeader>
             <CardDescription>Last Check</CardDescription>
-            <CardTitle className="tabular-nums text-lg font-mono font-light">
+            <CardTitle className="tabular-nums text-lg  font-light">
               {stats.lastCheckAt ? formatDate(stats.lastCheckAt) : "-"}
             </CardTitle>
           </CardHeader>

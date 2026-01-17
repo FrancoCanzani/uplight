@@ -1,3 +1,13 @@
+import { useState } from "react";
+import { getRouteApi, Link } from "@tanstack/react-router";
+import {
+  MoreVertical,
+  Pause,
+  Pencil,
+  Play,
+  Trash2,
+  Wrench,
+} from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,13 +27,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { getRouteApi, Link } from "@tanstack/react-router";
-import { MoreVertical, Pause, Pencil, Play, Trash2, Wrench } from "lucide-react";
-import { useState } from "react";
 import { useDeleteMonitor } from "../api/use-delete-monitor";
 import { useToggleMonitorStatus } from "../api/use-toggle-monitor-status";
 
-function getMonitorDomain(monitor: { type: string; host?: string | null; url?: string | null; domainCheck?: { domain: string } | null }): string {
+function getMonitorDomain(monitor: {
+  type: string;
+  host?: string | null;
+  url?: string | null;
+  domainCheck?: { domain: string } | null;
+}): string {
   if (monitor.type === "tcp") {
     return monitor.host || "";
   }
@@ -80,11 +92,13 @@ export default function MonitorActions() {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="xs">
-            <MoreVertical className="size-3" />
-          </Button>
-        </DropdownMenuTrigger>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="outline" size="xs">
+              <MoreVertical className="size-3" />
+            </Button>
+          }
+        ></DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem
             onClick={(e) => {
@@ -158,7 +172,7 @@ export default function MonitorActions() {
               value={deleteConfirmation}
               onChange={(e) => setDeleteConfirmation(e.target.value)}
               placeholder={monitorDomain}
-              className="font-mono text-xs"
+              className=" text-xs"
             />
           </div>
           <AlertDialogFooter>

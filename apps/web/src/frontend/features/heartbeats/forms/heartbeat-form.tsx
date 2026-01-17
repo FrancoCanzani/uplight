@@ -1,3 +1,5 @@
+import { useForm } from "@tanstack/react-form";
+import { useParams } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -14,8 +16,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useForm } from "@tanstack/react-form";
-import { useParams } from "@tanstack/react-router";
 import { useCreateHeartbeat } from "../api/use-create-heartbeat";
 import { useUpdateHeartbeat } from "../api/use-update-heartbeat";
 import { GRACE_PERIODS, PERIODS } from "../constants";
@@ -86,7 +86,7 @@ export function HeartbeatForm({
       <div className="space-y-6">
         <div className="space-y-4">
           <div>
-            <FieldLabel>Heartbeat Information</FieldLabel>
+            <FieldLabel>Heartbeat InfoIconrmation</FieldLabel>
             <FieldDescription>
               Configure your heartbeat monitor for cron jobs, scheduled tasks,
               or background workers.

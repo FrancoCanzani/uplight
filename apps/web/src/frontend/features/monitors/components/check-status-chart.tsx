@@ -1,3 +1,6 @@
+import { useMemo } from "react";
+import { format, startOfDay } from "date-fns";
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import NoDataMessage from "@/components/no-data-message";
 import {
   ChartContainer,
@@ -7,9 +10,6 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { format, startOfDay } from "date-fns";
-import { useMemo } from "react";
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import type { CheckResult } from "../api/fetch-checks";
 
 // Colors match the app's status colors from utils.ts
@@ -116,7 +116,7 @@ export default function CheckStatusChart({
         <ChartTooltip
           content={
             <ChartTooltipContent
-              className="rounded"
+              className=""
               labelFormatter={(_, payload) => {
                 if (payload?.[0]?.payload?.date) {
                   return payload[0].payload.date;
@@ -126,12 +126,14 @@ export default function CheckStatusChart({
               formatter={(value, name, item) => {
                 const total = item.payload.total;
                 const count = item.payload[name as keyof DailyData] as number;
-                const percent = total > 0 ? ((count / total) * 100).toFixed(1) : "0";
-                const label = chartConfig[name as keyof typeof chartConfig]?.label || name;
+                const percent =
+                  total > 0 ? ((count / total) * 100).toFixed(1) : "0";
+                const label =
+                  chartConfig[name as keyof typeof chartConfig]?.label || name;
                 return (
                   <div className="flex w-full justify-between gap-4">
                     <span className="text-muted-foreground">{label}</span>
-                    <span className="font-mono font-medium">
+                    <span className=" font-medium">
                       {count} ({percent}%)
                     </span>
                   </div>

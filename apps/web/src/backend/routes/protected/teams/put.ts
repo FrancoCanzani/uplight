@@ -1,10 +1,10 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { HTTPException } from "hono/http-exception";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
+import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { team } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
-import { UpdateTeamSchema, TeamResponseSchema } from "./schemas";
+import { TeamResponseSchema, UpdateTeamSchema } from "./schemas";
 
 const route = createRoute({
   method: "put",
@@ -72,8 +72,7 @@ export function registerPutTeam(api: OpenAPIHono<AppEnv>) {
         createdAt: updatedTeam.createdAt.toISOString(),
         updatedAt: updatedTeam.updatedAt.toISOString(),
       },
-      200
+      200,
     );
   });
 }
-

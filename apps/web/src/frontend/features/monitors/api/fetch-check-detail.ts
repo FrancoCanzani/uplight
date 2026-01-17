@@ -15,10 +15,10 @@ export interface CheckDetail {
 export async function fetchCheckDetail(
   teamId: string,
   monitorId: string,
-  checkId: string
+  checkId: string,
 ): Promise<CheckDetail> {
   const response = await fetch(
-    `/api/monitors/${teamId}/${monitorId}/checks/${checkId}`
+    `/api/monitors/${teamId}/${monitorId}/checks/${checkId}`,
   );
 
   if (!response.ok) {
@@ -26,7 +26,7 @@ export async function fetchCheckDetail(
       .json()
       .catch(() => ({ error: "Unknown error" }));
     throw new Error(
-      errorData.error || `Failed to fetch check: ${response.statusText}`
+      errorData.error || `Failed to fetch check: ${response.statusText}`,
     );
   }
 

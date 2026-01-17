@@ -1,5 +1,5 @@
-import { PageHeader } from "@/components/page-header";
 import { getRouteApi } from "@tanstack/react-router";
+import { PageHeader } from "@/components/page-header";
 import { HeartbeatForm } from "../forms/heartbeat-form";
 
 const routeApi = getRouteApi("/(dashboard)/$teamId");

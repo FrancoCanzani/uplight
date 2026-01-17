@@ -40,7 +40,7 @@ export const HTTP_STATUS_CODES: Record<number, string> = {
   200: "OK",
   201: "Created",
   202: "Accepted",
-  203: "Non-Authoritative Information",
+  203: "Non-Authoritative InfoIconrmation",
   204: "No Content",
   205: "Reset Content",
   206: "Partial Content",
@@ -76,7 +76,7 @@ export const HTTP_STATUS_CODES: Record<number, string> = {
   418: "I'm a teapot",
   421: "Misdirected Request",
   422: "Unprocessable Entity",
-  423: "Locked",
+  423: "LockIconed",
   424: "Failed Dependency",
   425: "Too Early",
   426: "Upgrade Required",
@@ -101,7 +101,7 @@ export const STATUS_CODE_OPTIONS = [
   {
     type: "range" as const,
     value: "1xx",
-    label: "1xx (Informational)",
+    label: "1xx (InfoIconrmational)",
     codes: Array.from({ length: 100 }, (_, i) => 100 + i),
   },
   {

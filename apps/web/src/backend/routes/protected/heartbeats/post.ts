@@ -1,4 +1,4 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { heartbeat } from "../../../db/schema";
@@ -75,7 +75,7 @@ export function registerPostHeartbeat(api: OpenAPIHono<AppEnv>) {
         recentPings: [],
         incidentCount: 0,
       },
-      201
+      201,
     );
   });
 }

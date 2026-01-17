@@ -1,14 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { cn } from "@lib/utils";
+import { useMemo, useState } from "react";
 import { getRouteApi, Link } from "@tanstack/react-router";
 import {
   flexRender,
@@ -20,7 +10,17 @@ import {
 } from "@tanstack/react-table";
 import { formatDistanceToNowStrict } from "date-fns";
 import { ChevronsUpDown } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { cn } from "@lib/utils";
 import { GRACE_PERIODS } from "../constants";
 import type { HeartbeatResponse } from "../schemas";
 
@@ -52,7 +52,7 @@ export default function HeartbeatsTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [nameFilter, setNameFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<"up" | "down" | "all">(
-    "all"
+    "all",
   );
 
   const statusCounts = useMemo(() => {
@@ -147,7 +147,7 @@ export default function HeartbeatsTable() {
       cell: ({ row }) => {
         const lastPingAt = row.getValue("lastPingAt") as number | null;
         return (
-          <div className="text-xs font-mono tracking-tight text-muted-foreground">
+          <div className="text-xs  tracking-tight text-muted-foreground">
             {lastPingAt
               ? formatDistanceToNowStrict(lastPingAt, {
                   addSuffix: true,
@@ -181,7 +181,7 @@ export default function HeartbeatsTable() {
 
     if (nameFilter) {
       filtered = filtered.filter((heartbeat) =>
-        heartbeat.name.toLowerCase().includes(nameFilter.toLowerCase())
+        heartbeat.name.toLowerCase().includes(nameFilter.toLowerCase()),
       );
     }
 
@@ -200,7 +200,7 @@ export default function HeartbeatsTable() {
   });
 
   return (
-    <div className="space-y-2 bg-surface rounded p-3">
+    <div className="space-y-2 bg-surface  p-3">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Button
@@ -234,7 +234,7 @@ export default function HeartbeatsTable() {
         />
       </div>
 
-      <div className="rounded p-1 bg-background overflow-x-scroll">
+      <div className=" p-1 bg-background overflow-x-scroll">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -255,7 +255,7 @@ export default function HeartbeatsTable() {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -283,7 +283,7 @@ export default function HeartbeatsTable() {
                         <TableCell key={cell.id}>
                           {flexRender(
                             cell.column.columnDef.cell,
-                            cell.getContext()
+                            cell.getContext(),
                           )}
                         </TableCell>
                       ))}

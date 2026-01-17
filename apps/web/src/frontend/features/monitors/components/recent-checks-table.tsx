@@ -49,7 +49,7 @@ export default function RecentChecksTable({
             <TableCell className="">
               {getLocationLabel(check.location)}
             </TableCell>
-            <TableCell className="tabular-nums font-mono">
+            <TableCell className="tabular-nums ">
               {check.responseTime}ms
             </TableCell>
             <TableCell className="text-muted-foreground">

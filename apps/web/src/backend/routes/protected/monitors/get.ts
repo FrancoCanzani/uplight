@@ -1,8 +1,8 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { and, eq, desc } from "drizzle-orm";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { and, desc, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { monitor, domainCheckResult, checkResult } from "../../../db/schema";
+import { checkResult, domainCheckResult, monitor } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { MonitorResponseSchema } from "./schemas";
 
@@ -41,8 +41,8 @@ export function registerGetMonitor(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(monitor.teamId, teamContext.teamId),
-          eq(monitor.id, Number(monitorId))
-        )
+          eq(monitor.id, Number(monitorId)),
+        ),
       )
       .limit(1);
 
@@ -92,7 +92,7 @@ export function registerGetMonitor(api: OpenAPIHono<AppEnv>) {
         lastCheckAt: lastCheck?.checkedAt.getTime() ?? null,
         lastResponseTime: lastCheck?.responseTime ?? null,
       },
-      200
+      200,
     );
   });
 }

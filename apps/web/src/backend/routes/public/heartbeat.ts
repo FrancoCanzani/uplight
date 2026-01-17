@@ -1,16 +1,13 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { eq, and } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import { Context } from "hono";
 import { createDb } from "../../db";
 import { heartbeat, heartbeatIncident, heartbeatPing } from "../../db/schema";
 import type { AppEnv } from "../../types";
 
-const ALLOWED_METHODS = ["GET", "POST", "HEAD", "PUT"] as const;
-type AllowedMethod = (typeof ALLOWED_METHODS)[number];
+type AllowedMethod = "GET" | "POST" | "HEAD" | "PUT";
 
-async function handlePing(
-  c: Parameters<Parameters<OpenAPIHono<AppEnv>["get"]>[1]>[0],
-  method: AllowedMethod,
-) {
+async function handlePing(c: Context<AppEnv>, method: AllowedMethod) {
   const { slug } = c.req.param();
 
   const db = createDb(c.env.DB);

@@ -1,3 +1,5 @@
+import { useForm } from "@tanstack/react-form";
+import { useParams } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -8,8 +10,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { useForm } from "@tanstack/react-form";
-import { useParams } from "@tanstack/react-router";
 import { useCreateNotifier } from "../api/use-create-notifier";
 import { useUpdateNotifier } from "../api/use-update-notifier";
 import type { Notifier, SlackFormInput } from "../schemas";
@@ -71,7 +71,7 @@ export default function SlackNotifierForm({
             notifierId: existing.id,
             data,
           },
-          { onSuccess: onClose }
+          { onSuccess: onClose },
         );
       } else {
         createMutation.mutate(
@@ -79,7 +79,7 @@ export default function SlackNotifierForm({
             teamId,
             data,
           },
-          { onSuccess: onClose }
+          { onSuccess: onClose },
         );
       }
     },

@@ -1,3 +1,4 @@
+import { useTheme } from "next-themes";
 import {
   Select,
   SelectContent,
@@ -5,7 +6,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTheme } from "next-themes";
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();

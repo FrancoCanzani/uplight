@@ -1,10 +1,10 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { requireTeamMember } from "../../../middleware/team";
 import type { AppEnv } from "../../../types";
-import { registerPostMaintenance } from "./post";
-import { registerGetAllMaintenance } from "./get-all";
-import { registerPutMaintenance } from "./put";
 import { registerDeleteMaintenance } from "./delete";
+import { registerGetAllMaintenance } from "./get-all";
+import { registerPostMaintenance } from "./post";
+import { registerPutMaintenance } from "./put";
 
 const maintenance = new OpenAPIHono<AppEnv>();
 

@@ -1,3 +1,5 @@
+import { useForm } from "@tanstack/react-form";
+import { useParams } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -15,8 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { useForm } from "@tanstack/react-form";
-import { useParams } from "@tanstack/react-router";
 import { useCreateNotifier } from "../api/use-create-notifier";
 import { useUpdateNotifier } from "../api/use-update-notifier";
 import type { Notifier, WebhookFormInput } from "../schemas";
@@ -75,7 +75,7 @@ export default function WebhookNotifierForm({
             notifierId: existing.id,
             data,
           },
-          { onSuccess: onClose }
+          { onSuccess: onClose },
         );
       } else {
         createMutation.mutate(
@@ -83,7 +83,7 @@ export default function WebhookNotifierForm({
             teamId,
             data,
           },
-          { onSuccess: onClose }
+          { onSuccess: onClose },
         );
       }
     },

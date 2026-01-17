@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import { getRouteApi, Link, useLocation } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 import { ActivityIcon } from "./motion/icons/activity";
 import { BadgeAlertIcon } from "./motion/icons/badge-alert";
 import { BellIcon } from "./motion/icons/bell";
@@ -13,7 +13,11 @@ const navItems = [
   { icon: ActivityIcon, path: "/$teamId/monitors", segment: "monitors" },
   { icon: HeartIcon, path: "/$teamId/heartbeats", segment: "heartbeats" },
   { icon: BadgeAlertIcon, path: "/$teamId/incidents", segment: "incidents" },
-  { icon: LayoutPanelTopIcon, path: "/$teamId/status-pages", segment: "status-pages" },
+  {
+    icon: LayoutPanelTopIcon,
+    path: "/$teamId/status-pages",
+    segment: "status-pages",
+  },
   { icon: BellIcon, path: "/$teamId/notifications", segment: "notifications" },
   { icon: SettingsIcon, path: "/$teamId/settings", segment: "settings" },
 ];
@@ -35,10 +39,8 @@ export function BottomNav() {
               to={item.path}
               params={{ teamId }}
               className={cn(
-                "p-2 rounded-md transition-colors",
-                isActive
-                  ? "text-foreground"
-                  : "text-muted-foreground/70"
+                "p-2 transition-colors",
+                isActive ? "text-foreground" : "text-muted-foreground/70",
               )}
             >
               <Icon size={16} />

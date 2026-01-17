@@ -4,7 +4,7 @@ import type { InviteMember, TeamMemberResponse } from "../schemas";
 
 async function inviteMember(
   teamId: string,
-  data: InviteMember
+  data: InviteMember,
 ): Promise<TeamMemberResponse> {
   const response = await fetch(`/api/teams/${teamId}/members`, {
     method: "POST",
@@ -43,4 +43,3 @@ export function useInviteMember() {
     },
   });
 }
-

@@ -1,3 +1,4 @@
+import { MoreVertical } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -6,11 +7,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useUpdateMemberRole } from "../api/use-update-member-role";
 import { useRemoveMember } from "../api/use-remove-member";
-import { canManageMembers, canChangeRole, canRemoveMember } from "../utils/permissions";
+import { useUpdateMemberRole } from "../api/use-update-member-role";
 import type { TeamMemberResponse, TeamRole } from "../schemas";
-import { MoreVertical } from "lucide-react";
+import {
+  canChangeRole,
+  canManageMembers,
+  canRemoveMember,
+} from "../utils/permissions";
 
 export function TeamMemberItem({
   member,
@@ -55,7 +59,7 @@ export function TeamMemberItem({
   return (
     <div className="flex items-center justify-between py-3 border-b last:border-0">
       <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-medium">
+        <div className="flex h-8 w-8 items-center justify-center -full bg-muted text-xs font-medium">
           {member.name.charAt(0).toUpperCase()}
         </div>
         <div>
@@ -64,50 +68,54 @@ export function TeamMemberItem({
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Badge variant={roleVariants[member.role]}>
-          {member.role}
-        </Badge>
+        <Badge variant={roleVariants[member.role]}>{member.role}</Badge>
         {canManage && (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon-sm">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="ghost" size="icon-sm">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              }
+            ></DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {member.role !== "owner" && canChangeRole(currentUserRole, member.role, "owner") && (
-                <DropdownMenuItem
-                  onClick={() => handleRoleChange("owner")}
-                  disabled={updateRole.isPending}
-                >
-                  Make owner
-                </DropdownMenuItem>
-              )}
-              {member.role !== "admin" && canChangeRole(currentUserRole, member.role, "admin") && (
-                <DropdownMenuItem
-                  onClick={() => handleRoleChange("admin")}
-                  disabled={updateRole.isPending}
-                >
-                  Make admin
-                </DropdownMenuItem>
-              )}
-              {member.role !== "member" && canChangeRole(currentUserRole, member.role, "member") && (
-                <DropdownMenuItem
-                  onClick={() => handleRoleChange("member")}
-                  disabled={updateRole.isPending}
-                >
-                  Make member
-                </DropdownMenuItem>
-              )}
-              {!isCurrentUser && canRemoveMember(currentUserRole, member.role) && (
-                <DropdownMenuItem
-                  onClick={handleRemove}
-                  className="text-destructive"
-                  disabled={removeMember.isPending}
-                >
-                  Remove from team
-                </DropdownMenuItem>
-              )}
+              {member.role !== "owner" &&
+                canChangeRole(currentUserRole, member.role, "owner") && (
+                  <DropdownMenuItem
+                    onClick={() => handleRoleChange("owner")}
+                    disabled={updateRole.isPending}
+                  >
+                    Make owner
+                  </DropdownMenuItem>
+                )}
+              {member.role !== "admin" &&
+                canChangeRole(currentUserRole, member.role, "admin") && (
+                  <DropdownMenuItem
+                    onClick={() => handleRoleChange("admin")}
+                    disabled={updateRole.isPending}
+                  >
+                    Make admin
+                  </DropdownMenuItem>
+                )}
+              {member.role !== "member" &&
+                canChangeRole(currentUserRole, member.role, "member") && (
+                  <DropdownMenuItem
+                    onClick={() => handleRoleChange("member")}
+                    disabled={updateRole.isPending}
+                  >
+                    Make member
+                  </DropdownMenuItem>
+                )}
+              {!isCurrentUser &&
+                canRemoveMember(currentUserRole, member.role) && (
+                  <DropdownMenuItem
+                    onClick={handleRemove}
+                    className="text-destructive"
+                    disabled={removeMember.isPending}
+                  >
+                    Remove from team
+                  </DropdownMenuItem>
+                )}
             </DropdownMenuContent>
           </DropdownMenu>
         )}
@@ -115,4 +123,3 @@ export function TeamMemberItem({
     </div>
   );
 }
-

@@ -1,9 +1,9 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
-import { eq, and } from "drizzle-orm";
 import { createDb } from "../../../../db";
-import { team, teamMember } from "../../../../db/schema";
 import { user } from "../../../../db/auth-schema";
+import { team, teamMember } from "../../../../db/schema";
 import type { AppEnv } from "../../../../types";
 import { InviteMemberSchema, TeamMemberResponseSchema } from "../schemas";
 
@@ -91,8 +91,8 @@ export function registerPostTeamMember(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(teamMember.teamId, teamContext.teamId),
-          eq(teamMember.userId, targetUser.id)
-        )
+          eq(teamMember.userId, targetUser.id),
+        ),
       )
       .limit(1);
 
@@ -120,7 +120,7 @@ export function registerPostTeamMember(api: OpenAPIHono<AppEnv>) {
         role: newMember.role,
         createdAt: newMember.createdAt.toISOString(),
       },
-      201
+      201,
     );
   });
 }

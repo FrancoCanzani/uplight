@@ -1,6 +1,6 @@
+import { createFileRoute, getRouteApi } from "@tanstack/react-router";
 import { PageHeader } from "@/components/page-header";
 import { NewMonitorForm } from "@/features/monitors/forms/new-monitor-form";
-import { createFileRoute, getRouteApi } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(dashboard)/$teamId/monitors/new")({
   component: RouteComponent,

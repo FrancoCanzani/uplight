@@ -1,15 +1,3 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { signOut } from "@/lib/auth/client";
-import { cn } from "@/lib/utils";
 import {
   getRouteApi,
   Link,
@@ -25,6 +13,18 @@ import {
   Plus,
   Users,
 } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { signOut } from "@/lib/auth/client";
+import { cn } from "@/lib/utils";
 
 const routeApi = getRouteApi("/(dashboard)/$teamId");
 
@@ -59,18 +59,22 @@ export function MobileMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          className="rounded p-1 flex items-center justify-center hover:bg-muted transition-colors"
-        >
-          <Menu className="size-5" />
-        </button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            className="p-1 flex items-center justify-center hover:bg-muted transition-colors"
+          >
+            <Menu className="size-5" />
+          </button>
+        }
+      ></DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
-          Switch team
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
+            Switch team
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuGroup>
           {teams.map((team) => (
             <DropdownMenuItem
@@ -101,31 +105,37 @@ export function MobileMenu() {
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild className="cursor-pointer gap-2">
-            <Link
-              to="/$teamId/team"
-              params={{ teamId }}
-              className={cn(
-                "w-full flex items-center gap-2",
-                locationArr.includes("team") &&
-                  !locationArr.includes("teams") &&
-                  "bg-muted",
-              )}
-            >
-              <Users className="size-4 text-muted-foreground" />
-              <span>Manage team</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild className="cursor-pointer gap-2">
-            <Link
-              to="/$teamId/new-team"
-              params={{ teamId }}
-              className="w-full flex items-center gap-2"
-            >
-              <Plus className="size-4 text-muted-foreground" />
-              <span>Create new team</span>
-            </Link>
-          </DropdownMenuItem>
+          <DropdownMenuItem
+            render={
+              <Link
+                to="/$teamId/team"
+                params={{ teamId }}
+                className={cn(
+                  "w-full flex items-center gap-2",
+                  locationArr.includes("team") &&
+                    !locationArr.includes("teams") &&
+                    "bg-muted",
+                )}
+              >
+                <Users className="size-4 text-muted-foreground" />
+                <span>Manage team</span>
+              </Link>
+            }
+            className="cursor-pointer gap-2"
+          ></DropdownMenuItem>
+          <DropdownMenuItem
+            render={
+              <Link
+                to="/$teamId/new-team"
+                params={{ teamId }}
+                className="w-full flex items-center gap-2"
+              >
+                <Plus className="size-4 text-muted-foreground" />
+                <span>Create new team</span>
+              </Link>
+            }
+            className="cursor-pointer gap-2"
+          ></DropdownMenuItem>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
@@ -137,21 +147,21 @@ export function MobileMenu() {
             return (
               <DropdownMenuItem
                 key={item.path}
-                asChild
+                render={
+                  <Link
+                    to={item.path}
+                    params={{ teamId }}
+                    className={cn(
+                      "w-full flex items-center gap-2",
+                      isActive && "bg-muted",
+                    )}
+                  >
+                    <Icon className="size-4 text-muted-foreground" />
+                    <span>{item.label}</span>
+                  </Link>
+                }
                 className="cursor-pointer gap-2"
-              >
-                <Link
-                  to={item.path}
-                  params={{ teamId }}
-                  className={cn(
-                    "w-full flex items-center gap-2",
-                    isActive && "bg-muted",
-                  )}
-                >
-                  <Icon className="size-4 text-muted-foreground" />
-                  <span>{item.label}</span>
-                </Link>
-              </DropdownMenuItem>
+              ></DropdownMenuItem>
             );
           })}
         </DropdownMenuGroup>

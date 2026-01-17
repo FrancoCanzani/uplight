@@ -1,22 +1,22 @@
-import { eq, and } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { createDb } from "../../db";
-import { notifier, teamMember, incident } from "../../db/schema";
 import { user } from "../../db/auth-schema";
-import type { CheckResult } from "../types";
-import type { IncidentEvent } from "../incidents/manager";
+import { incident, notifier, teamMember } from "../../db/schema";
 import { formatDuration } from "../../lib/utils";
 import {
-  EmailConfigSchema,
-  SlackConfigSchema,
   DiscordConfigSchema,
-  WebhookConfigSchema,
+  EmailConfigSchema,
   GitHubConfigSchema,
-  type EmailConfig,
-  type SlackConfig,
+  SlackConfigSchema,
+  WebhookConfigSchema,
   type DiscordConfig,
-  type WebhookConfig,
+  type EmailConfig,
   type GitHubConfig,
+  type SlackConfig,
+  type WebhookConfig,
 } from "../../routes/protected/notifications/schemas";
+import type { IncidentEvent } from "../incidents/manager";
+import type { CheckResult } from "../types";
 
 interface NotificationContext {
   monitorId: number;
@@ -31,7 +31,7 @@ interface NotificationContext {
 
 async function getIncidentData(
   incidentId: number,
-  env: Env
+  env: Env,
 ): Promise<{
   title: string | null;
   description: string | null;
@@ -79,7 +79,7 @@ async function getIncidentData(
 
 async function sendEmailNotification(
   _config: EmailConfig,
-  ctx: NotificationContext
+  ctx: NotificationContext,
 ): Promise<void> {
   const db = createDb(ctx.env.DB);
 
@@ -100,7 +100,7 @@ async function sendEmailNotification(
         .filter((r) => r.result !== "success")
         .map((r) => r.location);
       const firstError = ctx.results.find(
-        (r) => r.result !== "success"
+        (r) => r.result !== "success",
       )?.errorMessage;
 
       const title = incidentData.title || `Monitor DOWN: ${ctx.monitorName}`;
@@ -153,7 +153,7 @@ async function sendEmailNotification(
 
 async function sendSlackNotification(
   config: SlackConfig,
-  ctx: NotificationContext
+  ctx: NotificationContext,
 ): Promise<void> {
   const failedLocations = ctx.results
     .filter((r) => r.result !== "success")
@@ -164,7 +164,7 @@ async function sendSlackNotification(
       if (event.type === "created") {
         const incidentData = await getIncidentData(event.incidentId, ctx.env);
         const firstError = ctx.results.find(
-          (r) => r.result !== "success"
+          (r) => r.result !== "success",
         )?.errorMessage;
 
         const title = incidentData.title || `Monitor DOWN: ${ctx.monitorName}`;
@@ -246,7 +246,7 @@ async function sendSlackNotification(
 
 async function sendDiscordNotification(
   config: DiscordConfig,
-  ctx: NotificationContext
+  ctx: NotificationContext,
 ): Promise<void> {
   const failedLocations = ctx.results
     .filter((r) => r.result !== "success")
@@ -257,7 +257,7 @@ async function sendDiscordNotification(
       if (event.type === "created") {
         const incidentData = await getIncidentData(event.incidentId, ctx.env);
         const firstError = ctx.results.find(
-          (r) => r.result !== "success"
+          (r) => r.result !== "success",
         )?.errorMessage;
 
         const title = incidentData.title || `Monitor DOWN: ${ctx.monitorName}`;
@@ -384,7 +384,7 @@ async function sendDiscordNotification(
 
 async function sendWebhookNotification(
   config: WebhookConfig,
-  ctx: NotificationContext
+  ctx: NotificationContext,
 ): Promise<void> {
   const failedLocations = ctx.results
     .filter((r) => r.result !== "success")
@@ -395,7 +395,7 @@ async function sendWebhookNotification(
       if (event.type === "created") {
         const incidentData = await getIncidentData(event.incidentId, ctx.env);
         const firstError = ctx.results.find(
-          (r) => r.result !== "success"
+          (r) => r.result !== "success",
         )?.errorMessage;
 
         const payload = {
@@ -456,7 +456,7 @@ async function sendWebhookNotification(
 
 async function sendGitHubNotification(
   config: GitHubConfig,
-  ctx: NotificationContext
+  ctx: NotificationContext,
 ): Promise<void> {
   const failedLocations = ctx.results
     .filter((r) => r.result !== "success")
@@ -467,7 +467,7 @@ async function sendGitHubNotification(
       if (event.type === "created") {
         const incidentData = await getIncidentData(event.incidentId, ctx.env);
         const firstError = ctx.results.find(
-          (r) => r.result !== "success"
+          (r) => r.result !== "success",
         )?.errorMessage;
         const repoParts = config.repository.split("/");
         if (repoParts.length !== 2) {
@@ -537,7 +537,7 @@ async function sendGitHubNotification(
 }
 
 export async function sendNotifications(
-  ctx: NotificationContext
+  ctx: NotificationContext,
 ): Promise<void> {
   const db = createDb(ctx.env.DB);
 
@@ -561,7 +561,7 @@ export async function sendNotifications(
         parsedConfig = JSON.parse(notifierRecord.config);
       } catch {
         console.error(
-          `[NOTIFIER] Invalid JSON config for ${notifierRecord.type} notifier ${notifierRecord.id}`
+          `[NOTIFIER] Invalid JSON config for ${notifierRecord.type} notifier ${notifierRecord.id}`,
         );
         return;
       }
@@ -594,13 +594,13 @@ export async function sendNotifications(
         }
         default:
           console.error(
-            `[NOTIFIER] Unknown notifier type: ${notifierRecord.type satisfies never}`
+            `[NOTIFIER] Unknown notifier type: ${notifierRecord.type satisfies never}`,
           );
       }
     } catch (error) {
       console.error(
         `[NOTIFIER] Failed to send ${notifierRecord.type} notification:`,
-        error
+        error,
       );
     }
   });

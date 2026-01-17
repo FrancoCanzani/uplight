@@ -1,4 +1,4 @@
-import { eq, and, ne } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { createDb } from "../../db";
 import { heartbeat, heartbeatIncident } from "../../db/schema";
 
@@ -31,8 +31,8 @@ export async function handleHeartbeatChecks(env: Env): Promise<void> {
         .where(
           and(
             eq(heartbeatIncident.heartbeatId, hb.id),
-            eq(heartbeatIncident.status, "ongoing")
-          )
+            eq(heartbeatIncident.status, "ongoing"),
+          ),
         );
 
       if (!existingIncident) {

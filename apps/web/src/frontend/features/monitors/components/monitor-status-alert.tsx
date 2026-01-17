@@ -1,7 +1,7 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { formatCause } from "@lib/utils";
 import { getRouteApi, Link } from "@tanstack/react-router";
 import { AlertTriangle, Wrench, X } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { formatCause } from "@lib/utils";
 
 export default function MonitorStatusAlert({
   status,

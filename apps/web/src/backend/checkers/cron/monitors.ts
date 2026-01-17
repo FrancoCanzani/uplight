@@ -1,6 +1,6 @@
-import { eq, ne, lte, gt, and } from "drizzle-orm";
+import { and, eq, gt, lte, ne } from "drizzle-orm";
 import { createDb } from "../../db";
-import { monitor, maintenance, checkResult } from "../../db/schema";
+import { checkResult, maintenance, monitor } from "../../db/schema";
 import { runPipeline } from "../pipeline";
 import type { Location } from "../types";
 
@@ -18,7 +18,7 @@ export async function handleMonitorChecks(env: Env): Promise<void> {
     .select()
     .from(maintenance)
     .where(
-      and(lte(maintenance.startsAt, nowDate), gt(maintenance.endsAt, nowDate))
+      and(lte(maintenance.startsAt, nowDate), gt(maintenance.endsAt, nowDate)),
     );
 
   const maintenanceByMonitor = new Map<number, boolean>();
@@ -81,7 +81,7 @@ export async function handleMonitorChecks(env: Env): Promise<void> {
   if (monitorsToCheck.length === 0) {
     if (monitorsInMaintenance.length > 0) {
       console.log(
-        `[CRON] ${monitorsInMaintenance.length} monitors in maintenance`
+        `[CRON] ${monitorsInMaintenance.length} monitors in maintenance`,
       );
     }
     return;

@@ -15,7 +15,10 @@ export const CreateHeartbeatSchema = z
       .int()
       .min(60)
       .max(2592000)
-      .openapi({ example: 86400, description: "Expected interval between pings in seconds" }),
+      .openapi({
+        example: 86400,
+        description: "Expected interval between pings in seconds",
+      }),
     gracePeriod: z
       .number()
       .int()

@@ -1,8 +1,9 @@
+import { useForm } from "@tanstack/react-form";
+import { useParams } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Field,
-  FieldContent,
   FieldDescription,
   FieldError,
   FieldGroup,
@@ -18,8 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useForm } from "@tanstack/react-form";
-import { useParams } from "@tanstack/react-router";
 import { useCreateMonitor } from "../api/use-create-monitor";
 import { useUpdateMonitor } from "../api/use-update-monitor";
 import { INTERVALS, LOCATIONS } from "../constants";
@@ -94,7 +93,7 @@ export function TcpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
       <div className="space-y-6">
         <div className="space-y-4">
           <div>
-            <FieldLabel>Basic Information</FieldLabel>
+            <FieldLabel>Basic InfoIconrmation</FieldLabel>
             <FieldDescription>
               Provide a name and connection details for your TCP monitor.
             </FieldDescription>
@@ -205,7 +204,7 @@ export function TcpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 const selectedInterval = INTERVALS.find(
-                  (interval) => interval.value === field.state.value
+                  (interval) => interval.value === field.state.value,
                 );
                 return (
                   <Field data-invalid={isInvalid}>
@@ -356,7 +355,7 @@ export function TcpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                               } else {
                                 const currentValue = field.state.value;
                                 const newValue = currentValue.filter(
-                                  (loc) => loc !== location.id
+                                  (loc) => loc !== location.id,
                                 );
                                 field.handleChange(newValue);
                               }

@@ -1,9 +1,9 @@
+import { and, eq } from "drizzle-orm";
 import { Context, Next } from "hono";
-import { eq, and } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../db";
 import { team, teamMember } from "../db/schema";
-import type { TeamRole, AppEnv } from "../types";
+import type { AppEnv, TeamRole } from "../types";
 
 export function requireTeamMember(allowedRoles?: TeamRole[]) {
   return async (c: Context<AppEnv>, next: Next) => {

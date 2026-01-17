@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { getRouteApi } from "@tanstack/react-router";
+import { MoreHorizontal, Plus } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import {
   AlertDialog,
@@ -28,9 +31,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSession } from "@/lib/auth/client";
-import { getRouteApi } from "@tanstack/react-router";
-import { MoreHorizontal, Plus } from "lucide-react";
-import { useState } from "react";
 import { useDeleteTeam } from "../api/use-delete-team";
 import { useRemoveMember } from "../api/use-remove-member";
 import { useTeamMembers } from "../api/use-team-members";
@@ -106,11 +106,13 @@ function MemberRow({
         </Badge>
         {canManage && (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon-sm" className="h-6 w-6">
-                <MoreHorizontal className="h-3.5 w-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="ghost" size="icon-sm" className="h-6 w-6">
+                  <MoreHorizontal className="h-3.5 w-3.5" />
+                </Button>
+              }
+            ></DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {member.role !== "owner" &&
                 canChangeRole(currentUserRole, member.role, "owner") && (

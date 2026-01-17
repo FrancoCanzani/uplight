@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,12 +11,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { UpdateTeamForm } from "../forms/update-team-form";
-import { TeamMembersList } from "./team-members-list";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDeleteTeam } from "../api/use-delete-team";
-import { canManageTeam, canDeleteTeam } from "../utils/permissions";
+import { UpdateTeamForm } from "../forms/update-team-form";
 import type { TeamResponse, TeamRole } from "../schemas";
-import { Trash2 } from "lucide-react";
+import { canDeleteTeam, canManageTeam } from "../utils/permissions";
+import { TeamMembersList } from "./team-members-list";
 
 export function TeamSettings({
   team,
@@ -91,4 +91,3 @@ export function TeamSettings({
     </div>
   );
 }
-

@@ -1,17 +1,16 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
-import { z } from "@hono/zod-openapi";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { notifier } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import {
-  NotifierResponseSchema,
-  EmailConfigSchema,
-  SlackConfigSchema,
   DiscordConfigSchema,
-  WebhookConfigSchema,
+  EmailConfigSchema,
   GitHubConfigSchema,
+  NotifierResponseSchema,
+  SlackConfigSchema,
+  WebhookConfigSchema,
 } from "./schemas";
 
 const route = createRoute({

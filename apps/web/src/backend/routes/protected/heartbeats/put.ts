@@ -1,10 +1,10 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { eq, and } from "drizzle-orm";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { heartbeat } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
-import { UpdateHeartbeatSchema, HeartbeatResponseSchema } from "./schemas";
+import { HeartbeatResponseSchema, UpdateHeartbeatSchema } from "./schemas";
 
 const route = createRoute({
   method: "put",
@@ -58,8 +58,8 @@ export function registerPutHeartbeat(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(heartbeat.id, Number(heartbeatId)),
-          eq(heartbeat.teamId, teamContext.teamId)
-        )
+          eq(heartbeat.teamId, teamContext.teamId),
+        ),
       );
 
     if (!existing) {
@@ -95,7 +95,7 @@ export function registerPutHeartbeat(api: OpenAPIHono<AppEnv>) {
         recentPings: [],
         incidentCount: 0,
       },
-      200
+      200,
     );
   });
 }

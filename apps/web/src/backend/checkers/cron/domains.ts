@@ -1,7 +1,7 @@
+import { isValid, parseISO } from "date-fns";
 import { and, eq } from "drizzle-orm";
-import { parseISO, isValid } from "date-fns";
 import { createDb } from "../../db";
-import { monitor, domainCheckResult } from "../../db/schema";
+import { domainCheckResult, monitor } from "../../db/schema";
 
 interface DomainCheckerResponse {
   domain: string;
@@ -72,7 +72,7 @@ export async function handleDomainChecks(env: Env): Promise<void> {
 
       if (!response.ok) {
         console.error(
-          `[DOMAIN-CHECK] Failed to check domain for monitor ${mon.id}: ${response.status}`
+          `[DOMAIN-CHECK] Failed to check domain for monitor ${mon.id}: ${response.status}`,
         );
         continue;
       }
@@ -104,7 +104,7 @@ export async function handleDomainChecks(env: Env): Promise<void> {
     } catch (error) {
       console.error(
         `[DOMAIN-CHECK] Error checking domain for monitor ${mon.id}:`,
-        error instanceof Error ? error.message : "Unknown error"
+        error instanceof Error ? error.message : "Unknown error",
       );
       continue;
     }

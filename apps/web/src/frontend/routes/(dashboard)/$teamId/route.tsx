@@ -1,8 +1,8 @@
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { BottomNav } from "@/components/bottom-nav";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { fetchTeams } from "@/features/teams/api/use-teams";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(dashboard)/$teamId")({
   beforeLoad: async ({ context, location }) => {

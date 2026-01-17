@@ -1,3 +1,5 @@
+import { useForm } from "@tanstack/react-form";
+import { useParams } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -6,8 +8,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
-import { useForm } from "@tanstack/react-form";
-import { useParams } from "@tanstack/react-router";
 import { useCreateNotifier } from "../api/use-create-notifier";
 import { useUpdateNotifier } from "../api/use-update-notifier";
 import type { Notifier } from "../schemas";
@@ -61,7 +61,7 @@ export default function EmailNotifierForm({
               enabled: value.enabled,
             },
           },
-          { onSuccess: onClose }
+          { onSuccess: onClose },
         );
       } else {
         createMutation.mutate(
@@ -69,7 +69,7 @@ export default function EmailNotifierForm({
             teamId,
             data,
           },
-          { onSuccess: onClose }
+          { onSuccess: onClose },
         );
       }
     },

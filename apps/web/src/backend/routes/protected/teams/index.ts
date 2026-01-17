@@ -1,15 +1,15 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
-import type { AppEnv } from "../../../types";
 import { requireTeamMember } from "../../../middleware/team";
+import type { AppEnv } from "../../../types";
+import { registerDeleteTeam } from "./delete";
 import { registerGetTeam } from "./get";
 import { registerGetAllTeams } from "./get-all";
-import { registerPostTeam } from "./post";
-import { registerPutTeam } from "./put";
-import { registerDeleteTeam } from "./delete";
+import { registerDeleteTeamMember } from "./members/delete";
 import { registerGetAllTeamMembers } from "./members/get-all";
 import { registerPostTeamMember } from "./members/post";
 import { registerPutTeamMember } from "./members/put";
-import { registerDeleteTeamMember } from "./members/delete";
+import { registerPostTeam } from "./post";
+import { registerPutTeam } from "./put";
 
 const teams = new OpenAPIHono<AppEnv>();
 

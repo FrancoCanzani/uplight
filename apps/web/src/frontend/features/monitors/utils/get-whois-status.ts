@@ -1,4 +1,4 @@
-import { parseISO, differenceInDays } from "date-fns";
+import { differenceInDays, parseISO } from "date-fns";
 import type { DomainCheck } from "../schemas";
 
 export type StatusResult =

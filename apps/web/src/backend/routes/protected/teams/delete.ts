@@ -1,6 +1,6 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { HTTPException } from "hono/http-exception";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
+import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { team } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
@@ -55,4 +55,3 @@ export function registerDeleteTeam(api: OpenAPIHono<AppEnv>) {
     return c.body(null, 204);
   });
 }
-

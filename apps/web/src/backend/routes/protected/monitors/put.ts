@@ -1,8 +1,8 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { and, eq, desc } from "drizzle-orm";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { and, desc, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { monitor, domainCheckResult, checkResult } from "../../../db/schema";
+import { checkResult, domainCheckResult, monitor } from "../../../db/schema";
 import { encrypt } from "../../../lib/crypto";
 import type { AppEnv } from "../../../types";
 import {
@@ -71,8 +71,8 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(monitor.teamId, teamContext.teamId),
-          eq(monitor.id, Number(monitorId))
-        )
+          eq(monitor.id, Number(monitorId)),
+        ),
       )
       .limit(1);
 
@@ -116,7 +116,7 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
           : null;
       if (data.expectedStatusCodes !== undefined)
         baseUpdates.expectedStatusCodes = JSON.stringify(
-          data.expectedStatusCodes
+          data.expectedStatusCodes,
         );
       if (data.followRedirects !== undefined)
         baseUpdates.followRedirects = data.followRedirects;
@@ -134,8 +134,8 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
       .where(
         and(
           eq(monitor.teamId, teamContext.teamId),
-          eq(monitor.id, Number(monitorId))
-        )
+          eq(monitor.id, Number(monitorId)),
+        ),
       )
       .returning();
 
@@ -181,7 +181,7 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
         lastCheckAt: lastCheck?.checkedAt.getTime() ?? null,
         lastResponseTime: lastCheck?.responseTime ?? null,
       },
-      200
+      200,
     );
   });
 }

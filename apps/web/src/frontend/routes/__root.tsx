@@ -1,7 +1,7 @@
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import type { useSession } from "@/lib/auth/client";
-import { ThemeProvider } from "next-themes";
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 
 export interface RouterContext {
   auth: ReturnType<typeof useSession>;

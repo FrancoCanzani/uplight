@@ -1,3 +1,10 @@
+import { useEffect, useRef } from "react";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -7,13 +14,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { useEffect, useRef } from "react";
 
 interface ChecksDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

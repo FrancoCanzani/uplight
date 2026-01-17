@@ -1,3 +1,5 @@
+import { getRouteApi, Link, useNavigate } from "@tanstack/react-router";
+import { Check, ChevronsUpDown, Plus, Users } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,8 +11,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { getRouteApi, Link, useNavigate } from "@tanstack/react-router";
-import { Check, ChevronsUpDown, Plus, Users } from "lucide-react";
 
 const routeApi = getRouteApi("/(dashboard)/$teamId");
 
@@ -27,28 +27,32 @@ export function TeamSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="w-full border justify-between gap-2 px-2"
-        >
-          <div className="flex items-center gap-2 min-w-0">
-            <Avatar size="sm">
-              <AvatarFallback className="text-[10px]">
-                {currentTeam.name.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <span className="truncate text-sm font-medium">
-              {currentTeam.name}
-            </span>
-          </div>
-          <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[240px]">
-        <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
-          Switch team
-        </DropdownMenuLabel>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            className="w-full border justify-between gap-2 px-2"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <Avatar size="sm">
+                <AvatarFallback className="text-[10px]">
+                  {currentTeam.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <span className="truncate text-sm font-medium">
+                {currentTeam.name}
+              </span>
+            </div>
+            <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
+          </Button>
+        }
+      ></DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-60">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
+            Switch team
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuGroup>
           {teams.map((team) => (
             <DropdownMenuItem
