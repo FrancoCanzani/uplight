@@ -16,6 +16,7 @@ import getLocationLabel from "../utils/get-location-label";
 import { getSelectedOptions } from "../utils/get-selected-options";
 import { getSslStatus } from "../utils/get-ssl-status";
 import { getWhoisStatus } from "../utils/get-whois-status";
+import { getTextStatusColor } from "../utils/get-status-color";
 
 export default function MonitorInfoSheet({
   monitor,
@@ -49,7 +50,7 @@ export default function MonitorInfoSheet({
             <ConfigItem
               label="Status"
               value={
-                <Badge variant={"outline"} className={"capitalize"}>
+                <Badge variant={"outline"} className={cn("capitalize", getTextStatusColor(monitor.status))}>
                   {monitor.status}
                 </Badge>
               }

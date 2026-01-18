@@ -75,8 +75,8 @@ export default function MonitorPage() {
         <MonitorStatusAlert status={monitor.status} />
       )}
 
-      <div className="flex items-center justify-start gap-x-1.5">
-        Data from
+      <div className="flex items-center justify-start gap-x-1.5 flex-wrap">
+        <span>Data from</span>
         <TimePeriodFilter
           teamId={teamId}
           monitorId={monitorId}
@@ -84,7 +84,7 @@ export default function MonitorPage() {
         />
         {showRegionFilter ? (
           <>
-            in
+            <span>in</span>
             <RegionFilter
               teamId={teamId}
               monitorId={monitorId}
@@ -95,7 +95,7 @@ export default function MonitorPage() {
         ) : (
           availableRegions[0] && (
             <>
-              in{" "}
+              <span>in</span>
               <span className="text-muted-foreground">
                 {getLocationLabel(availableRegions[0])}
               </span>

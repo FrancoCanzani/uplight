@@ -87,18 +87,20 @@ export function ChecksFilters({
   };
 
   const dateFromValue = search.checkDateFrom
-    ? new Date(Number(search.checkDateFrom)).toISOString().slice(0, 16)
+    ? new Date(Number(search.checkDateFrom)).toISOString().slice(0, 10)
     : "";
 
   const dateToValue = search.checkDateTo
-    ? new Date(Number(search.checkDateTo)).toISOString().slice(0, 16)
+    ? new Date(Number(search.checkDateTo)).toISOString().slice(0, 10)
     : "";
 
   const handleDateFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value) {
       const selectedDate = new Date(value);
+      selectedDate.setHours(0, 0, 0, 0);
       const now = new Date();
+      now.setHours(0, 0, 0, 0);
       if (selectedDate > now) {
         return;
       }
@@ -112,6 +114,7 @@ export function ChecksFilters({
     const value = e.target.value;
     if (value) {
       const selectedDate = new Date(value);
+      selectedDate.setHours(23, 59, 59, 999);
       const now = new Date();
       if (selectedDate > now) {
         return;
@@ -122,7 +125,7 @@ export function ChecksFilters({
     }
   };
 
-  const maxDate = new Date().toISOString().slice(0, 16);
+  const maxDate = new Date().toISOString().slice(0, 10);
 
   const hasActiveFilters = !!(
     search.checkResult ||
@@ -206,7 +209,7 @@ export function ChecksFilters({
           <Input
             className="h-7"
             id="date-from"
-            type="datetime-local"
+            type="date"
             value={dateFromValue}
             onChange={handleDateFromChange}
             max={maxDate}
@@ -218,7 +221,7 @@ export function ChecksFilters({
           <Input
             className="h-7"
             id="date-to"
-            type="datetime-local"
+            type="date"
             value={dateToValue}
             onChange={handleDateToChange}
             max={maxDate}
