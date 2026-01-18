@@ -110,10 +110,16 @@ export function DashboardSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton>
+                <SidebarMenuButton
+                  className={cn(
+                    "",
+                    locationArr.includes("status-pages") && "bg-sidebar-accent",
+                  )}
+                >
                   <Link
                     className="w-full flex items-center gap-x-2 text-base font-light"
-                    to="/"
+                    to="/$teamId/status-pages"
+                    params={{ teamId }}
                   >
                     <LayoutPanelTopIcon />
                     Status Pages

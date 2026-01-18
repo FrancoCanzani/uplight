@@ -1,0 +1,223 @@
+# Notifications
+
+Get alerted when something goes wrong. Uplight supports multiple notification channels so you can be notified wherever you work.
+
+## Supported Channels
+
+| Channel | Best For |
+|---------|----------|
+| **Email** | Personal alerts, backup notifications |
+| **Slack** | Team collaboration, ops channels |
+| **Discord** | Community/team servers |
+| **Webhooks** | Custom integrations, automation |
+| **GitHub** | Creating issues for incidents |
+
+## Setting Up Notifications
+
+1. Navigate to **Settings** → **Notifications**
+2. Click **Add Channel**
+3. Select your channel type
+4. Configure the channel settings
+5. Click **Save**
+
+You can add multiple channels. All enabled channels receive notifications.
+
+---
+
+## Email
+
+Receive incident notifications directly in your inbox.
+
+### Setup
+
+1. Click **Add Channel** → **Email**
+2. Enter the email address
+3. Click **Save**
+
+You can add multiple email addresses by creating multiple email channels.
+
+### What You'll Receive
+
+- New incident alerts
+- Incident recovery notifications
+- Status updates (if configured)
+
+---
+
+## Slack
+
+Send notifications to a Slack channel for team visibility.
+
+### Setup
+
+1. Click **Add Channel** → **Slack**
+2. Click **Add to Slack** (or enter a webhook URL manually)
+3. Select the Slack channel to receive notifications
+4. Click **Save**
+
+### Using Incoming Webhooks
+
+If you prefer to set up manually:
+
+1. Go to your [Slack App settings](https://api.slack.com/apps)
+2. Create an app or select an existing one
+3. Enable **Incoming Webhooks**
+4. Create a webhook for your desired channel
+5. Copy the webhook URL
+6. Paste it in Uplight
+
+### Message Format
+
+Slack notifications include:
+- Monitor/heartbeat name
+- Current status
+- Incident severity
+- Link to the incident
+
+---
+
+## Discord
+
+Send notifications to a Discord channel.
+
+### Setup
+
+1. Click **Add Channel** → **Discord**
+2. Enter your Discord webhook URL
+3. Click **Save**
+
+### Getting a Discord Webhook URL
+
+1. Open your Discord server
+2. Go to **Server Settings** → **Integrations**
+3. Click **Webhooks** → **New Webhook**
+4. Name it (e.g., "Uplight Alerts")
+5. Select the channel
+6. Click **Copy Webhook URL**
+7. Paste it in Uplight
+
+### Message Format
+
+Discord notifications appear as rich embeds with:
+- Incident title
+- Status and severity
+- Timestamp
+- Link to view more
+
+---
+
+## Webhooks
+
+Send notifications to any URL. Perfect for custom integrations, automation, or connecting to tools Uplight doesn't natively support.
+
+### Setup
+
+1. Click **Add Channel** → **Webhook**
+2. Enter your webhook URL
+3. Click **Save**
+
+### Payload Format
+
+Uplight sends a POST request with JSON body:
+
+```json
+{
+  "event": "incident.created",
+  "incident": {
+    "id": "inc_123",
+    "title": "Monitor Down: API",
+    "status": "ongoing",
+    "severity": "high",
+    "type": "availability",
+    "createdAt": "2024-01-15T10:30:00Z"
+  },
+  "monitor": {
+    "id": "mon_456",
+    "name": "API",
+    "type": "http",
+    "url": "https://api.example.com/health"
+  }
+}
+```
+
+### Event Types
+
+| Event | Description |
+|-------|-------------|
+| `incident.created` | New incident created |
+| `incident.updated` | Incident status changed |
+| `incident.resolved` | Incident resolved |
+| `monitor.up` | Monitor recovered |
+| `monitor.down` | Monitor went down |
+
+### Verifying Webhooks
+
+For security, verify that webhooks are coming from Uplight by checking:
+- The source IP
+- A shared secret (if configured)
+
+---
+
+## GitHub
+
+Create GitHub issues automatically when incidents occur.
+
+### Setup
+
+1. Click **Add Channel** → **GitHub**
+2. Authenticate with GitHub
+3. Select the repository
+4. Click **Save**
+
+### What Happens
+
+When an incident is created:
+- A new GitHub issue is opened in your selected repo
+- Issue includes incident details, severity, and links
+- Issue is labeled appropriately
+
+When the incident is resolved:
+- The GitHub issue can be automatically closed (if enabled)
+
+---
+
+## Managing Channels
+
+### Enabling/Disabling
+
+Toggle a channel on or off without deleting it:
+
+1. Go to **Settings** → **Notifications**
+2. Find the channel
+3. Toggle the **Enabled** switch
+
+Disabled channels won't receive notifications but keep their configuration.
+
+### Testing
+
+Test your notification setup:
+
+1. Go to **Settings** → **Notifications**
+2. Find the channel
+3. Click **Test**
+
+A test notification will be sent to verify everything works.
+
+### Deleting
+
+To remove a channel:
+
+1. Go to **Settings** → **Notifications**
+2. Find the channel
+3. Click **Delete**
+4. Confirm
+
+---
+
+## Best Practices
+
+1. **Use multiple channels** - Have a backup (e.g., Slack + Email)
+2. **Don't over-notify** - Too many alerts leads to alert fatigue
+3. **Use Slack/Discord for teams** - Better visibility than individual emails
+4. **Set up webhooks for automation** - Auto-create tickets, trigger runbooks
+5. **Test after setup** - Always verify notifications work

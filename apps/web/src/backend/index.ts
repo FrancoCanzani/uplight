@@ -60,13 +60,14 @@ export default {
   async scheduled(
     controller: ScheduledController,
     env: Env,
-    ctx: ExecutionContext,
+    ctx: ExecutionContext, // eslint-disable-line
   ) {
     if (!controller.cron) {
-      // Fallback: run both checks if cron is null/undefined
+      // Fallback: run all checks if cron is null/undefined
       waitUntil(handleMonitorChecks(env));
+      waitUntil(handleHeartbeatChecks(env));
       waitUntil(handleDomainChecks(env));
-      console.log("Both checks processed (fallback - cron is null/undefined)");
+      console.log("All checks processed (fallback - cron is null/undefined)");
     } else {
       switch (controller.cron) {
         case "* * * * *":
@@ -79,10 +80,11 @@ export default {
           console.log("Domain check processed");
           break;
         default:
-          // Fallback: run both checks if cron is unrecognized
+          // Fallback: run all checks if cron is unrecognized
           waitUntil(handleMonitorChecks(env));
+          waitUntil(handleHeartbeatChecks(env));
           waitUntil(handleDomainChecks(env));
-          console.log("Both checks processed (fallback - unrecognized cron)");
+          console.log("All checks processed (fallback - unrecognized cron)");
           break;
       }
     }

@@ -1,0 +1,116 @@
+# Domains & SSL Monitoring
+
+Never be caught off guard by an expiring domain or SSL certificate. Uplight tracks expiration dates and alerts you before they become problems.
+
+## What's Monitored
+
+For each domain, Uplight tracks:
+
+### Domain Information
+- **Registration date** - When the domain was first registered
+- **Last updated** - When domain records were last changed
+- **Expiration date** - When the domain registration expires
+- **Registrar** - Where the domain is registered
+
+### SSL Certificate
+- **Issuer** - Certificate authority that issued the cert
+- **Valid from** - When the certificate became valid
+- **Expiration date** - When the certificate expires
+- **Self-signed status** - Whether it's a self-signed certificate
+
+## How It Works
+
+When you add a monitor for an HTTP endpoint, Uplight automatically:
+
+1. Checks the domain WHOIS information
+2. Inspects the SSL certificate
+3. Records expiration dates
+4. Alerts you as expirations approach
+
+Domain and SSL checks run twice daily to keep information current.
+
+## Viewing Domain Information
+
+1. Navigate to **Monitors**
+2. Select an HTTP monitor
+3. Click on the **Domain** or **SSL** tab
+
+You'll see current information and days until expiration.
+
+## Expiration Alerts
+
+Uplight alerts you at these intervals before expiration:
+
+| Days Before | Alert Level |
+|-------------|-------------|
+| 30 days | Warning |
+| 14 days | Warning |
+| 7 days | Urgent |
+| 1 day | Critical |
+
+Alerts are sent through your configured notification channels.
+
+## SSL Certificate Details
+
+### Understanding Certificate Status
+
+| Status | Meaning |
+|--------|---------|
+| **Valid** | Certificate is current and trusted |
+| **Expiring Soon** | Certificate expires within 30 days |
+| **Expired** | Certificate has expired (site will show errors) |
+| **Self-Signed** | Not issued by a trusted CA (browsers will warn) |
+
+### Self-Signed Certificates
+
+Uplight flags self-signed certificates because:
+- Browsers show security warnings to visitors
+- They may indicate a misconfiguration
+- Let's Encrypt makes free trusted certs easy to obtain
+
+If you intentionally use self-signed certs (internal tools, development), you can acknowledge this in the settings.
+
+## Domain Expiration
+
+### Why It Matters
+
+An expired domain means:
+- Your website goes offline
+- Email stops working
+- Someone else could register your domain
+- Loss of brand and SEO value
+
+### Best Practices
+
+1. **Enable auto-renewal** - Most registrars offer this
+2. **Keep payment info current** - Failed renewals cause expiration
+3. **Use multiple contacts** - Ensure renewal notices reach someone
+4. **Register for multiple years** - Reduces renewal frequency
+
+## Common Issues
+
+### "Domain information not available"
+
+This can happen when:
+- The domain uses privacy protection (WHOIS guard)
+- The TLD doesn't support WHOIS queries
+- The registrar blocks automated queries
+
+The SSL certificate information should still be available.
+
+### "SSL certificate shows wrong domain"
+
+This could indicate:
+- A CDN or proxy in front of your site
+- Misconfigured certificate
+- Using a shared hosting certificate
+
+Check your hosting configuration if the cert doesn't match your domain.
+
+## What Uplight Doesn't Do
+
+- **Domain registration** - Use your registrar to manage registration
+- **SSL certificate installation** - Use your hosting provider or cert manager
+- **Auto-renewal** - Set this up with your registrar/provider
+
+Uplight monitors and alerts, but you need to take action to renew.

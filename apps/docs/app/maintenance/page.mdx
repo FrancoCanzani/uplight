@@ -1,0 +1,139 @@
+# Maintenance Windows
+
+Schedule planned downtime to prevent false alerts. During a maintenance window, monitors are paused and your team isn't disturbed by expected outages.
+
+## When to Use Maintenance Windows
+
+Create a maintenance window when you know a service will be unavailable:
+
+- **Deployments** - Rolling out new code
+- **Infrastructure updates** - Server migrations, upgrades
+- **Database maintenance** - Backups, schema changes
+- **Planned restarts** - Scheduled reboots
+- **Third-party maintenance** - Upstream provider maintenance
+
+## Creating a Maintenance Window
+
+1. Navigate to **Maintenance** in the sidebar
+2. Click **Schedule Maintenance**
+3. Configure the window:
+   - **Name** - Describe the maintenance (e.g., "Database Migration")
+   - **Start Time** - When maintenance begins
+   - **End Time** - When maintenance ends
+   - **Monitors** - Which monitors are affected
+   - **Reason** - Optional notes about the maintenance
+4. Click **Create**
+
+## Maintenance Window Settings
+
+| Setting | Description |
+|---------|-------------|
+| **Name** | A descriptive title for the maintenance |
+| **Start Time** | When the window begins (UTC or local time) |
+| **End Time** | When the window ends |
+| **Monitors** | Select one or more monitors to pause |
+| **Reason** | Notes about what's being done (optional) |
+
+## What Happens During Maintenance
+
+When a maintenance window is active:
+
+1. Selected monitors show status as **Maintenance**
+2. Checks continue running but don't trigger alerts
+3. No incidents are created for failures
+4. No notifications are sent
+5. Check results are still recorded (for history)
+
+When the window ends:
+
+1. Monitors return to normal operation
+2. Status updates based on current check results
+3. Notifications resume
+4. Any failures detected will create incidents
+
+## Managing Maintenance Windows
+
+### Viewing Scheduled Maintenance
+
+Go to **Maintenance** to see:
+- Currently active maintenance windows
+- Upcoming scheduled windows
+- Past maintenance history
+
+### Editing a Window
+
+You can modify a maintenance window before it starts:
+
+1. Open the maintenance window
+2. Click **Edit**
+3. Make your changes
+4. Click **Save**
+
+### Ending Early
+
+If maintenance finishes ahead of schedule:
+
+1. Open the active maintenance window
+2. Click **End Now**
+
+Monitors immediately return to normal operation.
+
+### Extending
+
+If you need more time:
+
+1. Open the active maintenance window
+2. Click **Edit**
+3. Update the end time
+4. Click **Save**
+
+### Canceling
+
+To cancel a scheduled (not yet started) window:
+
+1. Open the maintenance window
+2. Click **Delete** or **Cancel**
+3. Confirm
+
+## Recurring Maintenance
+
+For regular maintenance (e.g., weekly restarts), you'll need to create individual windows. Uplight doesn't currently support recurring schedules.
+
+**Tip**: If you have regular maintenance, consider pausing monitors manually or using the API to automate window creation.
+
+## Monitor Status During Maintenance
+
+| Status | Meaning |
+|--------|---------|
+| **Maintenance** | Monitor is in an active maintenance window |
+| **Up** (after) | Monitor healthy when maintenance ended |
+| **Down** (after) | Monitor failing after maintenance ended (incident created) |
+
+## Best Practices
+
+1. **Schedule in advance** - Create windows before starting work
+2. **Add a buffer** - End time should include some cushion
+3. **Document the reason** - Helps with future reference
+4. **Select only affected monitors** - Don't pause everything unnecessarily
+5. **Communicate with your team** - Let others know about planned maintenance
+
+## Notifications and Maintenance
+
+During maintenance:
+- No "down" notifications are sent for selected monitors
+- Team members can see maintenance status in the dashboard
+
+After maintenance ends:
+- If a monitor is down, an incident is created and notifications are sent
+- "Up" status resumes normal operation silently
+
+## API Integration
+
+If you deploy frequently, consider automating maintenance windows via the API:
+
+1. Create a maintenance window before deployment
+2. Run your deployment
+3. Verify services are healthy
+4. End the maintenance window (or let it expire)
+
+This prevents alert noise during every deploy.

@@ -5,6 +5,11 @@ import { Activity, ChevronDown, ChevronRight, Heart } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { cn, formatCause, formatDuration } from "@lib/utils";
 import type { Incident, IncidentStatus } from "../types";
 import { calculateIncidentStats } from "../utils/calculate-stats";
@@ -100,10 +105,23 @@ export default function IncidentsPage() {
     }
   }
 
+  const hasIncidents = incidents && incidents.length > 0;
+  const hasVisibleIncidents = groups.some((g) => g.count > 0);
+
   return (
-    <div className="space-y-10 w-full lg:max-w-4xl mx-auto">
+    <div className="space-y-10 w-full h-full flex-1 lg:max-w-4xl mx-auto">
       <PageHeader title="Incidents" />
-      <div className="flex justify-between items-center gap-4">
+      {!hasIncidents ? (
+        <Empty className="flex-1 pt-36">
+          <EmptyTitle>No incidents found.</EmptyTitle>
+          <EmptyDescription>
+            You haven&apos;t had any incidents yet. Incidents will appear here
+            when monitors or heartbeats fail.
+          </EmptyDescription>
+        </Empty>
+      ) : (
+        <>
+          <div className="flex justify-between items-center gap-4">
         <div className="flex items-center gap-6 text-sm">
           <div>
             <div className="text-muted-foreground text-xs">Open</div>
@@ -175,63 +193,76 @@ export default function IncidentsPage() {
         </Button>
       </div>
 
-      <div className="space-y-4">
-        {groups.map((group) => {
-          const isExpanded = expandedGroups.has(group.status);
-          return (
-            <div key={group.status} className="space-y-2">
-              <button
-                onClick={() => toggleGroup(group.status)}
-                className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-foreground/80 transition-colors"
-              >
-                {isExpanded ? (
-                  <ChevronDown className="size-4" />
-                ) : (
-                  <ChevronRight className="size-4" />
-                )}
-                <span className="capitalize">
-                  {group.status} ({group.count})
-                </span>
-              </button>
-
-              {isExpanded && (
-                <div className="space-y-0 pl-3 text-sm">
-                  {group.incidents.map((incident) => (
-                    <div
-                      key={`${incident.type}-${incident.id}`}
-                      className={cn(
-                        "group flex items-center justify-between gap-4 py-1.5 px-2 hover:bg-surface transition-colors border-b border-border/35 last:border-b-0",
-                        incident.type === "monitor" && "cursor-pointer",
-                      )}
-                      onClick={() => handleIncidentClick(incident)}
+          <div className="space-y-4">
+            {hasVisibleIncidents ? (
+              groups.map((group) => {
+                if (group.count === 0) return null;
+                const isExpanded = expandedGroups.has(group.status);
+                return (
+                  <div key={group.status} className="space-y-2">
+                    <button
+                      onClick={() => toggleGroup(group.status)}
+                      className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-foreground/80 transition-colors"
                     >
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <span className="shrink-0 capitalize">
-                          {incident.type}
-                        </span>
-                        <span>*</span>
-                        <span className="shrink-0">{incident.monitorName}</span>
-                        <span className="text-muted-foreground truncate">
-                          {incident.title ?? formatCause(incident.cause)}
-                        </span>
-                      </div>
-
-                      <span className="text-xs text-muted-foreground">
-                        {formatDistanceToNowStrict(
-                          new Date(incident.startedAt),
-                          {
-                            addSuffix: true,
-                          },
-                        )}
+                      {isExpanded ? (
+                        <ChevronDown className="size-4" />
+                      ) : (
+                        <ChevronRight className="size-4" />
+                      )}
+                      <span className="capitalize">
+                        {group.status} ({group.count})
                       </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                    </button>
+
+                    {isExpanded && (
+                      <div className="space-y-0 pl-3 text-sm">
+                        {group.incidents.map((incident) => (
+                          <div
+                            key={`${incident.type}-${incident.id}`}
+                            className={cn(
+                              "group flex items-center justify-between gap-4 py-1.5 px-2 hover:bg-surface transition-colors border-b border-border/35 last:border-b-0",
+                              incident.type === "monitor" && "cursor-pointer",
+                            )}
+                            onClick={() => handleIncidentClick(incident)}
+                          >
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <span className="shrink-0 capitalize">
+                                {incident.type}
+                              </span>
+                              <span>*</span>
+                              <span className="shrink-0">
+                                {incident.monitorName}
+                              </span>
+                              <span className="text-muted-foreground truncate">
+                                {incident.title ?? formatCause(incident.cause)}
+                              </span>
+                            </div>
+
+                            <span className="text-xs text-muted-foreground">
+                              {formatDistanceToNowStrict(
+                                new Date(incident.startedAt),
+                                {
+                                  addSuffix: true,
+                                },
+                              )}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-12 border border-dashed border-border">
+                <p className="text-muted-foreground text-sm">
+                  No incidents match the current filters.
+                </p>
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

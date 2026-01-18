@@ -20,7 +20,7 @@ export const WebhookConfigSchema = z.object({
 });
 
 export const GitHubConfigSchema = z.object({
-  repository: z.string().regex(/^[\w\-\.]+\/[\w\-\.]+$/, {
+  repository: z.string().regex(/^[\w\-.]+\/[\w\-.]+$/, {
     message: "Repository must be in format 'owner/repo'",
   }),
   token: z.string().min(1, "GitHub token is required"),
@@ -140,7 +140,7 @@ export const WebhookFormSchema = z.object({
 export const GitHubFormSchema = z.object({
   type: z.literal("github"),
   enabled: z.boolean(),
-  repository: z.string().regex(/^[\w\-\.]+\/[\w\-\.]+$/, {
+  repository: z.string().regex(/^[\w\-.]+\/[\w\-.]+$/, {
     message: "Repository must be in format 'owner/repo'",
   }),
   token: z.string().min(1, "GitHub token is required"),

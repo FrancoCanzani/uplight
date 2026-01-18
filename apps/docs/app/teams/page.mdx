@@ -1,0 +1,170 @@
+# Teams
+
+Teams let you organize monitors, collaborate on incidents, and manage access for your organization.
+
+## How Teams Work
+
+- Every monitor, incident, and heartbeat belongs to a team
+- Team members can view and manage team resources
+- Each member has a role that determines their permissions
+- You can be a member of multiple teams
+
+## Personal vs Organization Teams
+
+### Personal Team
+
+When you sign up, a personal team is created automatically. Use this for:
+- Personal projects
+- Testing and experimentation
+- Solo work
+
+### Organization Teams
+
+Create organization teams to:
+- Collaborate with colleagues
+- Share monitors across a group
+- Manage incidents together
+- Control access with roles
+
+## Creating a Team
+
+1. Click on the team selector in the sidebar
+2. Click **Create Team**
+3. Enter a team name
+4. Click **Create**
+
+You're automatically the owner of teams you create.
+
+## Team Roles
+
+| Role | Permissions |
+|------|-------------|
+| **Owner** | Full access, can delete team, manage billing |
+| **Admin** | Manage team settings, add/remove members |
+| **Member** | View and manage monitors, incidents, heartbeats |
+
+### Owner
+
+- All admin permissions
+- Delete the team
+- Transfer ownership
+- Manage billing (if applicable)
+
+### Admin
+
+- All member permissions
+- Invite and remove members
+- Change member roles
+- Update team settings
+
+### Member
+
+- View all team resources
+- Create and manage monitors
+- Create and manage heartbeats
+- Manage incidents
+- Configure notifications
+
+## Inviting Team Members
+
+1. Go to **Settings** → **Team**
+2. Click **Invite Member**
+3. Enter their email address
+4. Select a role
+5. Click **Send Invite**
+
+The invited person receives an email with a link to join your team.
+
+### Pending Invites
+
+View and manage pending invitations:
+
+1. Go to **Settings** → **Team**
+2. See the **Pending Invites** section
+3. Resend or cancel invites as needed
+
+## Managing Members
+
+### Changing Roles
+
+1. Go to **Settings** → **Team**
+2. Find the member
+3. Click on their role
+4. Select the new role
+
+### Removing Members
+
+1. Go to **Settings** → **Team**
+2. Find the member
+3. Click **Remove**
+4. Confirm
+
+Removed members lose access immediately.
+
+## Switching Teams
+
+If you're a member of multiple teams:
+
+1. Click the team selector in the sidebar
+2. Select the team you want to work in
+
+The dashboard shows only that team's monitors, incidents, and data.
+
+## Leaving a Team
+
+To leave a team you're a member of:
+
+1. Go to **Settings** → **Team**
+2. Click **Leave Team**
+3. Confirm
+
+You can't leave if you're the only owner. Transfer ownership first.
+
+## Transferring Ownership
+
+To transfer team ownership:
+
+1. Go to **Settings** → **Team**
+2. Find the member who will become owner
+3. Click **Transfer Ownership**
+4. Confirm
+
+You become an admin after transferring ownership.
+
+## Deleting a Team
+
+Only owners can delete teams.
+
+1. Go to **Settings** → **Team**
+2. Scroll to **Danger Zone**
+3. Click **Delete Team**
+4. Type the team name to confirm
+5. Click **Delete**
+
+Deleting a team removes all its data including monitors, incidents, and history. This cannot be undone.
+
+## Best Practices
+
+1. **Use descriptive team names** - "Backend Team" vs "Team 1"
+2. **Limit owners** - Only give owner access when necessary
+3. **Use admin for managers** - They can manage members without full control
+4. **Regular audits** - Review member access periodically
+5. **Remove promptly** - Remove access when people leave
+
+## Common Questions
+
+### Can I be in multiple teams?
+
+Yes. Switch between teams using the team selector.
+
+### Can monitors be shared between teams?
+
+No. Each monitor belongs to exactly one team. If multiple teams need to monitor the same service, create separate monitors.
+
+### What happens to my data if I leave a team?
+
+Team data stays with the team. You lose access but nothing is deleted.
+
+### Can I merge teams?
+
+Not directly. You would need to recreate monitors and move data manually.

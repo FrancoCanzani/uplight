@@ -1,0 +1,150 @@
+# Heartbeats
+
+Heartbeats monitor jobs and processes that run on a schedule. Unlike regular monitors where Uplight checks your service, with heartbeats your service pings Uplight to confirm it's running.
+
+## When to Use Heartbeats
+
+Heartbeats are perfect for:
+
+- **Cron jobs** - Ensure your scheduled tasks are running
+- **Background workers** - Verify queue processors are active
+- **Backup scripts** - Confirm backups completed successfully
+- **Scheduled reports** - Make sure reports are being generated
+- **Any periodic task** - Anything that should run on a schedule
+
+## How Heartbeats Work
+
+1. You create a heartbeat in Uplight with an expected interval
+2. Uplight gives you a unique URL to ping
+3. Your job pings this URL when it completes
+4. If Uplight doesn't receive a ping within the expected time (plus grace period), you get notified
+
+## Creating a Heartbeat
+
+1. Navigate to **Heartbeats** in the sidebar
+2. Click **Add Heartbeat**
+3. Configure the settings:
+   - **Name**: A descriptive name (e.g., "Nightly Backup")
+   - **Period**: How often the job should run
+   - **Grace Period**: Extra time before alerting (buffer for slow runs)
+4. Click **Create**
+
+## Heartbeat Settings
+
+| Setting | Description |
+|---------|-------------|
+| **Name** | A friendly name for the heartbeat |
+| **Period** | Expected interval between pings (e.g., 1 hour, 1 day) |
+| **Grace Period** | Additional time to wait before alerting |
+
+### Choosing a Period
+
+Set this to match your job's schedule:
+
+- Daily backup at 2 AM → Period: 1 day
+- Hourly sync job → Period: 1 hour
+- Job every 15 minutes → Period: 15 minutes
+
+### Understanding Grace Period
+
+The grace period gives your job extra time before Uplight alerts you. This helps avoid false alarms when:
+
+- Jobs occasionally run a bit longer
+- There's slight timing variation in your scheduler
+- Network delays occur
+
+**Example**: If your job runs every hour and usually takes 5 minutes, you might set:
+- Period: 1 hour
+- Grace Period: 15 minutes
+
+This means Uplight will alert you if it doesn't receive a ping within 1 hour + 15 minutes of the last ping.
+
+## Pinging Your Heartbeat
+
+Each heartbeat has a unique URL. Ping it when your job completes successfully.
+
+### Using cURL
+
+```bash
+curl -X POST https://uplight.dev/api/public/heartbeat/your-unique-slug
+```
+
+### In a Bash Script
+
+```bash
+#!/bin/bash
+
+# Your job logic here
+./run-backup.sh
+
+# Ping Uplight when done
+if [ $? -eq 0 ]; then
+  curl -s https://uplight.dev/api/public/heartbeat/your-unique-slug
+fi
+```
+
+### In Node.js
+
+```javascript
+const runJob = async () => {
+  // Your job logic here
+  await processQueue();
+
+  // Ping Uplight when done
+  await fetch('https://uplight.dev/api/public/heartbeat/your-unique-slug', {
+    method: 'POST'
+  });
+};
+```
+
+### In Python
+
+```python
+import requests
+
+def run_job():
+    # Your job logic here
+    process_data()
+
+    # Ping Uplight when done
+    requests.post('https://uplight.dev/api/public/heartbeat/your-unique-slug')
+```
+
+## Heartbeat States
+
+| State | Description |
+|-------|-------------|
+| **Up** | Receiving pings on schedule |
+| **Down** | Missed expected ping (incident created) |
+| **Paused** | Monitoring temporarily disabled |
+
+## Ping History
+
+Uplight records each ping with:
+
+- Timestamp
+- Source IP address
+- User Agent
+- HTTP method used
+
+View this history in the heartbeat details to debug issues or verify your jobs are running correctly.
+
+## Best Practices
+
+1. **Ping on success only** - Only ping when your job completes successfully
+2. **Add a grace period** - Give some buffer for job duration variation
+3. **Use descriptive names** - Make it clear what each heartbeat monitors
+4. **Test your integration** - Manually ping the URL to verify it's working
+
+## Troubleshooting
+
+### "Heartbeat is down but my job is running"
+
+- Verify the ping URL is correct
+- Check if your job can reach Uplight (firewall, network issues)
+- Confirm the job is actually completing (not erroring out before the ping)
+
+### "Getting too many false alarms"
+
+- Increase the grace period
+- Check if your job's duration varies significantly

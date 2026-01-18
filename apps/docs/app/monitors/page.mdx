@@ -1,0 +1,149 @@
+# Monitors
+
+Monitors are the core of Uplight. They continuously check your services and alert you when something goes wrong.
+
+## Monitor Types
+
+Uplight supports two types of monitors:
+
+### HTTP Monitors
+
+Check any HTTP/HTTPS endpoint. Perfect for websites, APIs, and web services.
+
+- Supports all HTTP methods (GET, POST, PUT, DELETE, etc.)
+- Custom headers and request body
+- Response validation (status codes, content matching)
+- Authentication support
+- Redirect following
+
+### TCP Monitors
+
+Check if a port is open and accepting connections. Great for databases, mail servers, and custom services.
+
+- Host and port configuration
+- Connection timeout settings
+- Multi-location checks
+
+## Creating a Monitor
+
+1. Navigate to **Monitors** in the sidebar
+2. Click **Add Monitor**
+3. Select the monitor type (HTTP or TCP)
+4. Configure the monitor settings
+5. Click **Create**
+
+## HTTP Monitor Settings
+
+### Basic Settings
+
+| Setting | Description |
+|---------|-------------|
+| **Name** | A friendly name for your monitor |
+| **URL** | The full URL to monitor (including `https://`) |
+| **Method** | HTTP method to use (GET, POST, HEAD, etc.) |
+| **Check Interval** | How often to check (1, 2, 5, 10, 15, 30, or 60 minutes) |
+
+### Request Configuration
+
+#### Headers
+
+Add custom headers to your request. Useful for authentication or API versioning.
+
+```
+Authorization: Bearer your-token-here
+Content-Type: application/json
+X-Custom-Header: value
+```
+
+#### Body
+
+For POST, PUT, and PATCH requests, you can include a request body.
+
+```json
+{
+  "key": "value"
+}
+```
+
+### Validation
+
+#### Expected Status Codes
+
+Define which HTTP status codes indicate success. By default, any 2xx status is considered successful.
+
+Examples:
+- `200` - Only accept 200 OK
+- `200,201` - Accept 200 or 201
+- `200-299` - Accept any 2xx status
+
+#### Content Validation
+
+Check if the response contains (or doesn't contain) specific text.
+
+- **Contains**: The response must include this text
+- **Does Not Contain**: The response must NOT include this text
+
+### Advanced Settings
+
+| Setting | Description |
+|---------|-------------|
+| **Follow Redirects** | Whether to follow HTTP redirects |
+| **Timeout** | Maximum time to wait for a response |
+| **Response Time Threshold** | Mark as degraded if response exceeds this time |
+
+## TCP Monitor Settings
+
+| Setting | Description |
+|---------|-------------|
+| **Name** | A friendly name for your monitor |
+| **Host** | The hostname or IP address |
+| **Port** | The port number to check |
+| **Check Interval** | How often to check |
+
+## Monitoring Locations
+
+Uplight checks your services from 8 global locations:
+
+| Code | Region |
+|------|--------|
+| **WNAM** | Western North America |
+| **ENAM** | Eastern North America |
+| **SAM** | South America |
+| **WEUR** | Western Europe |
+| **EEUR** | Eastern Europe |
+| **APAC** | Asia Pacific |
+| **OC** | Oceania |
+| **AFR** | Africa |
+| **ME** | Middle East |
+
+Select multiple locations to ensure your service is accessible globally and to reduce false positives from regional network issues.
+
+## Monitor States
+
+| State | Description |
+|-------|-------------|
+| **Up** | Monitor is healthy, all checks passing |
+| **Down** | Monitor is failing checks |
+| **Degraded** | Monitor is slow (exceeds response time threshold) |
+| **Maintenance** | Monitor is in a maintenance window |
+| **Paused** | Monitoring is temporarily disabled |
+| **Initializing** | Monitor was just created, waiting for first check |
+
+## Pausing a Monitor
+
+To temporarily stop monitoring:
+
+1. Open the monitor details
+2. Click the **Pause** button
+3. The monitor will stop checking until you resume it
+
+This is useful during deployments or known maintenance periods.
+
+## Deleting a Monitor
+
+1. Open the monitor details
+2. Click **Settings** or the menu
+3. Click **Delete Monitor**
+4. Confirm the deletion
+
+Deleting a monitor removes all associated check history and incidents.

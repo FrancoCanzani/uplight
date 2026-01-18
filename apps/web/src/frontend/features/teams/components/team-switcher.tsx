@@ -52,7 +52,7 @@ export function TeamSwitcher() {
           {teams.map((team) => (
             <DropdownMenuItem
               key={team.id}
-              className="cursor-pointer"
+              className="cursor-pointer flex items-center justify-between"
               onClick={() => handleTeamSelect(team.id)}
             >
               <span className="truncate text-xs">{team.name}</span>

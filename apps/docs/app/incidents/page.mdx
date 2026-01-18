@@ -1,0 +1,161 @@
+# Incidents
+
+When a monitor fails or a heartbeat is missed, Uplight automatically creates an incident. You can track, manage, and resolve incidents directly in the dashboard.
+
+## How Incidents Work
+
+1. A monitor check fails or a heartbeat is missed
+2. Uplight creates an incident automatically
+3. Notifications are sent to your configured channels
+4. Your team can acknowledge, work on, and resolve the incident
+5. The incident timeline captures all activity
+
+## Incident States
+
+Incidents progress through these states:
+
+| State | Description |
+|-------|-------------|
+| **Ongoing** | The incident is active and unacknowledged |
+| **Acknowledged** | Someone has seen and accepted the incident |
+| **Fixing** | The team is actively working on a fix |
+| **Recovered** | The service is back up, but incident not yet closed |
+| **Resolved** | The incident is closed |
+
+### Typical Workflow
+
+```
+Ongoing → Acknowledged → Fixing → Recovered → Resolved
+```
+
+You can skip states if needed (e.g., go directly from Ongoing to Resolved for minor issues).
+
+## Severity Levels
+
+Set the severity to communicate impact:
+
+| Level | Description | Typical Use |
+|-------|-------------|-------------|
+| **Low** | Minor issue, no user impact | Slow response times |
+| **Medium** | Some users affected | Partial service degradation |
+| **High** | Significant user impact | Major feature unavailable |
+| **Critical** | Complete outage | Service completely down |
+
+## Incident Types
+
+Categorize incidents for better organization and reporting:
+
+| Type | Description |
+|------|-------------|
+| **Availability** | Service is down or unreachable |
+| **Performance** | Service is slow or degraded |
+| **Security** | Security-related issue |
+| **Data** | Data integrity or loss issue |
+| **Other** | Doesn't fit other categories |
+
+## Managing Incidents
+
+### Viewing Incidents
+
+Navigate to **Incidents** in the sidebar to see all incidents. You can filter by:
+
+- Status (ongoing, acknowledged, resolved, etc.)
+- Severity
+- Type
+- Monitor
+
+### Acknowledging an Incident
+
+When you start looking at an incident:
+
+1. Open the incident
+2. Click **Acknowledge**
+
+This tells your team someone is aware and looking into it.
+
+### Updating Status
+
+As you work on the incident:
+
+1. Open the incident
+2. Use the status dropdown to update (e.g., "Fixing")
+3. Add a comment explaining what you're doing
+
+### Assigning Incidents
+
+Assign incidents to specific team members:
+
+1. Open the incident
+2. Click on the assignee field
+3. Select a team member
+
+### Adding Comments
+
+Keep your team informed with comments:
+
+1. Open the incident
+2. Scroll to the activity section
+3. Type your update
+4. Click **Add Comment**
+
+Comments appear in the incident timeline and help with post-mortems.
+
+## Incident Timeline
+
+Every incident has a timeline showing:
+
+- When the incident was created
+- Status changes
+- Comments and updates
+- Who made each change
+- When the incident was resolved
+
+This history is invaluable for understanding what happened and improving your response.
+
+## Post-Mortems
+
+After resolving a significant incident, document what happened:
+
+1. Open the resolved incident
+2. Go to the **Post-Mortem** section
+3. Document:
+   - What went wrong
+   - How it was detected
+   - What was done to fix it
+   - How to prevent it in the future
+
+Good post-mortems help your team learn and improve.
+
+## Auto-Created vs Manual Incidents
+
+### Auto-Created Incidents
+
+When a monitor fails or heartbeat is missed, Uplight automatically:
+- Creates an incident linked to that monitor/heartbeat
+- Sets severity based on the issue
+- Sends notifications
+
+When the monitor recovers:
+- The incident is automatically updated to "Recovered"
+- You still need to manually resolve and close it
+
+### Manual Incidents
+
+You can also create incidents manually for issues detected outside of Uplight:
+
+1. Navigate to **Incidents**
+2. Click **Create Incident**
+3. Fill in the details
+4. Click **Create**
+
+## Notifications
+
+When an incident is created or updated, notifications are sent based on your configuration. See [Notifications](/notifications) for setup details.
+
+## Best Practices
+
+1. **Acknowledge quickly** - Let your team know someone is looking at it
+2. **Update status regularly** - Keep the incident status current
+3. **Add comments** - Document what you're seeing and doing
+4. **Write post-mortems** - Learn from significant incidents
+5. **Set appropriate severity** - Don't cry wolf with everything as critical

@@ -141,6 +141,7 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
           : null,
         lastCheckAt: lastCheck?.checkedAt.getTime() ?? null,
         lastResponseTime: lastCheck?.responseTime ?? null,
+        recentChecks: [],
       },
       201,
     );

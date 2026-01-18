@@ -30,5 +30,6 @@ export default defineConfig({
       "@routes": path.resolve(__dirname, "./src/frontend/routes"),
       src: path.resolve(__dirname, "./src"),
     },
+    dedupe: ["react", "react-dom"],
   },
 });

@@ -425,11 +425,151 @@ export const notifierRelations = relations(notifier, ({ one }) => ({
   }),
 }));
 
+export const statusPage = sqliteTable(
+  "status_page",
+  {
+    id: integer().primaryKey({ autoIncrement: true }),
+    teamId: integer()
+      .notNull()
+      .references(() => team.id, { onDelete: "cascade" }),
+    name: text().notNull(),
+    slug: text().notNull().unique(),
+    description: text(),
+    logoKey: text(),
+    isPublic: integer({ mode: "boolean" }).default(true).notNull(),
+    showHistoricalUptime: integer({ mode: "boolean" }).default(true).notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    index("status_page_teamId_idx").on(table.teamId),
+    index("status_page_slug_idx").on(table.slug),
+  ],
+);
+
+export const statusPageGroup = sqliteTable(
+  "status_page_group",
+  {
+    id: integer().primaryKey({ autoIncrement: true }),
+    statusPageId: integer()
+      .notNull()
+      .references(() => statusPage.id, { onDelete: "cascade" }),
+    label: text().notNull(),
+    displayOrder: integer().notNull().default(0),
+    ...timestamps,
+  },
+  (table) => [
+    index("status_page_group_page_idx").on(table.statusPageId),
+    index("status_page_group_order_idx").on(
+      table.statusPageId,
+      table.displayOrder,
+    ),
+  ],
+);
+
+export const statusPageMonitor = sqliteTable(
+  "status_page_monitor",
+  {
+    statusPageId: integer()
+      .notNull()
+      .references(() => statusPage.id, { onDelete: "cascade" }),
+    monitorId: integer()
+      .notNull()
+      .references(() => monitor.id, { onDelete: "cascade" }),
+    groupId: integer().references(() => statusPageGroup.id, {
+      onDelete: "cascade",
+    }),
+    displayOrder: integer().notNull().default(0),
+    displayName: text(),
+    createdAt: integer({ mode: "timestamp_ms" })
+      .default(sql`(unixepoch() * 1000)`)
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.statusPageId, table.monitorId] }),
+    index("status_page_monitor_page_idx").on(table.statusPageId),
+    index("status_page_monitor_monitor_idx").on(table.monitorId),
+    index("status_page_monitor_group_idx").on(table.groupId),
+  ],
+);
+
+export const statusPageSubscriber = sqliteTable(
+  "status_page_subscriber",
+  {
+    id: integer().primaryKey({ autoIncrement: true }),
+    statusPageId: integer()
+      .notNull()
+      .references(() => statusPage.id, { onDelete: "cascade" }),
+    email: text().notNull(),
+    isVerified: integer({ mode: "boolean" }).default(false).notNull(),
+    verificationToken: text(),
+    subscribedAt: integer({ mode: "timestamp_ms" })
+      .default(sql`(unixepoch() * 1000)`)
+      .notNull(),
+  },
+  (table) => [
+    index("status_page_subscriber_page_idx").on(table.statusPageId),
+    index("status_page_subscriber_email_idx").on(
+      table.statusPageId,
+      table.email,
+    ),
+  ],
+);
+
+export const statusPageRelations = relations(statusPage, ({ one, many }) => ({
+  team: one(team, {
+    fields: [statusPage.teamId],
+    references: [team.id],
+  }),
+  groups: many(statusPageGroup),
+  monitors: many(statusPageMonitor),
+  subscribers: many(statusPageSubscriber),
+}));
+
+export const statusPageGroupRelations = relations(
+  statusPageGroup,
+  ({ one, many }) => ({
+    statusPage: one(statusPage, {
+      fields: [statusPageGroup.statusPageId],
+      references: [statusPage.id],
+    }),
+    monitors: many(statusPageMonitor),
+  }),
+);
+
+export const statusPageMonitorRelations = relations(
+  statusPageMonitor,
+  ({ one }) => ({
+    statusPage: one(statusPage, {
+      fields: [statusPageMonitor.statusPageId],
+      references: [statusPage.id],
+    }),
+    monitor: one(monitor, {
+      fields: [statusPageMonitor.monitorId],
+      references: [monitor.id],
+    }),
+    group: one(statusPageGroup, {
+      fields: [statusPageMonitor.groupId],
+      references: [statusPageGroup.id],
+    }),
+  }),
+);
+
+export const statusPageSubscriberRelations = relations(
+  statusPageSubscriber,
+  ({ one }) => ({
+    statusPage: one(statusPage, {
+      fields: [statusPageSubscriber.statusPageId],
+      references: [statusPage.id],
+    }),
+  }),
+);
+
 export const teamRelations = relations(team, ({ many }) => ({
   members: many(teamMember),
   monitors: many(monitor),
   heartbeats: many(heartbeat),
   notifiers: many(notifier),
+  statusPages: many(statusPage),
 }));
 
 export const schema = {
@@ -446,4 +586,8 @@ export const schema = {
   heartbeatIncident,
   heartbeatPing,
   notifier,
+  statusPage,
+  statusPageGroup,
+  statusPageMonitor,
+  statusPageSubscriber,
 } as const;
