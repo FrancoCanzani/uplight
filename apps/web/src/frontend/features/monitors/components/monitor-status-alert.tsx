@@ -1,6 +1,5 @@
 import { getRouteApi, Link } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatCause } from "@lib/utils";
 
 export default function MonitorStatusAlert({
   status,
@@ -10,21 +9,12 @@ export default function MonitorStatusAlert({
   const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
 
   const { teamId, monitorId } = routeApi.useParams();
-  const { incidents } = routeApi.useLoaderData();
-
-  const latestIncident = incidents;
 
   if (status === "down") {
     return (
       <Card size="xs" className="border-destructive bg-destructive/10 border">
         <CardContent className="flex items-center justify-between">
           <div className="flex items-center justify-start gap-x-1">
-            {latestIncident && (
-              <span className="flex font-medium items-center justify-start gap-x-1">
-                {formatCause(latestIncident.cause)}
-              </span>
-            )}
-            {" - "}
             Your monitor is down
           </div>
           <Link

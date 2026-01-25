@@ -1,7 +1,5 @@
 import { useMemo } from "react";
-import { getRouteApi, Link } from "@tanstack/react-router";
-import { formatDistanceToNowStrict } from "date-fns";
-import { ArrowRight } from "lucide-react";
+import { getRouteApi } from "@tanstack/react-router";
 import AnimatedNumber from "@/components/motion/animated-number";
 import { PageHeader } from "@/components/page-header";
 import {
@@ -10,11 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { Incident } from "@/features/monitors/api/fetch-incidents";
-import { formatCause, formatDate } from "@lib/utils";
+import { formatDate } from "@lib/utils";
 import calculatePercentiles from "../utils/calculate-percentiles";
 import getLocationLabel from "../utils/get-location-label";
-import { getBgStatusColor } from "../utils/get-status-color";
 import CheckStatusChart from "./check-status-chart";
 import ChecksTable from "./checks-table";
 import MonitorActions from "./monitor-actions";
@@ -28,7 +24,7 @@ import TimePeriodFilter from "./time-period-filter";
 
 export default function MonitorPage() {
   const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
-  const { monitor, stats, checks, incidents } = routeApi.useLoaderData();
+  const { monitor, stats, checks } = routeApi.useLoaderData();
   const { teamId, monitorId } = routeApi.useParams();
   const search = routeApi.useSearch();
   const { region, period } = search;
@@ -59,13 +55,6 @@ export default function MonitorPage() {
 
     return calculatePercentiles(times, [50, 75, 95, 99]);
   }, [filteredChecks]);
-
-  const openIncidents = useMemo(() => {
-    const incidentList = Array.isArray(incidents) ? incidents : [];
-    return (incidentList as Incident[]).filter(
-      (i) => i.status === "ongoing" || i.status === "acknowledged" || i.status === "fixing"
-    );
-  }, [incidents]);
 
   return (
     <div className="space-y-10 w-full lg:max-w-4xl mx-auto">
@@ -199,49 +188,6 @@ export default function MonitorPage() {
 
         <ResponseTimeChart checks={filteredChecks} />
       </div>
-
-      {openIncidents.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium">Open Incidents</h3>
-            <Link
-              to="/$teamId/incidents"
-              params={{ teamId }}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
-            >
-              View all
-              <ArrowRight className="size-3" />
-            </Link>
-          </div>
-          <div className="space-y-0">
-            {openIncidents.map((incident) => (
-              <Link
-                key={incident.id}
-                to="/$teamId/incidents/$incidentId"
-                params={{ teamId, incidentId: incident.id.toString() }}
-                className="flex items-center justify-between gap-4 py-2 px-3 hover:bg-surface transition-colors border-b border-border/30 last:border-b-0"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div
-                    className={`size-1.5 rounded-full shrink-0 ${getBgStatusColor(incident.status === "ongoing" ? "down" : "degraded")}`}
-                  />
-                  <span className="text-xs capitalize text-muted-foreground shrink-0">
-                    {incident.status}
-                  </span>
-                  <span className="text-sm truncate">
-                    {incident.title ?? formatCause(incident.cause)}
-                  </span>
-                </div>
-                <span className="text-xs text-muted-foreground shrink-0">
-                  {formatDistanceToNowStrict(new Date(incident.startedAt), {
-                    addSuffix: true,
-                  })}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
 
       <div className="space-y-4">
         <h3 className="font-medium">Check Logs</h3>

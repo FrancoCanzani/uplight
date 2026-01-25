@@ -7,7 +7,6 @@ import {
 import {
   Check,
   FileText,
-  LogOut,
   Menu,
   MessageSquare,
   Plus,
@@ -22,7 +21,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signOut } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 
 const routeApi = getRouteApi("/(dashboard)/$teamId");
@@ -49,11 +47,6 @@ export function MobileMenu() {
       to: "/$teamId/monitors",
       params: { teamId: String(id) },
     });
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate({ to: "/" });
   };
 
   return (
@@ -153,15 +146,6 @@ export function MobileMenu() {
           })}
         </DropdownMenuGroup>
 
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem
-          onClick={handleSignOut}
-          className="cursor-pointer gap-2 hover:text-destructive text-destructive focus:bg-destructive/10 focus:text-destructive"
-        >
-          <LogOut className="size-3" />
-          <span>Sign out</span>
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

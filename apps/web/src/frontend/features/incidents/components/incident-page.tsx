@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TiptapEditor from "@/components/ui/tiptap-editor";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { formatCause, formatDate, formatDuration } from "@lib/utils";
 import { useTeamMembers } from "../../teams/api/use-team-members";
 import { useUpdateIncident } from "../api/use-update-incident";
@@ -99,8 +101,79 @@ export default function IncidentPage() {
   return (
     <div className="space-y-6">
       <PageHeader title={incident.title ?? formatCause(incident.cause)} />
-      <div className="lg:flex lg:gap-6">
-        <div className="flex-1 min-w-0">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">Status</span>
+            <IncidentStatusSelector currentStatus={incident.status} />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">Severity</span>
+            <IncidentSeveritySelector currentSeverity={incident.severity} compact />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">Type</span>
+            <IncidentTypeSelector currentType={incident.incidentType} compact />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">Assigned to</span>
+            <Select
+              value={currentAssignee || "unassigned"}
+              onValueChange={handleAssigneeChange}
+              disabled={updateIncident.isPending}
+            >
+              <SelectTrigger className="w-auto h-6 text-xs border-0 bg-transparent px-1">
+                <SelectValue>
+                  {currentAssignee
+                    ? teamMembers.find((m) => m.userId === currentAssignee)?.name ||
+                      teamMembers.find((m) => m.userId === currentAssignee)?.email ||
+                      "Unknown"
+                    : "Unassigned"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unassigned">
+                  <span className="text-muted-foreground">Unassigned</span>
+                </SelectItem>
+                {teamMembers.map((member) => (
+                  <SelectItem key={member.userId} value={member.userId}>
+                    {member.name || member.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <span>Started</span>
+            <span className="text-foreground tabular-nums">{formatDate(incident.startedAt)}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span>Duration</span>
+            <span className="text-foreground tabular-nums">{formatDuration(duration)}</span>
+          </div>
+          {incident.acknowledgedAt && (
+            <div className="flex items-center gap-2">
+              <span>Acknowledged</span>
+              <span className="text-foreground tabular-nums">{formatDate(incident.acknowledgedAt)}</span>
+            </div>
+          )}
+          {incident.recoveredAt && (
+            <div className="flex items-center gap-2">
+              <span>Recovered</span>
+              <span className="text-green-600 tabular-nums">{formatDate(incident.recoveredAt)}</span>
+            </div>
+          )}
+          {incident.resolvedAt && (
+            <div className="flex items-center gap-2">
+              <span>Resolved</span>
+              <span className="text-foreground tabular-nums">{formatDate(incident.resolvedAt)}</span>
+            </div>
+          )}
+        </div>
+
+        <div>
           <Tabs defaultValue="overview">
             <TabsList variant="line">
               <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -133,9 +206,9 @@ export default function IncidentPage() {
             </TabsContent>
 
             <TabsContent value="postmortem" className="mt-6">
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     Document what happened and how it was resolved.
                   </p>
                   {showSaved && (
@@ -144,121 +217,31 @@ export default function IncidentPage() {
                     </span>
                   )}
                 </div>
-                <div className="space-y-4">
-                  <input
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="postmortem-title">Title</Label>
+                  <Input
+                    id="postmortem-title"
                     value={postMortemTitle}
                     onChange={(e) => setPostMortemTitle(e.target.value)}
-                    placeholder="Post-mortem title..."
-                    className="w-full text-lg font-medium outline-none bg-transparent"
+                    placeholder="What happened?"
                   />
-                  <TiptapEditor
-                    content={postMortemContent}
-                    onChange={setPostMortemContent}
-                    placeholder="Describe what happened, the impact, and how it was resolved..."
-                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label>Details</Label>
+                  <div className="border border-input">
+                    <TiptapEditor
+                      content={postMortemContent}
+                      onChange={setPostMortemContent}
+                      placeholder="Describe the incident, its impact, root cause, and how it was resolved..."
+                    />
+                  </div>
                 </div>
               </div>
             </TabsContent>
           </Tabs>
         </div>
-
-        <aside className="mt-8 pt-6 border-t lg:mt-0 lg:pt-0 lg:border-t-0 lg:w-72 lg:shrink-0 lg:border-l lg:p-6">
-          <div className="space-y-5">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Status</span>
-              <IncidentStatusSelector currentStatus={incident.status} />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Severity</span>
-              <IncidentSeveritySelector
-                currentSeverity={incident.severity}
-                compact
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Type</span>
-              <IncidentTypeSelector
-                currentType={incident.incidentType}
-                compact
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Assigned to</span>
-              <Select
-                value={currentAssignee || "unassigned"}
-                onValueChange={handleAssigneeChange}
-                disabled={updateIncident.isPending}
-              >
-                <SelectTrigger className="w-auto h-7 text-xs border-0 bg-transparent px-2">
-                  <SelectValue>
-                    {currentAssignee
-                      ? teamMembers.find((m) => m.userId === currentAssignee)
-                          ?.name ||
-                        teamMembers.find((m) => m.userId === currentAssignee)
-                          ?.email ||
-                        "Unknown"
-                      : "Unassigned"}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="unassigned">
-                    <span className="text-muted-foreground">Unassigned</span>
-                  </SelectItem>
-                  {teamMembers.map((member) => (
-                    <SelectItem key={member.userId} value={member.userId}>
-                      {member.name || member.email}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="border-t pt-5 space-y-3">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Started</span>
-                <span className="tabular-nums">
-                  {formatDate(incident.startedAt)}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Duration</span>
-                <span className="tabular-nums">{formatDuration(duration)}</span>
-              </div>
-
-              {incident.acknowledgedAt && (
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Acknowledged</span>
-                  <span className="tabular-nums">
-                    {formatDate(incident.acknowledgedAt)}
-                  </span>
-                </div>
-              )}
-
-              {incident.recoveredAt && (
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Recovered</span>
-                  <span className="tabular-nums text-green-600">
-                    {formatDate(incident.recoveredAt)}
-                  </span>
-                </div>
-              )}
-
-              {incident.resolvedAt && (
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Resolved</span>
-                  <span className="tabular-nums">
-                    {formatDate(incident.resolvedAt)}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </aside>
-      </div>
     </div>
   );
 }

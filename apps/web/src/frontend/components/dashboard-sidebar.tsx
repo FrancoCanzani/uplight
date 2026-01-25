@@ -1,9 +1,4 @@
-import {
-  getRouteApi,
-  Link,
-  useLocation,
-  useNavigate,
-} from "@tanstack/react-router";
+import { getRouteApi, Link, useLocation } from "@tanstack/react-router";
 import {
   Sidebar,
   SidebarContent,
@@ -17,7 +12,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { TeamSwitcher } from "@/features/teams/components/team-switcher";
-import { signOut } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { ActivityIcon } from "./motion/icons/activity";
 import { BadgeAlertIcon } from "./motion/icons/badge-alert";
@@ -25,7 +19,6 @@ import { BellIcon } from "./motion/icons/bell";
 import { FileTextIcon } from "./motion/icons/file-text";
 import { HeartIcon } from "./motion/icons/heart";
 import { LayoutPanelTopIcon } from "./motion/icons/layout-panel-top";
-import { LogoutIcon } from "./motion/icons/logout";
 import { MessageSquareIcon } from "./motion/icons/message-square";
 import { SettingsIcon } from "./motion/icons/settings";
 
@@ -33,17 +26,10 @@ const routeApi = getRouteApi("/(dashboard)/$teamId");
 
 export function DashboardSidebar() {
   const { currentTeam } = routeApi.useLoaderData();
-  const navigate = useNavigate();
   const teamId = currentTeam.id.toString();
 
   const location = useLocation();
-
   const locationArr = location.pathname.split("/");
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate({ to: "/" });
-  };
 
   return (
     <Sidebar
@@ -193,15 +179,6 @@ export function DashboardSidebar() {
                 <MessageSquareIcon />
                 Support
               </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              className="w-full flex items-center gap-x-2 text-base font-light"
-              onClick={handleSignOut}
-            >
-              <LogoutIcon />
-              Sign out
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
