@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { ActivityIcon } from "./motion/icons/activity";
 import { BadgeAlertIcon } from "./motion/icons/badge-alert";
 import { BellIcon } from "./motion/icons/bell";
+import { EyeIcon } from "./motion/icons/eye";
 import { HeartIcon } from "./motion/icons/heart";
 import { LayoutPanelTopIcon } from "./motion/icons/layout-panel-top";
 import { SettingsIcon } from "./motion/icons/settings";
@@ -10,6 +11,7 @@ import { SettingsIcon } from "./motion/icons/settings";
 const routeApi = getRouteApi("/(dashboard)/$teamId");
 
 const navItems = [
+  { icon: EyeIcon, path: "/$teamId", segment: "home" },
   { icon: ActivityIcon, path: "/$teamId/monitors", segment: "monitors" },
   { icon: HeartIcon, path: "/$teamId/heartbeats", segment: "heartbeats" },
   { icon: BadgeAlertIcon, path: "/$teamId/incidents", segment: "incidents" },
@@ -19,7 +21,6 @@ const navItems = [
     segment: "status-pages",
   },
   { icon: BellIcon, path: "/$teamId/notifications", segment: "notifications" },
-  { icon: SettingsIcon, path: "/$teamId/settings", segment: "settings" },
 ];
 
 export function BottomNav() {

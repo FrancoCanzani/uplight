@@ -4,30 +4,24 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"domain-checker/internal/helpers"
+	"domain-checker/internal/types"
 	"fmt"
 	"log"
 	"net"
 	"time"
 )
 
-type SSLInfo struct {
-	Issuer       *string    `json:"issuer,omitempty"`
-	Expiry       *time.Time `json:"expiry,omitempty"`
-	IsSelfSigned *bool      `json:"is_self_signed,omitempty"`
-}
-
-func GetSSLInfo(domain string) (*SSLInfo, error) {
+func GetSSLInfo(domain string) (*types.SSLInfo, error) {
 	log.Printf("[INFO] Checking SSL certificate for domain: %s", domain)
 
-	// Load system certificate pool for proper certificate verification
 	rootCAs, err := x509.SystemCertPool()
 	if err != nil {
 		log.Printf("[WARN] Failed to load system cert pool: %v, using default", err)
-		rootCAs = nil // nil means use default/embedded certificates
+		rootCAs = nil
 	}
 
 	conf := &tls.Config{
-		InsecureSkipVerify: false, // do not allow expired/invalid certs
+		InsecureSkipVerify: false,
 		RootCAs:            rootCAs,
 	}
 
@@ -53,7 +47,7 @@ func GetSSLInfo(domain string) (*SSLInfo, error) {
 	log.Printf("[INFO] SSL check successful for %s (Issuer: %s, Expiry: %s, Self-signed: %v)",
 		domain, leaf.Issuer.CommonName, leaf.NotAfter.Format(time.RFC3339), isSelfSigned)
 
-	return &SSLInfo{
+	return &types.SSLInfo{
 		Issuer:       helpers.StringPtr(leaf.Issuer.CommonName),
 		Expiry:       &leaf.NotAfter,
 		IsSelfSigned: &isSelfSigned,

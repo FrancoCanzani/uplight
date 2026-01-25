@@ -1,6 +1,7 @@
 export interface Incident {
   id: number;
   cause: string;
+  title: string | null;
   status: string;
   startedAt: number;
   resolvedAt: number | null;
@@ -10,8 +11,8 @@ export interface Incident {
 export default async function fetchIncidents(
   teamId: string,
   monitorId: string,
-  limit: number = 1,
-): Promise<Incident | null> {
+  limit: number = 10,
+): Promise<Incident[]> {
   const response = await fetch(
     `/api/monitors/${teamId}/${monitorId}/incidents?limit=${limit}`,
   );
@@ -21,5 +22,6 @@ export default async function fetchIncidents(
     throw new Error(error);
   }
 
-  return response.json();
+  const data = await response.json();
+  return Array.isArray(data) ? data : data ? [data] : [];
 }

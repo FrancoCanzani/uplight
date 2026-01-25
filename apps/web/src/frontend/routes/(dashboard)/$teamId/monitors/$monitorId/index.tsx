@@ -30,7 +30,7 @@ export const Route = createFileRoute(
       fetchMonitor(params.teamId, params.monitorId),
       fetchStats(params.teamId, params.monitorId, days),
       fetchChecks(params.teamId, params.monitorId, days),
-      fetchIncidents(params.teamId, params.monitorId, 1),
+      fetchIncidents(params.teamId, params.monitorId, 10),
     ]);
 
     return { monitor, stats, checks, incidents };

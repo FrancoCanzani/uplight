@@ -2,36 +2,13 @@ package handlers
 
 import (
 	"domain-checker/internal/services"
+	"domain-checker/internal/types"
+	"domain-checker/internal/validation"
 	"log"
-	"net/url"
-	"strings"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 )
-
-type CheckResult struct {
-	Data  any     `json:"data,omitempty"`
-	Error *string `json:"error,omitempty"`
-}
-
-type WhoisData struct {
-	CreatedDate    *string `json:"created_date,omitempty"`
-	UpdatedDate    *string `json:"updated_date,omitempty"`
-	ExpirationDate *string `json:"expiration_date,omitempty"`
-	Registrar      *string `json:"registrar,omitempty"`
-}
-
-type SSLInfo struct {
-	Issuer       string `json:"issuer,omitempty"`
-	Expiry       string `json:"expiry,omitempty"`
-	IsSelfSigned bool   `json:"is_self_signed,omitempty"`
-}
-
-type CheckAllResponse struct {
-	Domain string      `json:"domain"`
-	Whois  CheckResult `json:"whois"`
-	SSL    CheckResult `json:"ssl"`
-}
 
 func CheckAllHandler(c *gin.Context) {
 	inputURL := c.Query("url")
@@ -44,24 +21,36 @@ func CheckAllHandler(c *gin.Context) {
 
 	log.Printf("[INFO] Processing check request for URL: %s from %s", inputURL, c.ClientIP())
 
-	u, err := url.Parse(inputURL)
+	domain, err := validation.ValidateAndExtractDomain(inputURL)
 	if err != nil {
-		log.Printf("[ERROR] Invalid URL format: %s - %v", inputURL, err)
-		c.JSON(400, gin.H{"error": "Invalid URL format"})
+		log.Printf("[ERROR] Validation failed for %s: %v", inputURL, err)
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	host := u.Host
-	if host == "" {
-		host = inputURL
-	}
+	log.Printf("[INFO] Validated domain: %s", domain)
 
-	domain := strings.TrimPrefix(host, "www.")
-	log.Printf("[INFO] Extracted domain: %s", domain)
+	var wg sync.WaitGroup
+	var whoisData *types.WhoisInfo
+	var whoisErr error
+	var sslData *types.SSLInfo
+	var sslErr error
 
-	whoisData, whoisErr := services.GetWhoisInfo(domain)
-	whoisResult := CheckResult{}
+	wg.Add(2)
 
+	go func() {
+		defer wg.Done()
+		whoisData, whoisErr = services.GetWhoisInfo(domain)
+	}()
+
+	go func() {
+		defer wg.Done()
+		sslData, sslErr = services.GetSSLInfo(domain)
+	}()
+
+	wg.Wait()
+
+	whoisResult := types.CheckResult{}
 	if whoisErr != nil {
 		log.Printf("[WARN] WHOIS lookup failed for %s: %v", domain, whoisErr)
 		errStr := whoisErr.Error()
@@ -71,8 +60,7 @@ func CheckAllHandler(c *gin.Context) {
 		whoisResult.Data = whoisData
 	}
 
-	sslData, sslErr := services.GetSSLInfo(domain)
-	sslResult := CheckResult{}
+	sslResult := types.CheckResult{}
 	if sslErr != nil {
 		log.Printf("[WARN] SSL check failed for %s: %v", domain, sslErr)
 		errStr := sslErr.Error()
@@ -82,7 +70,7 @@ func CheckAllHandler(c *gin.Context) {
 		sslResult.Data = sslData
 	}
 
-	resp := CheckAllResponse{
+	resp := types.CheckAllResponse{
 		Domain: domain,
 		Whois:  whoisResult,
 		SSL:    sslResult,

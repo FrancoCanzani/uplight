@@ -1,7 +1,5 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import type { StatusPageResponse } from "../schemas";
 
 export function StatusPageItem({ page }: { page: StatusPageResponse }) {
@@ -10,49 +8,34 @@ export function StatusPageItem({ page }: { page: StatusPageResponse }) {
   const statusPageUrl = `${window.location.origin}/status/${page.slug}`;
 
   return (
-    <div className="border rounded-lg p-4 hover:bg-accent/50 transition-colors">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <Link
-              to="/$teamId/status-pages/$pageId"
-              params={{ teamId, pageId: String(page.id) }}
-              className="font-medium hover:underline"
-            >
-              {page.name}
-            </Link>
-            {!page.isPublic && (
-              <Badge variant="secondary" className="text-xs">
-                Private
-              </Badge>
-            )}
-          </div>
-          {page.description && (
-            <p className="text-sm text-muted-foreground mb-2">
-              {page.description}
-            </p>
+    <Link
+      to="/$teamId/status-pages/$pageId"
+      params={{ teamId, pageId: String(page.id) }}
+      className="block border border-border/30 p-3 hover:bg-surface transition-colors"
+    >
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <span className="font-medium">{page.name}</span>
+          {!page.isPublic && (
+            <span className="text-xs text-muted-foreground">(Private)</span>
           )}
-          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <span className="font-mono">/{page.slug}</span>
-            <span>Created {new Date(page.createdAt).toLocaleDateString()}</span>
-          </div>
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            render={
-              <a
-                href={statusPageUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              />
-            }
-          >
-            <ExternalLink className="h-4 w-4" />
-          </Button>
-        </div>
+        <a
+          href={statusPageUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-muted-foreground hover:text-foreground"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+        </a>
       </div>
-    </div>
+      {page.description && (
+        <p className="text-sm text-muted-foreground mb-2 line-clamp-1">
+          {page.description}
+        </p>
+      )}
+      <div className="text-xs text-muted-foreground">/status/{page.slug}</div>
+    </Link>
   );
 }

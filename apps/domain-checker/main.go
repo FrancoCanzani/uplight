@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"domain-checker/internal/handlers"
+	"domain-checker/internal/middleware"
 	"fmt"
 	"log"
 	"net/http"
@@ -35,6 +36,7 @@ func main() {
 
 	corsOrigins := os.Getenv("CORS_ORIGINS")
 	if corsOrigins == "" {
+		log.Println("[WARN] CORS_ORIGINS not set, using default localhost:5173")
 		corsOrigins = "http://localhost:5173"
 	}
 	origins := strings.Split(corsOrigins, ",")
@@ -44,15 +46,15 @@ func main() {
 
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     origins,
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowMethods:     []string{"GET"},
+		AllowHeaders:     []string{"Origin", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
 
 	router.Use(func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(c.Request.Context(), 30*time.Second)
+		ctx, cancel := context.WithTimeout(c.Request.Context(), 25*time.Second)
 		defer cancel()
 		c.Request = c.Request.WithContext(ctx)
 		c.Next()
@@ -62,7 +64,7 @@ func main() {
 		c.JSON(200, gin.H{"status": "ok"})
 	})
 
-	router.GET("/check/all", handlers.CheckAllHandler)
+	router.GET("/check/all", middleware.NewRateLimiter(10, time.Minute), handlers.CheckAllHandler)
 
 	log.Println("Starting domain-checker server on :8080")
 
@@ -70,23 +72,17 @@ func main() {
 		Addr:         ":8080",
 		Handler:      router.Handler(),
 		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
+		WriteTimeout: 30 * time.Second,
 		IdleTimeout:  60 * time.Second,
 	}
 
 	go func() {
-		// service connections
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
 
-	// Wait for interrupt signal to gracefully shutdown the server with
-	// a timeout of 5 seconds.
 	quit := make(chan os.Signal, 1)
-	// kill (no params) by default sends syscall.SIGTERM
-	// kill -2 is syscall.SIGINT
-	// kill -9 is syscall.SIGKILL but can't be caught, so don't need add it
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Println("Shutdown Server ...")

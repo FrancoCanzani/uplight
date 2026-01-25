@@ -2,6 +2,7 @@ package services
 
 import (
 	"domain-checker/internal/helpers"
+	"domain-checker/internal/types"
 	"fmt"
 	"log"
 
@@ -9,14 +10,7 @@ import (
 	whoisparser "github.com/likexian/whois-parser"
 )
 
-type WhoisInfo struct {
-	CreatedDate    *string `json:"created_date,omitempty"`
-	UpdatedDate    *string `json:"updated_date,omitempty"`
-	ExpirationDate *string `json:"expiration_date,omitempty"`
-	Registrar      *string `json:"registrar,omitempty"`
-}
-
-func GetWhoisInfo(domain string) (*WhoisInfo, error) {
+func GetWhoisInfo(domain string) (*types.WhoisInfo, error) {
 	log.Printf("[INFO] Fetching WHOIS data for domain: %s", domain)
 
 	whois_raw, err := whois.Whois(domain)
@@ -31,14 +25,13 @@ func GetWhoisInfo(domain string) (*WhoisInfo, error) {
 		return nil, err
 	}
 
-	// If the registrar is empty, it's likely the domain isn't registered
 	if result.Registrar.Name == "" && result.Domain.CreatedDate == "" {
 		log.Printf("[WARN] Domain %s appears to be unregistered or WHOIS data incomplete", domain)
 		return nil, fmt.Errorf("domain not found or not registered")
 	}
 
 	log.Printf("[INFO] Successfully parsed WHOIS data for %s (Registrar: %s)", domain, result.Registrar.Name)
-	return &WhoisInfo{
+	return &types.WhoisInfo{
 		CreatedDate:    helpers.StringPtr(result.Domain.CreatedDate),
 		UpdatedDate:    helpers.StringPtr(result.Domain.UpdatedDate),
 		ExpirationDate: helpers.StringPtr(result.Domain.ExpirationDate),

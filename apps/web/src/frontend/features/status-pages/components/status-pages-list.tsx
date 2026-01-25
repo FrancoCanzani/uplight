@@ -7,7 +7,7 @@ export default function StatusPagesList() {
   const pages = routeApi.useLoaderData();
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-3">
       {pages?.map((page) => (
         <StatusPageItem key={page.id} page={page} />
       ))}

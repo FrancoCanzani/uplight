@@ -1,11 +1,100 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTeams } from "@/features/teams/api/use-teams";
 import { useSession } from "@/lib/auth/client";
+import { AnimatedMonitorDemo } from "@/components/motion/animated-status-check";
+import { motion } from "motion/react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  Globe,
+  Bell,
+  Shield,
+  Users,
+  Clock,
+  FileText,
+  Github,
+} from "lucide-react";
 import "../index.css";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
+
+const features = [
+  {
+    icon: Globe,
+    title: "Multi-region monitoring",
+    description:
+      "Check your services from 9+ global locations simultaneously. Detect regional outages before they affect all users.",
+  },
+  {
+    icon: Bell,
+    title: "Instant alerts",
+    description:
+      "Get notified via Slack, Discord, email, or webhooks the moment something goes wrong. No more finding out from customers.",
+  },
+  {
+    icon: Clock,
+    title: "30-second intervals",
+    description:
+      "Monitor as frequently as every 30 seconds. Catch issues fast, resolve them faster.",
+  },
+  {
+    icon: FileText,
+    title: "Public status pages",
+    description:
+      "Beautiful, customizable status pages to keep your users informed. Build trust with transparency.",
+  },
+  {
+    icon: Shield,
+    title: "SSL & domain expiry",
+    description:
+      "Never let a certificate expire again. Get alerts days before your SSL or domain renewals are due.",
+  },
+  {
+    icon: Users,
+    title: "Team collaboration",
+    description:
+      "Invite your team, assign monitors, and share responsibility. Everyone stays in the loop.",
+  },
+];
+
+const faqs = [
+  {
+    question: "What types of services can I monitor?",
+    answer:
+      "Uplight supports HTTP/HTTPS endpoints, TCP services, and can verify SSL certificates. You can monitor websites, APIs, databases, game servers, or any service that accepts network connections.",
+  },
+  {
+    question: "How does multi-region monitoring work?",
+    answer:
+      "When you create a monitor, you select which regions should check your service. Each region independently sends requests and reports results. This helps you detect regional outages and ensures your service is accessible globally.",
+  },
+  {
+    question: "Can I self-host Uplight?",
+    answer:
+      "Yes. Uplight is 100% open source and designed to be self-hosted. Deploy it on your own infrastructure using Cloudflare Workers, or run it locally for development. You own your data.",
+  },
+  {
+    question: "What alerting integrations are available?",
+    answer:
+      "We support Slack, Discord, email, and generic webhooks. You can configure multiple notification channels per monitor and set up escalation policies for critical services.",
+  },
+  {
+    question: "Is there a free tier?",
+    answer:
+      "The self-hosted version is completely free with no limitations. For the managed service, we offer a generous free tier with up to 5 monitors and 5-minute check intervals.",
+  },
+  {
+    question: "How are status pages customized?",
+    answer:
+      "Each status page gets a unique URL and can be customized with your branding. Group monitors by service, add descriptions, and optionally show historical uptime data to your users.",
+  },
+];
 
 function Index() {
   const { data: session } = useSession();
@@ -13,142 +102,284 @@ function Index() {
   const firstTeamId = teams?.[0]?.id;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#1a1a1a] text-gray-900 dark:text-[#e5e5e5] font-mono antialiased transition-colors">
-      <div className="max-w-5xl mx-auto p-4 sm:p-6 md:p-8">
-        <div className="text-center mb-8 sm:mb-10 md:mb-12 text-xs text-gray-500 dark:text-[#a0a0a0]">
-          Designed By --True Type - {new Date().getFullYear()}
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-14 md:mb-16 text-xs text-gray-600 dark:text-[#a0a0a0]">
-          <div>
-            <div className="text-gray-400 dark:text-[#808080]">Built on Cloudflare</div>
-            <div className="mt-1">All Right Reserved ©{new Date().getFullYear()}</div>
-          </div>
-          <div>
-            <div className="text-gray-400 dark:text-[#808080]">Global Monitoring</div>
-            <div className="mt-1">9+ Regions</div>
-          </div>
-          <div>
-            <div className="text-gray-400 dark:text-[#808080]">Protocol Support</div>
-            <div className="mt-1">HTTP, TCP, DNS</div>
-          </div>
-          <div>
-            <div className="text-gray-400 dark:text-[#808080]">Pricing Tiers</div>
-            <div className="mt-1">Free & Premium</div>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-12 sm:mb-14 md:mb-16">
-          <div className="flex gap-1 sm:gap-1.5">
-            {"UPLIGHT".split("").map((letter, i) => (
-              <div
-                key={i}
-                className="w-8 h-10 sm:w-10 sm:h-12 md:w-14 md:h-16 border border-gray-300 dark:border-[#404040] bg-gray-900 dark:bg-black flex items-center justify-center text-xl sm:text-2xl md:text-3xl font-bold text-white"
+    <div className="min-h-screen font-mono antialiased">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+        {/* Navigation */}
+        <nav className="flex justify-between items-center mb-20 sm:mb-28">
+          <span className="text-sm tracking-tight font-medium">uplight</span>
+          <div className="flex items-center gap-4">
+            {session?.user && firstTeamId ? (
+              <Link
+                to="/$teamId/monitors"
+                params={{ teamId: firstTeamId.toString() }}
+                className="text-xs hover:underline"
               >
-                {letter}
-              </div>
-            ))}
-          </div>
-          <span className="text-2xl sm:text-3xl md:text-4xl text-red-500 mx-1">*</span>
-          <div className="flex gap-1 sm:gap-1.5">
-            {"MONITOR".split("").map((letter, i) => (
-              <div
-                key={i}
-                className="w-8 h-10 sm:w-10 sm:h-12 md:w-14 md:h-16 border border-gray-300 dark:border-[#404040] bg-gray-900 dark:bg-black flex items-center justify-center text-xl sm:text-2xl md:text-3xl font-bold text-white"
-              >
-                {letter}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10 md:mb-12 text-xs">
-          <div>
-            <div className="text-gray-400 dark:text-[#808080] mb-2">HTTP, TCP & DNS</div>
-            <div className="text-gray-900 dark:text-[#e5e5e5]">
-              Monitor websites, APIs, and any TCP service.
-            </div>
-          </div>
-          <div>
-            <div className="text-gray-400 dark:text-[#808080] mb-2">Multi Region</div>
-            <div className="text-gray-900 dark:text-[#e5e5e5]">
-              Monitor from 9+ global regions simultaneously.
-            </div>
-          </div>
-          <div>
-            <div className="text-gray-400 dark:text-[#808080] mb-2">Status Pages</div>
-            <div className="text-gray-900 dark:text-[#e5e5e5]">
-              Communicate incidents effectively with public status pages.
-            </div>
-          </div>
-          <div>
-            <div className="text-gray-400 dark:text-[#808080] mb-2">Incident Tracking</div>
-            <div className="text-gray-900 dark:text-[#e5e5e5]">
-              Automatic detection with full history and resolution tracking.
-            </div>
-          </div>
-          <div>
-            <div className="text-gray-400 dark:text-[#808080] mb-2">SSL & Domain</div>
-            <div className="text-gray-900 dark:text-[#e5e5e5]">
-              Get notified before certificates or domains expire.
-            </div>
-          </div>
-          <div>
-            <div className="text-gray-400 dark:text-[#808080] mb-2">Team Collaboration</div>
-            <div className="text-gray-900 dark:text-[#e5e5e5]">
-              Shared monitors, shared responsibility.
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row gap-6 md:gap-8 text-xs border-t border-gray-300 dark:border-[#404040] pt-6 sm:pt-8 mt-8 sm:mt-10 md:mt-12">
-          <div className="flex-1">
-            <div className="text-gray-400 dark:text-[#808080] mb-2">[]</div>
-            <div className="space-y-1 text-gray-900 dark:text-[#e5e5e5]">
-              <div>1 FREE 2 PREMIUM</div>
-              <div>3 TEAMS 4 STATUS PAGES</div>
-              <div>5 ALERTS</div>
-            </div>
-          </div>
-          <div className="flex-1 border-t md:border-t-0 md:border-l border-gray-300 dark:border-[#404040] pt-6 md:pt-0 md:pl-8">
-            <div className="text-gray-400 dark:text-[#808080] mb-2">[]</div>
-            <div className="space-y-1 text-gray-900 dark:text-[#e5e5e5]">
-              <div>
-                Uplight is a contemporary <span className="bg-yellow-200 dark:bg-yellow-600/30 px-1">monitoring</span> platform
-              </div>
-              <div>
-                designed with precision, reliability, and clarity in mind.
-              </div>
-              <div className="text-gray-400 dark:text-[#808080] mt-2">. . . . . . . . .</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-8 sm:mt-10 md:mt-12 text-center">
-          {session?.user && firstTeamId ? (
-            <Link
-              to="/$teamId/monitors"
-              params={{ teamId: firstTeamId.toString() }}
-              className="text-sm text-gray-900 dark:text-[#e5e5e5] hover:text-gray-700 dark:hover:text-white underline underline-offset-4"
-            >
-              Go to dashboard →
-            </Link>
-          ) : (
-            <div className="space-y-3 sm:space-y-4">
-              <div>
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link className="text-xs hover:underline" to="/login">
+                  Login
+                </Link>
                 <Link
                   to="/signup"
-                  className="text-sm text-gray-900 dark:text-[#e5e5e5] hover:text-gray-700 dark:hover:text-white underline underline-offset-4"
+                  className="text-xs px-3 py-1.5 bg-foreground text-background hover:opacity-90 transition-opacity"
                 >
-                  Get started
+                  Sign up
                 </Link>
-              </div>
-              <div className="text-xs text-gray-500 dark:text-[#808080]">
-                Free to start. No credit card required.
-              </div>
+              </>
+            )}
+          </div>
+        </nav>
+
+        {/* Hero */}
+        <section className="mb-20 sm:mb-28">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <span className="text-xs text-muted-foreground mb-4 block">
+                  Open source uptime monitoring
+                </span>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-light tracking-tight mb-6 leading-[1.1]">
+                  Know before your
+                  <br />
+                  customers do.
+                </h1>
+                <p className="text-sm text-muted-foreground mb-8 max-w-md leading-relaxed">
+                  Monitor your services from multiple regions around the world.
+                  Get instant alerts when something breaks. Keep users informed
+                  with status pages.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <Link
+                    to="/signup"
+                    className="text-xs px-4 py-2 bg-foreground text-background hover:opacity-90 transition-opacity"
+                  >
+                    Start monitoring
+                  </Link>
+                  <a
+                    href="https://github.com/francocanzani/uplight"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs px-4 py-2 ring-1 ring-foreground/10 hover:bg-surface transition-colors inline-flex items-center gap-2"
+                  >
+                    <Github className="size-3" />
+                    View source
+                  </a>
+                </div>
+              </motion.div>
             </div>
-          )}
-        </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="flex justify-center lg:justify-end"
+            >
+              <AnimatedMonitorDemo />
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Trust badge */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="flex justify-center mb-20 sm:mb-28"
+        >
+          <div className="inline-flex items-center gap-6 text-xs text-muted-foreground">
+            <span className="flex items-center gap-2">
+              <span className="size-1.5 rounded-full bg-green-500" />
+              Self-hostable
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="size-1.5 rounded-full bg-green-500" />
+              Open source
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="size-1.5 rounded-full bg-green-500" />
+              No vendor lock-in
+            </span>
+          </div>
+        </motion.div>
+
+        {/* Features */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="mb-20 sm:mb-28"
+        >
+          <div className="text-center mb-12">
+            <h2 className="text-xl sm:text-2xl font-light tracking-tight mb-3">
+              Everything you need
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Simple, reliable monitoring without the complexity.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border ring-1 ring-foreground/10">
+            {features.map((feature, i) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, delay: 0.4 + i * 0.05 }}
+                className="bg-background p-6 hover:bg-surface transition-colors group"
+              >
+                <feature.icon className="size-4 text-muted-foreground group-hover:text-foreground transition-colors mb-3" />
+                <h3 className="text-sm font-medium mb-2">{feature.title}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+
+        {/* How it works */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="mb-20 sm:mb-28"
+        >
+          <div className="text-center mb-12">
+            <h2 className="text-xl sm:text-2xl font-light tracking-tight mb-3">
+              How it works
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Get started in under a minute.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-8">
+            {[
+              {
+                step: "01",
+                title: "Add your endpoints",
+                description:
+                  "Enter the URLs or IP addresses you want to monitor. Configure check intervals and regions.",
+              },
+              {
+                step: "02",
+                title: "Set up alerts",
+                description:
+                  "Connect Slack, Discord, or email. Choose who gets notified and when.",
+              },
+              {
+                step: "03",
+                title: "Stay informed",
+                description:
+                  "Watch real-time status, review incident history, and share public status pages.",
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={item.step}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.6 + i * 0.1 }}
+                className="text-center sm:text-left"
+              >
+                <span className="text-xs text-muted-foreground mb-2 block">
+                  {item.step}
+                </span>
+                <h3 className="text-sm font-medium mb-2">{item.title}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {item.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+
+        {/* FAQ */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+          className="mb-20 sm:mb-28"
+        >
+          <div className="text-center mb-12">
+            <h2 className="text-xl sm:text-2xl font-light tracking-tight mb-3">
+              Questions & answers
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Common questions about Uplight.
+            </p>
+          </div>
+
+          <Accordion className="ring-1 ring-foreground/10 border-0">
+            {faqs.map((faq, i) => (
+              <AccordionItem key={i} value={i}>
+                <AccordionTrigger>{faq.question}</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-muted-foreground">{faq.answer}</p>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </motion.section>
+
+        {/* CTA */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+          className="text-center mb-20 sm:mb-28"
+        >
+          <div className="ring-1 ring-foreground/10 bg-surface/50 p-8 sm:p-12">
+            <h2 className="text-xl sm:text-2xl font-light tracking-tight mb-3">
+              Start monitoring today
+            </h2>
+            <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+              Free to use, open source, and ready to deploy. No credit card
+              required.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link
+                to="/signup"
+                className="text-xs px-4 py-2 bg-foreground text-background hover:opacity-90 transition-opacity"
+              >
+                Create free account
+              </Link>
+              <a
+                href="https://github.com/francocanzani/uplight"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs px-4 py-2 ring-1 ring-foreground/10 hover:bg-surface transition-colors"
+              >
+                Self-host instead
+              </a>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Footer */}
+        <footer className="border-t border-border/30 pt-8 pb-12">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
+            <span>Uplight — Open source uptime monitoring</span>
+            <div className="flex items-center gap-4">
+              <a
+                href="https://github.com/francocanzani/uplight"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-foreground transition-colors"
+              >
+                GitHub
+              </a>
+              <Link to="/login" className="hover:text-foreground transition-colors">
+                Login
+              </Link>
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );
