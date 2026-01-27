@@ -27,6 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { fetchTeams } from "@/features/teams/api/use-teams";
 import { signIn } from "@/lib/auth/client";
+import { SEOHead } from "@/components/seo";
 
 const loginSchema = z.object({
   email: z.email("Please enter a valid email address"),

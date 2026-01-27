@@ -397,8 +397,8 @@ export const heartbeatPingRelations = relations(heartbeatPing, ({ one }) => ({
   }),
 }));
 
-export const notifier = sqliteTable(
-  "notifier",
+export const integration = sqliteTable(
+  "integration",
   {
     id: integer().primaryKey({ autoIncrement: true }),
     teamId: integer()
@@ -412,15 +412,15 @@ export const notifier = sqliteTable(
     ...timestamps,
   },
   (table) => [
-    index("notifier_teamId_idx").on(table.teamId),
-    index("notifier_type_idx").on(table.type),
-    index("notifier_enabled_idx").on(table.enabled),
+    index("integration_teamId_idx").on(table.teamId),
+    index("integration_type_idx").on(table.type),
+    index("integration_enabled_idx").on(table.enabled),
   ],
 );
 
-export const notifierRelations = relations(notifier, ({ one }) => ({
+export const integrationRelations = relations(integration, ({ one }) => ({
   team: one(team, {
-    fields: [notifier.teamId],
+    fields: [integration.teamId],
     references: [team.id],
   }),
 }));
@@ -568,7 +568,7 @@ export const teamRelations = relations(team, ({ many }) => ({
   members: many(teamMember),
   monitors: many(monitor),
   heartbeats: many(heartbeat),
-  notifiers: many(notifier),
+  integrations: many(integration),
   statusPages: many(statusPage),
 }));
 
@@ -585,7 +585,7 @@ export const schema = {
   heartbeat,
   heartbeatIncident,
   heartbeatPing,
-  notifier,
+  integration,
   statusPage,
   statusPageGroup,
   statusPageMonitor,

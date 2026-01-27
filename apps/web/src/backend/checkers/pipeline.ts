@@ -1,9 +1,9 @@
 import { eq } from "drizzle-orm";
 import { createDb } from "../db";
 import { checkResult, monitor } from "../db/schema";
+import { dispatchIntegrations } from "../integrations/dispatcher";
 import { decrypt } from "../lib/crypto";
 import { manageIncidents } from "./incidents/manager";
-import { sendNotifications } from "./notifications/notifier";
 import { sleep } from "./retry";
 import type { CheckRequest, CheckResult, Location, MonitorRow } from "./types";
 
@@ -248,7 +248,7 @@ async function processResults(results: CheckResult[], env: Env): Promise<void> {
       env,
     );
 
-    await sendNotifications({
+    await dispatchIntegrations({
       monitorId,
       monitorName: currentMonitor.name,
       teamId: currentMonitor.teamId,

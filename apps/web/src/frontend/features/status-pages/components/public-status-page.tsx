@@ -6,6 +6,7 @@ import {
   OVERALL_STATUS_LABELS,
 } from "../constants";
 import type { PublicMonitor } from "../types";
+import { SEOHead, createStatusPageSchema } from "@/components/seo";
 
 const routeApi = getRouteApi("/status/$slug");
 
@@ -69,12 +70,42 @@ function MonitorRow({
 export default function PublicStatusPage() {
   const data = routeApi.useLoaderData();
   const { page, overallStatus, stats, groups, ungroupedMonitors } = data;
+  const { slug } = routeApi.useParams();
 
   const hasMonitors =
     groups.some((g) => g.monitors.length > 0) || ungroupedMonitors.length > 0;
 
+  // Collect all monitors for structured data
+  const allMonitors = [
+    ...groups.flatMap((g) => g.monitors),
+    ...ungroupedMonitors,
+  ];
+
+  const statusSchema = createStatusPageSchema({
+    name: page.name,
+    description: page.description,
+    url: `https://uplight.dev/status/${slug}`,
+    status: overallStatus,
+    services: allMonitors.map((m) => ({
+      name: m.name,
+      status: m.status,
+      uptime: m.uptime,
+    })),
+  });
+
+  const description =
+    page.description ||
+    `Current status for ${page.name}. ${stats.operational} of ${stats.total} services operational.`;
+
   return (
-    <div className="min-h-screen font-mono antialiased">
+    <>
+      <SEOHead
+        title={`${page.name} Status`}
+        description={description}
+        canonical={`https://uplight.dev/status/${slug}`}
+        jsonLd={statusSchema}
+      />
+      <div className="min-h-screen font-mono antialiased">
       <div className="max-w-3xl mx-auto px-4 py-12 space-y-10">
         <header className="space-y-4">
           <div className="flex items-center gap-4">
@@ -162,5 +193,6 @@ export default function PublicStatusPage() {
         </footer>
       </div>
     </div>
+    </>
   );
 }

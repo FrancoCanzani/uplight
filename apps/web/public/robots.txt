@@ -1,0 +1,16 @@
+# Uplight robots.txt
+# https://uplight.dev
+
+User-agent: *
+
+# Allow public pages
+Allow: /
+Allow: /status/
+
+# Disallow auth and dashboard pages
+Disallow: /login
+Disallow: /signup
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://uplight.dev/sitemap.xml

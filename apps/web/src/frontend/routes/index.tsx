@@ -18,6 +18,11 @@ import {
   FileText,
   Github,
 } from "lucide-react";
+import {
+  SEOHead,
+  createFAQSchema,
+  createSoftwareApplicationSchema,
+} from "@/components/seo";
 import "../index.css";
 
 export const Route = createFileRoute("/")({
@@ -101,8 +106,19 @@ function Index() {
   const { data: teams } = useTeams();
   const firstTeamId = teams?.[0]?.id;
 
+  const faqSchema = createFAQSchema(faqs);
+  const softwareSchema = createSoftwareApplicationSchema();
+  const combinedSchema = [faqSchema, softwareSchema];
+
   return (
-    <div className="min-h-screen font-mono antialiased">
+    <>
+      <SEOHead
+        title="Open Source Uptime Monitoring"
+        description="Monitor your services from multiple regions. Get instant alerts via Slack, Discord, or email when something breaks. Keep users informed with public status pages."
+        canonical="https://uplight.dev"
+        jsonLd={combinedSchema}
+      />
+      <div className="min-h-screen font-mono antialiased">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         {/* Navigation */}
         <nav className="flex justify-between items-center mb-20 sm:mb-28">
@@ -382,5 +398,6 @@ function Index() {
         </footer>
       </div>
     </div>
+    </>
   );
 }

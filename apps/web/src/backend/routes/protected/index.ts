@@ -2,9 +2,9 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import type { AppEnv } from "../../types";
 import { heartbeats } from "./heartbeats";
 import { incidents } from "./incidents";
+import { integrations } from "./integrations";
 import { maintenance } from "./maintenance";
 import { monitors } from "./monitors";
-import { notifications } from "./notifications";
 import { statusPages } from "./status-pages";
 import { teams } from "./teams";
 
@@ -15,7 +15,7 @@ protectedRouter.route("/monitors", monitors);
 protectedRouter.route("/heartbeats", heartbeats);
 protectedRouter.route("/maintenance", maintenance);
 protectedRouter.route("/incidents", incidents);
-protectedRouter.route("/notifications", notifications);
+protectedRouter.route("/integrations", integrations);
 protectedRouter.route("/status-pages", statusPages);
 
 export { protectedRouter };

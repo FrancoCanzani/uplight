@@ -57,6 +57,13 @@
       "when": 1768751441674,
       "tag": "0007_salty_arachne",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1769549327177,
+      "tag": "0008_rename_notifier_to_integration",
+      "breakpoints": true
     }
   ]
 }

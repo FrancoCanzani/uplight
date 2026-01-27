@@ -9,6 +9,8 @@ import { createAuth } from "../../auth";
 import { handleDomainChecks } from "./checkers/cron/domains";
 import { handleHeartbeatChecks } from "./checkers/cron/heartbeats";
 import { handleMonitorChecks } from "./checkers/cron/monitors";
+import { handleIntegrationQueue } from "./integrations/queue-handler";
+import type { QueueMessage } from "./integrations/types";
 import { authMiddleware, requireAuth } from "./middleware/auth";
 import { protectedRouter } from "./routes/protected";
 import { publicRouter } from "./routes/public";
@@ -89,5 +91,8 @@ export default {
       }
     }
     console.log("cron processed");
+  },
+  async queue(batch: MessageBatch<QueueMessage>, env: Env) {
+    await handleIntegrationQueue(batch, env);
   },
 };

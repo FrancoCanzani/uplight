@@ -116,17 +116,17 @@ export function DashboardSidebar() {
                 <SidebarMenuButton
                   className={cn(
                     "",
-                    locationArr.includes("notifications") &&
+                    locationArr.includes("integrations") &&
                       "bg-sidebar-accent",
                   )}
                 >
                   <Link
                     className="w-full flex items-center gap-x-2 text-base font-light"
-                    to="/$teamId/notifications"
+                    to="/$teamId/integrations"
                     params={{ teamId }}
                   >
                     <BellIcon />
-                    Notifications
+                    Integrations
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -17,7 +17,7 @@ const navItems = [
     path: "/$teamId/status-pages",
     segment: "status-pages",
   },
-  { icon: BellIcon, path: "/$teamId/notifications", segment: "notifications" },
+  { icon: BellIcon, path: "/$teamId/integrations", segment: "integrations" },
 ];
 
 export function BottomNav() {
