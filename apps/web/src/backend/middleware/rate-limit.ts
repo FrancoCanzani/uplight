@@ -14,20 +14,8 @@ interface RateLimitEntry {
 }
 
 // In-memory store (per isolate - good enough for basic protection)
+// Expired entries are handled lazily when accessed
 const store = new Map<string, RateLimitEntry>();
-
-// Clean up expired entries periodically
-function cleanup() {
-  const now = Date.now();
-  for (const [key, entry] of store.entries()) {
-    if (entry.resetAt < now) {
-      store.delete(key);
-    }
-  }
-}
-
-// Run cleanup every 60 seconds
-setInterval(cleanup, 60000);
 
 function getClientIP(c: Context<AppEnv>): string {
   return (

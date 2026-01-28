@@ -178,6 +178,7 @@ export default function MonitorQuickstart() {
                       autoComplete="off"
                       disabled={isPending}
                       className="w-full"
+                      autoFocus
                     />
                     <Button
                       type="submit"
