@@ -9,9 +9,11 @@ import { createAuth } from "../../auth";
 import { handleDomainChecks } from "./checkers/cron/domains";
 import { handleHeartbeatChecks } from "./checkers/cron/heartbeats";
 import { handleMonitorChecks } from "./checkers/cron/monitors";
+import { handleDataRetention } from "./checkers/cron/retention";
 import { handleIntegrationQueue } from "./integrations/queue-handler";
 import type { QueueMessage } from "./integrations/types";
 import { authMiddleware, requireAuth } from "./middleware/auth";
+import { authRateLimiter, publicApiRateLimiter } from "./middleware/rate-limit";
 import { protectedRouter } from "./routes/protected";
 import { publicRouter } from "./routes/public";
 import type { AppEnv } from "./types";
@@ -35,6 +37,8 @@ app.onError((error, c) => {
 
 app.use("*", authMiddleware);
 
+// Rate limit auth endpoints
+app.use("/api/auth/*", authRateLimiter);
 app.all("/api/auth/*", async (c) => {
   if (!c.env.DB) {
     return c.json({ error: "Database not available" }, 500);
@@ -43,6 +47,8 @@ app.all("/api/auth/*", async (c) => {
   return authInstance.handler(c.req.raw);
 });
 
+// Rate limit public API
+app.use("/api/public/*", publicApiRateLimiter);
 app.route("/api/public", publicRouter);
 
 app.use("/api/*", requireAuth);
@@ -53,8 +59,59 @@ app.doc("/api/openapi", {
   info: {
     title: "Uplight API",
     version: "1.0.0",
-    description: "Uptime monitoring API",
+    description:
+      "Uplight is an open-source uptime monitoring API. Monitor HTTP endpoints, TCP services, and heartbeats with alerts via Slack, Discord, webhooks, and more.",
+    contact: {
+      name: "Uplight",
+      url: "https://github.com/your-org/uplight",
+    },
+    license: {
+      name: "MIT",
+      url: "https://opensource.org/licenses/MIT",
+    },
   },
+  servers: [
+    {
+      url: "/api",
+      description: "API server",
+    },
+  ],
+  tags: [
+    { name: "monitors", description: "HTTP and TCP monitor management" },
+    { name: "heartbeats", description: "Heartbeat monitor management" },
+    { name: "incidents", description: "Incident management" },
+    { name: "maintenance", description: "Maintenance window management" },
+    { name: "status-pages", description: "Public status page management" },
+    { name: "teams", description: "Team and member management" },
+    { name: "integrations", description: "Alert integrations (Slack, Discord, webhooks)" },
+  ],
+});
+
+// Swagger UI endpoint
+app.get("/api/docs", (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Uplight API Documentation</title>
+      <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+    </head>
+    <body>
+      <div id="swagger-ui"></div>
+      <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+      <script>
+        SwaggerUIBundle({
+          url: '/api/openapi',
+          dom_id: '#swagger-ui',
+          presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
+          layout: 'StandaloneLayout',
+        });
+      </script>
+    </body>
+    </html>
+  `);
 });
 
 export default {
@@ -80,6 +137,10 @@ export default {
         case "0 0,12 * * *":
           waitUntil(handleDomainChecks(env));
           console.log("Domain check processed");
+          break;
+        case "0 3 * * *":
+          waitUntil(handleDataRetention(env));
+          console.log("Data retention processed");
           break;
         default:
           // Fallback: run all checks if cron is unrecognized

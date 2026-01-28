@@ -19,14 +19,74 @@ import {
   Github,
 } from "lucide-react";
 import {
-  SEOHead,
   createFAQSchema,
   createSoftwareApplicationSchema,
 } from "@/components/seo";
 import "../index.css";
 
+const faqSchemaData = [
+  {
+    question: "What types of services can I monitor?",
+    answer:
+      "Uplight supports HTTP/HTTPS endpoints, TCP services, and can verify SSL certificates. You can monitor websites, APIs, databases, game servers, or any service that accepts network connections.",
+  },
+  {
+    question: "How does multi-region monitoring work?",
+    answer:
+      "When you create a monitor, you select which regions should check your service. Each region independently sends requests and reports results. This helps you detect regional outages and ensures your service is accessible globally.",
+  },
+  {
+    question: "Can I self-host Uplight?",
+    answer:
+      "Yes. Uplight is 100% open source and designed to be self-hosted. Deploy it on your own infrastructure using Cloudflare Workers, or run it locally for development. You own your data.",
+  },
+  {
+    question: "What alerting integrations are available?",
+    answer:
+      "We support Slack, Discord, email, and generic webhooks. You can configure multiple notification channels per monitor and set up escalation policies for critical services.",
+  },
+  {
+    question: "Is there a free tier?",
+    answer:
+      "The self-hosted version is completely free with no limitations. For the managed service, we offer a generous free tier with up to 5 monitors and 5-minute check intervals.",
+  },
+  {
+    question: "How are status pages customized?",
+    answer:
+      "Each status page gets a unique URL and can be customized with your branding. Group monitors by service, add descriptions, and optionally show historical uptime data to your users.",
+  },
+];
+
 export const Route = createFileRoute("/")({
   component: Index,
+  head: () => ({
+    meta: [
+      { title: "Uplight - Open Source Uptime Monitoring" },
+      {
+        name: "description",
+        content:
+          "Monitor your services from multiple regions. Get instant alerts via Slack, Discord, or email when something breaks. Keep users informed with public status pages.",
+      },
+      { property: "og:title", content: "Uplight - Open Source Uptime Monitoring" },
+      {
+        property: "og:description",
+        content:
+          "Monitor your services from multiple regions. Get instant alerts via Slack, Discord, or email when something breaks. Keep users informed with public status pages.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: "https://uplight.dev" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify([
+          createFAQSchema(faqSchemaData),
+          createSoftwareApplicationSchema(),
+        ]),
+      },
+    ],
+  }),
 });
 
 const features = [
@@ -68,57 +128,15 @@ const features = [
   },
 ];
 
-const faqs = [
-  {
-    question: "What types of services can I monitor?",
-    answer:
-      "Uplight supports HTTP/HTTPS endpoints, TCP services, and can verify SSL certificates. You can monitor websites, APIs, databases, game servers, or any service that accepts network connections.",
-  },
-  {
-    question: "How does multi-region monitoring work?",
-    answer:
-      "When you create a monitor, you select which regions should check your service. Each region independently sends requests and reports results. This helps you detect regional outages and ensures your service is accessible globally.",
-  },
-  {
-    question: "Can I self-host Uplight?",
-    answer:
-      "Yes. Uplight is 100% open source and designed to be self-hosted. Deploy it on your own infrastructure using Cloudflare Workers, or run it locally for development. You own your data.",
-  },
-  {
-    question: "What alerting integrations are available?",
-    answer:
-      "We support Slack, Discord, email, and generic webhooks. You can configure multiple notification channels per monitor and set up escalation policies for critical services.",
-  },
-  {
-    question: "Is there a free tier?",
-    answer:
-      "The self-hosted version is completely free with no limitations. For the managed service, we offer a generous free tier with up to 5 monitors and 5-minute check intervals.",
-  },
-  {
-    question: "How are status pages customized?",
-    answer:
-      "Each status page gets a unique URL and can be customized with your branding. Group monitors by service, add descriptions, and optionally show historical uptime data to your users.",
-  },
-];
+const faqs = faqSchemaData;
 
 function Index() {
   const { data: session } = useSession();
   const { data: teams } = useTeams();
   const firstTeamId = teams?.[0]?.id;
 
-  const faqSchema = createFAQSchema(faqs);
-  const softwareSchema = createSoftwareApplicationSchema();
-  const combinedSchema = [faqSchema, softwareSchema];
-
   return (
-    <>
-      <SEOHead
-        title="Open Source Uptime Monitoring"
-        description="Monitor your services from multiple regions. Get instant alerts via Slack, Discord, or email when something breaks. Keep users informed with public status pages."
-        canonical="https://uplight.dev"
-        jsonLd={combinedSchema}
-      />
-      <div className="min-h-screen font-mono antialiased">
+    <div className="min-h-screen font-mono antialiased">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         {/* Navigation */}
         <nav className="flex justify-between items-center mb-20 sm:mb-28">
@@ -398,6 +416,5 @@ function Index() {
         </footer>
       </div>
     </div>
-    </>
   );
 }

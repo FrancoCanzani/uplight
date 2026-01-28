@@ -90,9 +90,14 @@ export function registerGetIncident(api: OpenAPIHono<AppEnv>) {
         severity: result.incident.severity,
         incidentType: result.incident.incidentType,
         status: result.incident.status,
-        assignees: result.incident.assignees
-          ? JSON.parse(result.incident.assignees)
-          : [],
+        assignees: (() => {
+          if (!result.incident.assignees) return [];
+          try {
+            return JSON.parse(result.incident.assignees);
+          } catch {
+            return [];
+          }
+        })(),
         postMortemTitle: result.incident.postMortemTitle,
         postMortemContent: result.incident.postMortemContent,
         startedAt: result.incident.startedAt.getTime(),

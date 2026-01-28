@@ -5,6 +5,7 @@ import {
   primaryKey,
   sqliteTable,
   text,
+  uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 import * as authSchema from "./auth-schema";
 import { timestamps } from "./utils";
@@ -508,7 +509,7 @@ export const statusPageSubscriber = sqliteTable(
   },
   (table) => [
     index("status_page_subscriber_page_idx").on(table.statusPageId),
-    index("status_page_subscriber_email_idx").on(
+    uniqueIndex("status_page_subscriber_unique_email_idx").on(
       table.statusPageId,
       table.email,
     ),

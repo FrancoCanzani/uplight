@@ -6,6 +6,9 @@ User-agent: *
 # Allow public pages
 Allow: /
 Allow: /status/
+Allow: /guides/
+Allow: /use-cases/
+Allow: /compare/
 
 # Disallow auth and dashboard pages
 Disallow: /login

@@ -77,61 +77,82 @@ export default function StatusPageForm() {
         data: parsed,
       });
 
-      if (logoFile) {
-        const formData = new FormData();
-        formData.append("logo", logoFile);
-        await fetch(`/api/status-pages/${teamId}/${result.id}/logo`, {
-          method: "POST",
-          body: formData,
-        });
-      }
-
-      for (const group of groups) {
-        const groupResult = await fetch(
-          `/api/status-pages/${teamId}/${result.id}/groups`,
-          {
+      try {
+        if (logoFile) {
+          const formData = new FormData();
+          formData.append("logo", logoFile);
+          const logoResponse = await fetch(`/api/status-pages/${teamId}/${result.id}/logo`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              label: group.label,
-              displayOrder: group.displayOrder,
-            }),
-          },
-        );
-        const createdGroup = await groupResult.json();
+            body: formData,
+          });
+          if (!logoResponse.ok) {
+            console.error("Failed to upload logo:", await logoResponse.text());
+          }
+        }
 
-        const monitorsInGroup = Array.from(selectedMonitors.values()).filter(
-          (m) => m.groupId === group.tempId,
-        );
+        for (const group of groups) {
+          const groupResult = await fetch(
+            `/api/status-pages/${teamId}/${result.id}/groups`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                label: group.label,
+                displayOrder: group.displayOrder,
+              }),
+            },
+          );
 
-        for (const monitor of monitorsInGroup) {
-          await fetch(`/api/status-pages/${teamId}/${result.id}/monitors`, {
+          if (!groupResult.ok) {
+            console.error("Failed to create group:", await groupResult.text());
+            continue;
+          }
+
+          const createdGroup = await groupResult.json();
+
+          const monitorsInGroup = Array.from(selectedMonitors.values()).filter(
+            (m) => m.groupId === group.tempId,
+          );
+
+          for (const monitor of monitorsInGroup) {
+            const monitorResponse = await fetch(`/api/status-pages/${teamId}/${result.id}/monitors`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                monitorId: monitor.monitorId,
+                groupId: createdGroup.id,
+                displayName: monitor.displayName || null,
+                displayOrder: monitor.displayOrder,
+              }),
+            });
+            if (!monitorResponse.ok) {
+              console.error("Failed to add monitor to group:", await monitorResponse.text());
+            }
+          }
+        }
+
+        const ungroupedMonitors = Array.from(selectedMonitors.values()).filter(
+          (m) => m.groupId === null,
+        );
+        for (const monitor of ungroupedMonitors) {
+          const monitorResponse = await fetch(`/api/status-pages/${teamId}/${result.id}/monitors`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               monitorId: monitor.monitorId,
-              groupId: createdGroup.id,
+              groupId: null,
               displayName: monitor.displayName || null,
               displayOrder: monitor.displayOrder,
             }),
           });
+          if (!monitorResponse.ok) {
+            console.error("Failed to add ungrouped monitor:", await monitorResponse.text());
+          }
         }
-      }
-
-      const ungroupedMonitors = Array.from(selectedMonitors.values()).filter(
-        (m) => m.groupId === null,
-      );
-      for (const monitor of ungroupedMonitors) {
-        await fetch(`/api/status-pages/${teamId}/${result.id}/monitors`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            monitorId: monitor.monitorId,
-            groupId: null,
-            displayName: monitor.displayName || null,
-            displayOrder: monitor.displayOrder,
-          }),
-        });
+      } catch (error) {
+        // Status page was created but some configuration failed
+        // Log the error but don't throw - user can edit the page to fix
+        console.error("Error configuring status page:", error);
       }
     },
   });

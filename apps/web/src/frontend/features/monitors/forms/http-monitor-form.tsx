@@ -35,10 +35,12 @@ import { cn } from "@lib/utils";
 import { useCreateMonitor } from "../api/use-create-monitor";
 import { useUpdateMonitor } from "../api/use-update-monitor";
 import {
+  DEFAULT_STATUS_CODES,
   HTTP_METHODS,
   INTERVALS,
   LOCATIONS,
   STATUS_CODE_OPTIONS,
+  STATUS_CODE_PRESETS,
   type HttpMethod,
 } from "../constants";
 import {
@@ -48,12 +50,6 @@ import {
 } from "../schemas";
 import { expandStatusCodes } from "../utils/expand-status-codes";
 import { getSelectedOptions } from "../utils/get-selected-options";
-
-// Default to 2xx (200-299) and 3xx (300-399) status codes
-const defaultStatusCodes = [
-  ...Array.from({ length: 100 }, (_, i) => 200 + i), // 2xx: 200-299
-  ...Array.from({ length: 100 }, (_, i) => 300 + i), // 3xx: 300-399
-];
 
 const emptyValues: HttpMonitorInput = {
   type: "http",
@@ -68,7 +64,7 @@ const emptyValues: HttpMonitorInput = {
   body: "",
   username: "",
   password: "",
-  expectedStatusCodes: defaultStatusCodes,
+  expectedStatusCodes: DEFAULT_STATUS_CODES,
   followRedirects: true,
   checkDomain: true,
   contentCheck: undefined,
@@ -79,14 +75,9 @@ function monitorToFormValues(monitor: MonitorResponse): HttpMonitorInput {
   const contentCheck = monitor.contentCheck
     ? JSON.parse(monitor.contentCheck)
     : undefined;
-  // Default to 2xx (200-299) and 3xx (300-399) status codes if not set
-  const defaultStatusCodes = [
-    ...Array.from({ length: 100 }, (_, i) => 200 + i), // 2xx: 200-299
-    ...Array.from({ length: 100 }, (_, i) => 300 + i), // 3xx: 300-399
-  ];
   const expectedStatusCodes = monitor.expectedStatusCodes
     ? JSON.parse(monitor.expectedStatusCodes)
-    : defaultStatusCodes;
+    : DEFAULT_STATUS_CODES;
   const headers = monitor.headers ? JSON.parse(monitor.headers) : {};
 
   return {
@@ -508,6 +499,24 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                     <FieldDescription>
                       Select status codes or ranges considered successful
                     </FieldDescription>
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {STATUS_CODE_PRESETS.map((preset) => (
+                        <Button
+                          key={preset.label}
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs"
+                          onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                            e.preventDefault();
+                            field.handleChange(preset.codes);
+                          }}
+                          title={preset.description}
+                        >
+                          {preset.label}
+                        </Button>
+                      ))}
+                    </div>
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />
                     )}

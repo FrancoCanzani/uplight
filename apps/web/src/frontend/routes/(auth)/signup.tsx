@@ -41,6 +41,12 @@ const signUpSchema = z
 
 export const Route = createFileRoute("/(auth)/signup")({
   component: SignUp,
+  head: () => ({
+    meta: [
+      { title: "Sign Up | Uplight" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   beforeLoad: async ({ context }) => {
     const { auth } = context;
     if (auth.data?.user) {
@@ -68,7 +74,7 @@ function SignUp() {
       confirmPassword: "",
     },
     validators: {
-      onChange: signUpSchema,
+      onBlur: signUpSchema,
     },
     onSubmit: async ({ value }) => {
       setError(null);
@@ -107,8 +113,8 @@ function SignUp() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Create Account</CardTitle>
+          <CardHeader>
+            <CardTitle>Create Account</CardTitle>
           <CardDescription>
             Enter your information to create a new account
           </CardDescription>

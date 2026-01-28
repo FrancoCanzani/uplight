@@ -30,7 +30,7 @@ const route = createRoute({
   summary: "Get monitor stats",
   request: {
     query: z.object({
-      days: z.string().optional().default("14"),
+      days: z.coerce.number().int().min(1).max(90).optional().default(14),
     }),
   },
   responses: {
@@ -72,7 +72,7 @@ export function registerGetStats(api: OpenAPIHono<AppEnv>) {
       throw new HTTPException(404, { message: "Monitor not found" });
     }
 
-    const daysAgo = new Date(Date.now() - Number(days) * 24 * 60 * 60 * 1000);
+    const daysAgo = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
     const checks = await db
       .select()

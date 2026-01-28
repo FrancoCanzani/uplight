@@ -1,4 +1,3 @@
-export { SEOHead, type SEOProps } from "./seo-head";
 export {
   createOrganizationSchema,
   createWebsiteSchema,
@@ -6,4 +5,7 @@ export {
   createFAQSchema,
   createStatusPageSchema,
   createBreadcrumbSchema,
+  createArticleSchema,
+  createHowToSchema,
+  createComparisonSchema,
 } from "./structured-data";

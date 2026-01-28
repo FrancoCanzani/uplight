@@ -79,8 +79,9 @@ export function registerPostTeamMember(api: OpenAPIHono<AppEnv>) {
       .limit(1);
 
     if (!targetUser) {
-      throw new HTTPException(404, {
-        message: "User with this email not found",
+      // Use generic message to prevent user enumeration
+      throw new HTTPException(400, {
+        message: "Unable to add member. Please verify the email address.",
       });
     }
 
@@ -97,8 +98,9 @@ export function registerPostTeamMember(api: OpenAPIHono<AppEnv>) {
       .limit(1);
 
     if (existingMember) {
+      // Use generic message to prevent user enumeration
       throw new HTTPException(400, {
-        message: "User is already a member of this team",
+        message: "Unable to add member. Please verify the email address.",
       });
     }
 

@@ -1,5 +1,11 @@
 import { type Location } from "./schemas";
 
+// Default status codes: 2xx (200-299) and 3xx (300-399)
+export const DEFAULT_STATUS_CODES = [
+  ...Array.from({ length: 100 }, (_, i) => 200 + i), // 2xx: 200-299
+  ...Array.from({ length: 100 }, (_, i) => 300 + i), // 3xx: 300-399
+];
+
 export const LOCATIONS: { id: Location; label: string }[] = [
   { id: "wnam", label: "Western North America" },
   { id: "enam", label: "Eastern North America" },
@@ -134,4 +140,27 @@ export const STATUS_CODE_OPTIONS = [
     label: `${code} ${label}`,
     codes: [parseInt(code, 10)],
   })),
+];
+
+// Quick-select presets for common status code combinations
+export const STATUS_CODE_PRESETS = [
+  {
+    label: "2xx",
+    description: "Success only",
+    codes: Array.from({ length: 100 }, (_, i) => 200 + i),
+  },
+  {
+    label: "2xx + 3xx",
+    description: "Success & redirects",
+    codes: DEFAULT_STATUS_CODES,
+  },
+  {
+    label: "2xx-4xx",
+    description: "Exclude server errors",
+    codes: [
+      ...Array.from({ length: 100 }, (_, i) => 200 + i),
+      ...Array.from({ length: 100 }, (_, i) => 300 + i),
+      ...Array.from({ length: 100 }, (_, i) => 400 + i),
+    ],
+  },
 ];

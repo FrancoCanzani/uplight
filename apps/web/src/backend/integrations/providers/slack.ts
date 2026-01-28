@@ -12,6 +12,45 @@ export const SlackConfigSchema = z
 
 export type SlackConfig = z.infer<typeof SlackConfigSchema>;
 
+async function sendSlackWithRetry(
+  webhookUrl: string,
+  payload: unknown,
+  retries = 3
+): Promise<void> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => "Unknown error");
+        throw new Error(`Slack webhook failed: ${response.status} - ${errorText}`);
+      }
+      return; // Success
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      console.error(
+        `Slack delivery attempt ${attempt}/${retries} failed:`,
+        lastError.message
+      );
+
+      if (attempt < retries) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.pow(2, attempt - 1) * 1000)
+        );
+      }
+    }
+  }
+
+  console.error(`Slack delivery failed after ${retries} attempts`);
+  throw lastError;
+}
+
 export const slackProvider: IntegrationProvider<SlackConfig> = {
   type: "slack",
   configSchema: SlackConfigSchema,
@@ -51,11 +90,7 @@ export const slackProvider: IntegrationProvider<SlackConfig> = {
         ],
       };
 
-      await fetch(config.webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      await sendSlackWithRetry(config.webhookUrl, payload);
     }
 
     if (message.type === "recovery") {
@@ -76,11 +111,7 @@ export const slackProvider: IntegrationProvider<SlackConfig> = {
         ],
       };
 
-      await fetch(config.webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      await sendSlackWithRetry(config.webhookUrl, payload);
     }
   },
 };

@@ -10,10 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UseCasesIndexRouteImport } from './routes/use-cases/index'
+import { Route as GuidesIndexRouteImport } from './routes/guides/index'
+import { Route as CompareIndexRouteImport } from './routes/compare/index'
+import { Route as UseCasesSlugRouteImport } from './routes/use-cases/$slug'
 import { Route as StatusSlugRouteImport } from './routes/status/$slug'
+import { Route as GuidesSlugRouteImport } from './routes/guides/$slug'
+import { Route as CompareSlugRouteImport } from './routes/compare/$slug'
 import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as dashboardTeamIdRouteRouteImport } from './routes/(dashboard)/$teamId/route'
+import { Route as GuidesIntegrationsSlugRouteImport } from './routes/guides/integrations/$slug'
 import { Route as dashboardTeamIdTeamRouteImport } from './routes/(dashboard)/$teamId/team'
 import { Route as dashboardTeamIdSupportRouteImport } from './routes/(dashboard)/$teamId/support'
 import { Route as dashboardTeamIdSettingsRouteImport } from './routes/(dashboard)/$teamId/settings'
@@ -40,9 +47,39 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UseCasesIndexRoute = UseCasesIndexRouteImport.update({
+  id: '/use-cases/',
+  path: '/use-cases/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidesIndexRoute = GuidesIndexRouteImport.update({
+  id: '/guides/',
+  path: '/guides/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareIndexRoute = CompareIndexRouteImport.update({
+  id: '/compare/',
+  path: '/compare/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UseCasesSlugRoute = UseCasesSlugRouteImport.update({
+  id: '/use-cases/$slug',
+  path: '/use-cases/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StatusSlugRoute = StatusSlugRouteImport.update({
   id: '/status/$slug',
   path: '/status/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidesSlugRoute = GuidesSlugRouteImport.update({
+  id: '/guides/$slug',
+  path: '/guides/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareSlugRoute = CompareSlugRouteImport.update({
+  id: '/compare/$slug',
+  path: '/compare/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const authSignupRoute = authSignupRouteImport.update({
@@ -58,6 +95,11 @@ const authLoginRoute = authLoginRouteImport.update({
 const dashboardTeamIdRouteRoute = dashboardTeamIdRouteRouteImport.update({
   id: '/(dashboard)/$teamId',
   path: '/$teamId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidesIntegrationsSlugRoute = GuidesIntegrationsSlugRouteImport.update({
+  id: '/guides/integrations/$slug',
+  path: '/guides/integrations/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const dashboardTeamIdTeamRoute = dashboardTeamIdTeamRouteImport.update({
@@ -182,11 +224,18 @@ export interface FileRoutesByFullPath {
   '/$teamId': typeof dashboardTeamIdRouteRouteWithChildren
   '/login': typeof authLoginRoute
   '/signup': typeof authSignupRoute
+  '/compare/$slug': typeof CompareSlugRoute
+  '/guides/$slug': typeof GuidesSlugRoute
   '/status/$slug': typeof StatusSlugRoute
+  '/use-cases/$slug': typeof UseCasesSlugRoute
+  '/compare': typeof CompareIndexRoute
+  '/guides': typeof GuidesIndexRoute
+  '/use-cases': typeof UseCasesIndexRoute
   '/$teamId/new-team': typeof dashboardTeamIdNewTeamRoute
   '/$teamId/settings': typeof dashboardTeamIdSettingsRoute
   '/$teamId/support': typeof dashboardTeamIdSupportRoute
   '/$teamId/team': typeof dashboardTeamIdTeamRoute
+  '/guides/integrations/$slug': typeof GuidesIntegrationsSlugRoute
   '/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
   '/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
@@ -209,11 +258,18 @@ export interface FileRoutesByTo {
   '/$teamId': typeof dashboardTeamIdRouteRouteWithChildren
   '/login': typeof authLoginRoute
   '/signup': typeof authSignupRoute
+  '/compare/$slug': typeof CompareSlugRoute
+  '/guides/$slug': typeof GuidesSlugRoute
   '/status/$slug': typeof StatusSlugRoute
+  '/use-cases/$slug': typeof UseCasesSlugRoute
+  '/compare': typeof CompareIndexRoute
+  '/guides': typeof GuidesIndexRoute
+  '/use-cases': typeof UseCasesIndexRoute
   '/$teamId/new-team': typeof dashboardTeamIdNewTeamRoute
   '/$teamId/settings': typeof dashboardTeamIdSettingsRoute
   '/$teamId/support': typeof dashboardTeamIdSupportRoute
   '/$teamId/team': typeof dashboardTeamIdTeamRoute
+  '/guides/integrations/$slug': typeof GuidesIntegrationsSlugRoute
   '/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
   '/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
@@ -237,11 +293,18 @@ export interface FileRoutesById {
   '/(dashboard)/$teamId': typeof dashboardTeamIdRouteRouteWithChildren
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/signup': typeof authSignupRoute
+  '/compare/$slug': typeof CompareSlugRoute
+  '/guides/$slug': typeof GuidesSlugRoute
   '/status/$slug': typeof StatusSlugRoute
+  '/use-cases/$slug': typeof UseCasesSlugRoute
+  '/compare/': typeof CompareIndexRoute
+  '/guides/': typeof GuidesIndexRoute
+  '/use-cases/': typeof UseCasesIndexRoute
   '/(dashboard)/$teamId/new-team': typeof dashboardTeamIdNewTeamRoute
   '/(dashboard)/$teamId/settings': typeof dashboardTeamIdSettingsRoute
   '/(dashboard)/$teamId/support': typeof dashboardTeamIdSupportRoute
   '/(dashboard)/$teamId/team': typeof dashboardTeamIdTeamRoute
+  '/guides/integrations/$slug': typeof GuidesIntegrationsSlugRoute
   '/(dashboard)/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/(dashboard)/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
   '/(dashboard)/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
@@ -266,11 +329,18 @@ export interface FileRouteTypes {
     | '/$teamId'
     | '/login'
     | '/signup'
+    | '/compare/$slug'
+    | '/guides/$slug'
     | '/status/$slug'
+    | '/use-cases/$slug'
+    | '/compare'
+    | '/guides'
+    | '/use-cases'
     | '/$teamId/new-team'
     | '/$teamId/settings'
     | '/$teamId/support'
     | '/$teamId/team'
+    | '/guides/integrations/$slug'
     | '/$teamId/heartbeats/new'
     | '/$teamId/incidents/$incidentId'
     | '/$teamId/monitors/new'
@@ -293,11 +363,18 @@ export interface FileRouteTypes {
     | '/$teamId'
     | '/login'
     | '/signup'
+    | '/compare/$slug'
+    | '/guides/$slug'
     | '/status/$slug'
+    | '/use-cases/$slug'
+    | '/compare'
+    | '/guides'
+    | '/use-cases'
     | '/$teamId/new-team'
     | '/$teamId/settings'
     | '/$teamId/support'
     | '/$teamId/team'
+    | '/guides/integrations/$slug'
     | '/$teamId/heartbeats/new'
     | '/$teamId/incidents/$incidentId'
     | '/$teamId/monitors/new'
@@ -320,11 +397,18 @@ export interface FileRouteTypes {
     | '/(dashboard)/$teamId'
     | '/(auth)/login'
     | '/(auth)/signup'
+    | '/compare/$slug'
+    | '/guides/$slug'
     | '/status/$slug'
+    | '/use-cases/$slug'
+    | '/compare/'
+    | '/guides/'
+    | '/use-cases/'
     | '/(dashboard)/$teamId/new-team'
     | '/(dashboard)/$teamId/settings'
     | '/(dashboard)/$teamId/support'
     | '/(dashboard)/$teamId/team'
+    | '/guides/integrations/$slug'
     | '/(dashboard)/$teamId/heartbeats/new'
     | '/(dashboard)/$teamId/incidents/$incidentId'
     | '/(dashboard)/$teamId/monitors/new'
@@ -348,7 +432,14 @@ export interface RootRouteChildren {
   dashboardTeamIdRouteRoute: typeof dashboardTeamIdRouteRouteWithChildren
   authLoginRoute: typeof authLoginRoute
   authSignupRoute: typeof authSignupRoute
+  CompareSlugRoute: typeof CompareSlugRoute
+  GuidesSlugRoute: typeof GuidesSlugRoute
   StatusSlugRoute: typeof StatusSlugRoute
+  UseCasesSlugRoute: typeof UseCasesSlugRoute
+  CompareIndexRoute: typeof CompareIndexRoute
+  GuidesIndexRoute: typeof GuidesIndexRoute
+  UseCasesIndexRoute: typeof UseCasesIndexRoute
+  GuidesIntegrationsSlugRoute: typeof GuidesIntegrationsSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -360,11 +451,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/use-cases/': {
+      id: '/use-cases/'
+      path: '/use-cases'
+      fullPath: '/use-cases'
+      preLoaderRoute: typeof UseCasesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/': {
+      id: '/guides/'
+      path: '/guides'
+      fullPath: '/guides'
+      preLoaderRoute: typeof GuidesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare/': {
+      id: '/compare/'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof CompareIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/use-cases/$slug': {
+      id: '/use-cases/$slug'
+      path: '/use-cases/$slug'
+      fullPath: '/use-cases/$slug'
+      preLoaderRoute: typeof UseCasesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/status/$slug': {
       id: '/status/$slug'
       path: '/status/$slug'
       fullPath: '/status/$slug'
       preLoaderRoute: typeof StatusSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/$slug': {
+      id: '/guides/$slug'
+      path: '/guides/$slug'
+      fullPath: '/guides/$slug'
+      preLoaderRoute: typeof GuidesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare/$slug': {
+      id: '/compare/$slug'
+      path: '/compare/$slug'
+      fullPath: '/compare/$slug'
+      preLoaderRoute: typeof CompareSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(auth)/signup': {
@@ -386,6 +519,13 @@ declare module '@tanstack/react-router' {
       path: '/$teamId'
       fullPath: '/$teamId'
       preLoaderRoute: typeof dashboardTeamIdRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/integrations/$slug': {
+      id: '/guides/integrations/$slug'
+      path: '/guides/integrations/$slug'
+      fullPath: '/guides/integrations/$slug'
+      preLoaderRoute: typeof GuidesIntegrationsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(dashboard)/$teamId/team': {
@@ -593,7 +733,14 @@ const rootRouteChildren: RootRouteChildren = {
   dashboardTeamIdRouteRoute: dashboardTeamIdRouteRouteWithChildren,
   authLoginRoute: authLoginRoute,
   authSignupRoute: authSignupRoute,
+  CompareSlugRoute: CompareSlugRoute,
+  GuidesSlugRoute: GuidesSlugRoute,
   StatusSlugRoute: StatusSlugRoute,
+  UseCasesSlugRoute: UseCasesSlugRoute,
+  CompareIndexRoute: CompareIndexRoute,
+  GuidesIndexRoute: GuidesIndexRoute,
+  UseCasesIndexRoute: UseCasesIndexRoute,
+  GuidesIntegrationsSlugRoute: GuidesIntegrationsSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

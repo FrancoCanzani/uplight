@@ -1,3 +1,13 @@
+export {
+  getOverallStatusLabel,
+  getOverallStatusTextColor,
+  getStatusBgColor,
+  getStatusLabel,
+  MONITOR_STATUS_CONFIG,
+  OVERALL_STATUS_CONFIG,
+} from "@/lib/constants/status";
+
+// Legacy exports for backward compatibility
 export const OVERALL_STATUS_LABELS = {
   operational: "All Systems Operational",
   degraded: "Partial System Outage",

@@ -27,7 +27,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { fetchTeams } from "@/features/teams/api/use-teams";
 import { signIn } from "@/lib/auth/client";
-import { SEOHead } from "@/components/seo";
 
 const loginSchema = z.object({
   email: z.email("Please enter a valid email address"),
@@ -41,6 +40,12 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/(auth)/login")({
   component: Login,
   validateSearch: searchSchema,
+  head: () => ({
+    meta: [
+      { title: "Sign In | Uplight" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   beforeLoad: async ({ context }) => {
     const { auth } = context;
     if (auth.data?.user) {
@@ -68,7 +73,7 @@ function Login() {
       password: "",
     },
     validators: {
-      onChange: loginSchema,
+      onBlur: loginSchema,
     },
     onSubmit: async ({ value }) => {
       setError(null);
@@ -109,7 +114,7 @@ function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Sign In</CardTitle>
           <CardDescription>
@@ -193,7 +198,7 @@ function Login() {
             </FieldGroup>
           </form>
         </CardContent>
-      </Card>
-    </div>
+        </Card>
+      </div>
   );
 }

@@ -1,10 +1,5 @@
 import z from "zod";
-
-// Default status codes: 2xx (200-299) and 3xx (300-399)
-const DEFAULT_STATUS_CODES = [
-  ...Array.from({ length: 100 }, (_, i) => 200 + i), // 2xx: 200-299
-  ...Array.from({ length: 100 }, (_, i) => 300 + i), // 3xx: 300-399
-];
+import { DEFAULT_STATUS_CODES } from "./constants";
 
 export const LocationSchema = z.enum([
   "wnam",

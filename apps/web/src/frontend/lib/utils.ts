@@ -35,50 +35,9 @@ export function formatCause(cause: string) {
   return cause.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
 }
 
-export type MonitorStatus =
-  | "up"
-  | "down"
-  | "degraded"
-  | "maintenance"
-  | "paused"
-  | "initializing";
-
-export type HeartbeatStatus = "up" | "down" | "paused" | "initializing";
-
-export function getStatusBgColor(status: string): string {
-  switch (status) {
-    case "up":
-      return "bg-green-600";
-    case "down":
-      return "bg-red-600";
-    case "degraded":
-      return "bg-orange-500";
-    case "maintenance":
-      return "bg-blue-500";
-    case "paused":
-      return "bg-zinc-400";
-    case "initializing":
-      return "bg-amber-500";
-    default:
-      return "bg-zinc-400";
-  }
-}
-
-export function getStatusTextColor(status: string): string {
-  switch (status) {
-    case "up":
-      return "text-green-600";
-    case "down":
-      return "text-red-600";
-    case "degraded":
-      return "text-orange-500";
-    case "maintenance":
-      return "text-blue-500";
-    case "paused":
-      return "text-zinc-500";
-    case "initializing":
-      return "text-amber-500";
-    default:
-      return "text-zinc-500";
-  }
-}
+export {
+  getStatusBgColor,
+  getStatusTextColor,
+  type HeartbeatStatus,
+  type MonitorStatus,
+} from "./constants/status";

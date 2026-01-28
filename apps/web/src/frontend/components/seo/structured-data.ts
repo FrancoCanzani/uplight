@@ -119,3 +119,94 @@ export function createBreadcrumbSchema(
     })),
   };
 }
+
+export function createArticleSchema(data: {
+  title: string;
+  description: string;
+  url: string;
+  publishedAt: string;
+  updatedAt?: string;
+  author?: string;
+  image?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: data.title,
+    description: data.description,
+    url: data.url,
+    datePublished: data.publishedAt,
+    dateModified: data.updatedAt || data.publishedAt,
+    author: {
+      "@type": "Organization",
+      name: data.author || "Uplight",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Uplight",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://uplight.dev/logo.png",
+      },
+    },
+    image: data.image || "https://uplight.dev/og-image.png",
+  };
+}
+
+export function createHowToSchema(data: {
+  name: string;
+  description: string;
+  steps: Array<{
+    name: string;
+    text: string;
+    image?: string;
+  }>;
+  totalTime?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: data.name,
+    description: data.description,
+    totalTime: data.totalTime,
+    step: data.steps.map((step, index) => ({
+      "@type": "HowToStep",
+      position: index + 1,
+      name: step.name,
+      text: step.text,
+      image: step.image,
+    })),
+  };
+}
+
+export function createComparisonSchema(data: {
+  title: string;
+  description: string;
+  url: string;
+  mainProduct: string;
+  comparedProduct: string;
+  features: Array<{
+    name: string;
+    mainValue: string;
+    comparedValue: string;
+  }>;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: data.title,
+    description: data.description,
+    url: data.url,
+    articleSection: "Comparison",
+    about: [
+      {
+        "@type": "SoftwareApplication",
+        name: data.mainProduct,
+      },
+      {
+        "@type": "SoftwareApplication",
+        name: data.comparedProduct,
+      },
+    ],
+  };
+}

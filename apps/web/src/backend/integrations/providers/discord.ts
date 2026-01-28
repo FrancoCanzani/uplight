@@ -12,6 +12,46 @@ export const DiscordConfigSchema = z
 
 export type DiscordConfig = z.infer<typeof DiscordConfigSchema>;
 
+async function sendDiscordWithRetry(
+  webhookUrl: string,
+  payload: unknown,
+  retries = 3
+): Promise<void> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      // Discord returns 204 on success
+      if (!response.ok && response.status !== 204) {
+        const errorText = await response.text().catch(() => "Unknown error");
+        throw new Error(`Discord webhook failed: ${response.status} - ${errorText}`);
+      }
+      return; // Success
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      console.error(
+        `Discord delivery attempt ${attempt}/${retries} failed:`,
+        lastError.message
+      );
+
+      if (attempt < retries) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.pow(2, attempt - 1) * 1000)
+        );
+      }
+    }
+  }
+
+  console.error(`Discord delivery failed after ${retries} attempts`);
+  throw lastError;
+}
+
 export const discordProvider: IntegrationProvider<DiscordConfig> = {
   type: "discord",
   configSchema: DiscordConfigSchema,
@@ -76,11 +116,7 @@ export const discordProvider: IntegrationProvider<DiscordConfig> = {
         payload.avatar_url = config.avatarUrl;
       }
 
-      await fetch(config.webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      await sendDiscordWithRetry(config.webhookUrl, payload);
     }
 
     if (message.type === "recovery") {
@@ -119,11 +155,7 @@ export const discordProvider: IntegrationProvider<DiscordConfig> = {
         payload.avatar_url = config.avatarUrl;
       }
 
-      await fetch(config.webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      await sendDiscordWithRetry(config.webhookUrl, payload);
     }
   },
 };
