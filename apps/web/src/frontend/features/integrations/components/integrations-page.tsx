@@ -4,7 +4,12 @@ import { Check } from "lucide-react";
 import DiscordLogo from "@/components/logos/discord";
 import GithubLogo from "@/components/logos/github";
 import GmailLogo from "@/components/logos/gmail";
+import JiraLogo from "@/components/logos/jira";
+import LinearLogo from "@/components/logos/linear";
+import OpsgenieLogo from "@/components/logos/opsgenie";
+import PagerDutyLogo from "@/components/logos/pagerduty";
 import SlackLogo from "@/components/logos/slack";
+import TeamsLogo from "@/components/logos/teams";
 import WebhookLogo from "@/components/logos/webhook";
 import { PageHeader } from "@/components/page-header";
 import {
@@ -30,7 +35,12 @@ import { useDeleteIntegration } from "../api/use-delete-integration";
 import DiscordIntegrationForm from "../forms/discord-integration-form";
 import EmailIntegrationForm from "../forms/email-integration-form";
 import GitHubIntegrationForm from "../forms/github-integration-form";
+import JiraIntegrationForm from "../forms/jira-integration-form";
+import LinearIntegrationForm from "../forms/linear-integration-form";
+import OpsgenieIntegrationForm from "../forms/opsgenie-integration-form";
+import PagerDutyIntegrationForm from "../forms/pagerduty-integration-form";
 import SlackIntegrationForm from "../forms/slack-integration-form";
+import TeamsIntegrationForm from "../forms/teams-integration-form";
 import WebhookIntegrationForm from "../forms/webhook-integration-form";
 import type { Integration, IntegrationType } from "../schemas";
 
@@ -38,8 +48,13 @@ const INTEGRATION_TYPES: IntegrationType[] = [
   "email",
   "slack",
   "discord",
-  "webhook",
+  "teams",
+  "pagerduty",
+  "opsgenie",
+  "linear",
+  "jira",
   "github",
+  "webhook",
 ];
 
 const INTEGRATION_TYPE_CONFIG: Record<
@@ -60,6 +75,31 @@ const INTEGRATION_TYPE_CONFIG: Record<
     label: "Discord",
     icon: DiscordLogo,
     description: "Send messages to Discord webhooks",
+  },
+  teams: {
+    label: "Microsoft Teams",
+    icon: TeamsLogo,
+    description: "Post messages to Teams channels",
+  },
+  pagerduty: {
+    label: "PagerDuty",
+    icon: PagerDutyLogo,
+    description: "Trigger and resolve PagerDuty incidents",
+  },
+  opsgenie: {
+    label: "Opsgenie",
+    icon: OpsgenieLogo,
+    description: "Create and close Opsgenie alerts",
+  },
+  linear: {
+    label: "Linear",
+    icon: LinearLogo,
+    description: "Create Linear issues from incidents",
+  },
+  jira: {
+    label: "Jira",
+    icon: JiraLogo,
+    description: "Create Jira issues from incidents",
   },
   webhook: {
     label: "Webhook",
@@ -111,6 +151,36 @@ function IntegrationFormSheet({
           )}
           {type === "discord" && (
             <DiscordIntegrationForm
+              existing={existing}
+              onClose={() => onOpenChange(false)}
+            />
+          )}
+          {type === "teams" && (
+            <TeamsIntegrationForm
+              existing={existing}
+              onClose={() => onOpenChange(false)}
+            />
+          )}
+          {type === "pagerduty" && (
+            <PagerDutyIntegrationForm
+              existing={existing}
+              onClose={() => onOpenChange(false)}
+            />
+          )}
+          {type === "opsgenie" && (
+            <OpsgenieIntegrationForm
+              existing={existing}
+              onClose={() => onOpenChange(false)}
+            />
+          )}
+          {type === "linear" && (
+            <LinearIntegrationForm
+              existing={existing}
+              onClose={() => onOpenChange(false)}
+            />
+          )}
+          {type === "jira" && (
+            <JiraIntegrationForm
               existing={existing}
               onClose={() => onOpenChange(false)}
             />
@@ -211,11 +281,6 @@ export default function IntegrationsPage() {
             </Card>
           );
         })}
-        <div className="border-dashed flex items-center justify-center border h-full min-h-18">
-          <p className="text-xs text-muted-foreground">
-            More integrations coming soon
-          </p>
-        </div>
       </div>
 
       {selectedType && (

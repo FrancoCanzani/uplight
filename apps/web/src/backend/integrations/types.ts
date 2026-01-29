@@ -7,7 +7,12 @@ export type IntegrationType =
   | "slack"
   | "discord"
   | "webhook"
-  | "github";
+  | "github"
+  | "pagerduty"
+  | "teams"
+  | "opsgenie"
+  | "linear"
+  | "jira";
 
 export interface IntegrationProvider<TConfig = unknown> {
   type: IntegrationType;
