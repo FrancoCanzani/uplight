@@ -21,7 +21,7 @@ const navbar = (
         Uplight
       </span>
     }
-    projectLink="https://github.com/your-org/uplight"
+    projectLink="https://github.com/francocanzani/uplight"
   />
 );
 
@@ -43,7 +43,7 @@ export default async function RootLayout({
         <Layout
           navbar={navbar}
           pageMap={await getPageMap()}
-          docsRepositoryBase="https://github.com/your-org/uplight/tree/main/apps/docs"
+          docsRepositoryBase="https://github.com/francocanzani/uplight/tree/main/apps/docs"
           footer={footer}
           editLink="Edit this page on GitHub"
           feedback={{ content: "Question? Give us feedback →" }}

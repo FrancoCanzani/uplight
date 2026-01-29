@@ -13,4 +13,5 @@ export default {
   domains: "Domains & SSL",
   maintenance: "Maintenance Windows",
   teams: "Teams",
+  "self-hosting": "Self-Hosting",
 };

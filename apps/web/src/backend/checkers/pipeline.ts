@@ -46,7 +46,7 @@ async function buildCheckRequest(
     let decryptedPassword: string | undefined;
     if (mon.password) {
       try {
-        decryptedPassword = await decrypt(mon.password, env.BETTER_AUTH_SECRET);
+        decryptedPassword = await decrypt(mon.password, env.ENCRYPTION_SECRET);
       } catch {
         console.error(`Failed to decrypt password for monitor ${mon.id}`);
       }

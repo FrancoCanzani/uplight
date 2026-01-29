@@ -9,6 +9,7 @@ declare namespace Cloudflare {
 	interface Env {
 		BETTER_AUTH_SECRET: string;
 		BETTER_AUTH_URL: string;
+		ENCRYPTION_SECRET: string;
 		DOMAIN_CHECKER_URL: string;
 		VITE_DOMAIN_CHECKER_URL: string;
 		AI_GATEWAY_API_KEY: string;
@@ -22,7 +23,7 @@ type StringifyValues<EnvType extends Record<string, unknown>> = {
 	[Binding in keyof EnvType]: EnvType[Binding] extends string ? EnvType[Binding] : string;
 };
 declare namespace NodeJS {
-	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "BETTER_AUTH_SECRET" | "BETTER_AUTH_URL" | "DOMAIN_CHECKER_URL" | "VITE_DOMAIN_CHECKER_URL" | "AI_GATEWAY_API_KEY">> {}
+	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "BETTER_AUTH_SECRET" | "BETTER_AUTH_URL" | "ENCRYPTION_SECRET" | "DOMAIN_CHECKER_URL" | "VITE_DOMAIN_CHECKER_URL" | "AI_GATEWAY_API_KEY">> {}
 }
 
 // Begin runtime types

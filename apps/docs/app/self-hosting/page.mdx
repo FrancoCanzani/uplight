@@ -1,0 +1,97 @@
+# Self-Hosting
+
+Deploy your own Uplight instance to Cloudflare with one click.
+
+## Deploy to Cloudflare
+
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/francocanzani/uplight)
+
+Click the button above to deploy Uplight to your Cloudflare account. You'll need:
+
+- A Cloudflare account (free tier works)
+- A few minutes to complete the setup
+
+## What You Get
+
+The self-hosted version includes:
+
+- **HTTP & TCP Monitoring** - Monitor websites and services from 9 global regions
+- **Heartbeat Monitoring** - Track cron jobs and scheduled tasks
+- **Incident Management** - Track and resolve incidents with your team
+- **Status Pages** - Public status pages for your users
+- **Notifications** - Slack, Discord, Email, Webhooks, and more
+- **Team Collaboration** - Invite your team with role-based access
+
+## Limitations
+
+The self-hosted version does not include:
+
+- **Domain Expiration Monitoring** - Requires additional infrastructure
+- **SSL Certificate Monitoring** - Requires additional infrastructure
+
+These features require a separate domain checker service. If you need them,
+consider using the managed version at [uplight.dev](https://uplight.dev).
+
+## After Deployment
+
+Once deployed, you'll need to:
+
+1. **Set up a custom domain** (optional but recommended)
+   - Go to your Cloudflare dashboard
+   - Navigate to Workers & Pages → your uplight worker
+   - Add a custom domain
+
+2. **Create your account**
+   - Visit your deployed URL
+   - Sign up for an account
+   - You'll automatically be the owner of your instance
+
+3. **Configure notifications**
+   - Go to Settings → Notifications
+   - Add Slack, Discord, or other channels
+
+## Updating
+
+To update your instance:
+
+1. Fork the [Uplight repository](https://github.com/francocanzani/uplight)
+2. Sync your fork with upstream
+3. Redeploy using the same Deploy to Cloudflare button
+
+## Environment Variables
+
+The following are configured automatically during deployment:
+
+| Variable | Description |
+|----------|-------------|
+| `BETTER_AUTH_SECRET` | Authentication secret (auto-generated) |
+| `BETTER_AUTH_URL` | Your app URL |
+
+## Resources Created
+
+Deploying creates these Cloudflare resources:
+
+- **Worker** - The main application
+- **D1 Database** - SQLite database for all data
+- **R2 Bucket** - Storage for status page logos
+- **Durable Objects** - For distributed monitoring
+- **Queue** - For async notification delivery
+
+All resources are created in your Cloudflare account.
+
+## Troubleshooting
+
+### "Database not found" error
+
+Run migrations manually:
+```bash
+wrangler d1 migrations apply uplight-prod --remote
+```
+
+### Can't access after deployment
+
+Check that `BETTER_AUTH_URL` matches your actual URL.
+
+### Need help?
+
+Open an issue on [GitHub](https://github.com/francocanzani/uplight/issues).

@@ -112,7 +112,7 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
         baseUpdates.username = data.username ?? null;
       if (data.password !== undefined)
         baseUpdates.password = data.password
-          ? await encrypt(data.password, c.env.BETTER_AUTH_SECRET)
+          ? await encrypt(data.password, c.env.ENCRYPTION_SECRET)
           : null;
       if (data.expectedStatusCodes !== undefined)
         baseUpdates.expectedStatusCodes = JSON.stringify(

@@ -49,7 +49,7 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
     if (data.type === "http" && data.password) {
       encryptedPassword = await encrypt(
         data.password,
-        c.env.BETTER_AUTH_SECRET,
+        c.env.ENCRYPTION_SECRET,
       );
     }
 

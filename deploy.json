@@ -1,0 +1,7 @@
+{
+  "$schema": "https://deploy.workers.cloudflare.com/deploy.json",
+  "name": "Uplight",
+  "description": "Open source uptime monitoring",
+  "repository": "https://github.com/francocanzani/uplight",
+  "workersDirectory": "apps/web"
+}

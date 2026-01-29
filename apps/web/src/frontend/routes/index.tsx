@@ -178,7 +178,7 @@ function Index() {
                 <span className="text-xs text-muted-foreground mb-4 block">
                   Open source uptime monitoring
                 </span>
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-light tracking-tight mb-6 leading-[1.1]">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-light font-display tracking-tight mb-6 leading-[1.1]">
                   Know before your
                   <br />
                   customers do.
