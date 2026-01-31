@@ -12,7 +12,8 @@ export type IntegrationType =
   | "teams"
   | "opsgenie"
   | "linear"
-  | "jira";
+  | "jira"
+  | "sms";
 
 export interface IntegrationProvider<TConfig = unknown> {
   type: IntegrationType;

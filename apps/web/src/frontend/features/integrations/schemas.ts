@@ -57,6 +57,18 @@ export const JiraConfigSchema = z.object({
   issueType: z.string(),
 });
 
+export const SmsConfigSchema = z.object({
+  accountSid: z.string().min(1, "Account SID is required"),
+  authToken: z.string().min(1, "Auth Token is required"),
+  fromNumber: z
+    .string()
+    .regex(/^\+[1-9]\d{1,14}$/, "Must be E.164 format (+1234567890)"),
+  toNumbers: z
+    .array(z.string().regex(/^\+[1-9]\d{1,14}$/, "Must be E.164 format"))
+    .min(1, "At least one phone number is required")
+    .max(10, "Maximum 10 phone numbers allowed"),
+});
+
 export type EmailConfig = z.infer<typeof EmailConfigSchema>;
 export type SlackConfig = z.infer<typeof SlackConfigSchema>;
 export type DiscordConfig = z.infer<typeof DiscordConfigSchema>;
@@ -67,6 +79,7 @@ export type TeamsConfig = z.infer<typeof TeamsConfigSchema>;
 export type OpsgenieConfig = z.infer<typeof OpsgenieConfigSchema>;
 export type LinearConfig = z.infer<typeof LinearConfigSchema>;
 export type JiraConfig = z.infer<typeof JiraConfigSchema>;
+export type SmsConfig = z.infer<typeof SmsConfigSchema>;
 
 export type IntegrationType =
   | "email"
@@ -78,7 +91,8 @@ export type IntegrationType =
   | "teams"
   | "opsgenie"
   | "linear"
-  | "jira";
+  | "jira"
+  | "sms";
 
 export const IntegrationSchema = z.discriminatedUnion("type", [
   z.object({
@@ -171,6 +185,15 @@ export const IntegrationSchema = z.discriminatedUnion("type", [
     createdAt: z.number(),
     updatedAt: z.number(),
   }),
+  z.object({
+    id: z.number(),
+    teamId: z.number(),
+    type: z.literal("sms"),
+    enabled: z.boolean(),
+    config: SmsConfigSchema,
+    createdAt: z.number(),
+    updatedAt: z.number(),
+  }),
 ]);
 
 export const CreateIntegrationSchema = z.object({
@@ -185,6 +208,7 @@ export const CreateIntegrationSchema = z.object({
     "opsgenie",
     "linear",
     "jira",
+    "sms",
   ]),
   enabled: z.boolean().default(false),
   config: z.union([
@@ -198,6 +222,7 @@ export const CreateIntegrationSchema = z.object({
     OpsgenieConfigSchema,
     LinearConfigSchema,
     JiraConfigSchema,
+    SmsConfigSchema,
   ]),
 });
 
@@ -215,6 +240,7 @@ export const UpdateIntegrationSchema = z.object({
       OpsgenieConfigSchema,
       LinearConfigSchema,
       JiraConfigSchema,
+      SmsConfigSchema,
     ])
     .optional(),
 });
@@ -297,6 +323,17 @@ export const JiraFormSchema = z.object({
   issueType: z.string().min(1, "Issue type is required"),
 });
 
+export const SmsFormSchema = z.object({
+  type: z.literal("sms"),
+  enabled: z.boolean(),
+  accountSid: z.string().min(1, "Account SID is required"),
+  authToken: z.string().min(1, "Auth Token is required"),
+  fromNumber: z
+    .string()
+    .regex(/^\+[1-9]\d{1,14}$/, "Must be E.164 format (+1234567890)"),
+  toNumbers: z.string().min(1, "At least one phone number is required"),
+});
+
 export type Integration = z.infer<typeof IntegrationSchema>;
 export type CreateIntegration = z.infer<typeof CreateIntegrationSchema>;
 export type UpdateIntegration = z.infer<typeof UpdateIntegrationSchema>;
@@ -310,3 +347,4 @@ export type TeamsFormInput = z.infer<typeof TeamsFormSchema>;
 export type OpsgenieFormInput = z.infer<typeof OpsgenieFormSchema>;
 export type LinearFormInput = z.infer<typeof LinearFormSchema>;
 export type JiraFormInput = z.infer<typeof JiraFormSchema>;
+export type SmsFormInput = z.infer<typeof SmsFormSchema>;

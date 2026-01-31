@@ -406,7 +406,19 @@ export const integration = sqliteTable(
       .notNull()
       .references(() => team.id, { onDelete: "cascade" }),
     type: text({
-      enum: ["email", "slack", "discord", "webhook", "github"],
+      enum: [
+        "email",
+        "slack",
+        "discord",
+        "webhook",
+        "github",
+        "pagerduty",
+        "teams",
+        "opsgenie",
+        "linear",
+        "jira",
+        "sms",
+      ],
     }).notNull(),
     enabled: integer({ mode: "boolean" }).default(false).notNull(),
     config: text().notNull(),

@@ -93,6 +93,7 @@ Copy `apps/web/.env.example` to `apps/web/.env` and configure:
 |----------|-------------|
 | `BETTER_AUTH_SECRET` | Authentication secret (min 32 chars) |
 | `BETTER_AUTH_URL` | Your app URL |
+| `ENCRYPTION_SECRET` | Encryption key for sensitive data (min 32 chars) |
 | `DOMAIN_CHECKER_URL` | Optional: Domain checker service URL |
 
 ## Documentation

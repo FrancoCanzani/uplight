@@ -81,6 +81,14 @@
 					"binding": "status_page_logos"
 				}
 			],
+			"queues": {
+				"producers": [
+					{ "queue": "uplight-integrations", "binding": "INTEGRATIONS_QUEUE" }
+				],
+				"consumers": [
+					{ "queue": "uplight-integrations", "max_batch_size": 10, "max_retries": 3 }
+				]
+			},
 		},
 		"dev": {
 			"name": "uplight",

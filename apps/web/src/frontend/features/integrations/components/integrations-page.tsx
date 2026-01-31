@@ -9,6 +9,7 @@ import LinearLogo from "@/components/logos/linear";
 import OpsgenieLogo from "@/components/logos/opsgenie";
 import PagerDutyLogo from "@/components/logos/pagerduty";
 import SlackLogo from "@/components/logos/slack";
+import SmsLogo from "@/components/logos/sms";
 import TeamsLogo from "@/components/logos/teams";
 import WebhookLogo from "@/components/logos/webhook";
 import { PageHeader } from "@/components/page-header";
@@ -40,12 +41,14 @@ import LinearIntegrationForm from "../forms/linear-integration-form";
 import OpsgenieIntegrationForm from "../forms/opsgenie-integration-form";
 import PagerDutyIntegrationForm from "../forms/pagerduty-integration-form";
 import SlackIntegrationForm from "../forms/slack-integration-form";
+import SmsIntegrationForm from "../forms/sms-integration-form";
 import TeamsIntegrationForm from "../forms/teams-integration-form";
 import WebhookIntegrationForm from "../forms/webhook-integration-form";
 import type { Integration, IntegrationType } from "../schemas";
 
 const INTEGRATION_TYPES: IntegrationType[] = [
   "email",
+  "sms",
   "slack",
   "discord",
   "teams",
@@ -110,6 +113,11 @@ const INTEGRATION_TYPE_CONFIG: Record<
     label: "GitHub Issues",
     icon: GithubLogo,
     description: "Create GitHub issues from incidents",
+  },
+  sms: {
+    label: "SMS (Twilio)",
+    icon: SmsLogo,
+    description: "Send SMS alerts via Twilio",
   },
 };
 
@@ -193,6 +201,12 @@ function IntegrationFormSheet({
           )}
           {type === "github" && (
             <GitHubIntegrationForm
+              existing={existing}
+              onClose={() => onOpenChange(false)}
+            />
+          )}
+          {type === "sms" && (
+            <SmsIntegrationForm
               existing={existing}
               onClose={() => onOpenChange(false)}
             />

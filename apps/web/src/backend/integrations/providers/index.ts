@@ -7,6 +7,7 @@ import { linearProvider } from "./linear";
 import { opsgenieProvider } from "./opsgenie";
 import { pagerdutyProvider } from "./pagerduty";
 import { slackProvider } from "./slack";
+import { smsProvider } from "./sms";
 import { teamsProvider } from "./teams";
 import { webhookProvider } from "./webhook";
 
@@ -21,6 +22,7 @@ export const providers: Record<IntegrationType, IntegrationProvider> = {
   opsgenie: opsgenieProvider,
   linear: linearProvider,
   jira: jiraProvider,
+  sms: smsProvider,
 };
 
 // Re-export config schemas for use in routes
@@ -34,3 +36,4 @@ export { TeamsConfigSchema, type TeamsConfig } from "./teams";
 export { OpsgenieConfigSchema, type OpsgenieConfig } from "./opsgenie";
 export { LinearConfigSchema, type LinearConfig } from "./linear";
 export { JiraConfigSchema, type JiraConfig } from "./jira";
+export { SmsConfigSchema, type SmsConfig } from "./sms";

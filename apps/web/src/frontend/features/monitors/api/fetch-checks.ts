@@ -14,7 +14,7 @@ export default async function fetchChecks(
   days: number = 14,
 ): Promise<CheckResult[]> {
   const response = await fetch(
-    `/api/monitors/${teamId}/${monitorId}/checks?days=${days}&limit=1000`,
+    `/api/monitors/${teamId}/${monitorId}/checks?days=${days}`,
   );
 
   if (!response.ok) {

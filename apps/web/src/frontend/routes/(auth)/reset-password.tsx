@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
-import {
-  createFileRoute,
-  Link,
-  redirect,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -24,12 +19,10 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { signUp } from "@/lib/auth/client";
+import { resetPassword } from "@/lib/auth/client";
 
-const signUpSchema = z
+const resetPasswordSchema = z
   .object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    email: z.email("Please enter a valid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
   })
@@ -38,58 +31,73 @@ const signUpSchema = z
     path: ["confirmPassword"],
   });
 
-export const Route = createFileRoute("/(auth)/signup")({
-  component: SignUp,
+const searchSchema = z.object({
+  token: z.string().optional(),
+});
+
+export const Route = createFileRoute("/(auth)/reset-password")({
+  component: ResetPassword,
+  validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Sign Up | Uplight" },
+      { title: "Reset Password | Uplight" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
-  beforeLoad: async ({ context }) => {
-    const { auth } = context;
-    if (auth.data?.user) {
-      const teams = await fetchTeams();
-      if (teams.length > 0) {
-        throw redirect({
-          to: "/$teamId/monitors",
-          params: { teamId: String(teams[0].id) },
-        });
-      }
-    }
-  },
 });
 
-function SignUp() {
+function ResetPassword() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const token = search.token;
 
   const form = useForm({
     defaultValues: {
-      name: "",
-      email: "",
       password: "",
       confirmPassword: "",
     },
     validators: {
-      onBlur: signUpSchema,
+      onBlur: resetPasswordSchema,
     },
     onSubmit: async ({ value }) => {
+      if (!token) {
+        setError("Invalid or missing reset token");
+        return;
+      }
+
       setError(null);
       setIsLoading(true);
 
       try {
-        const result = await signUp.email({
-          email: value.email,
-          password: value.password,
-          name: value.name,
+        const result = await resetPassword({
+          newPassword: value.password,
+          token,
         });
 
         if (result.error) {
-          setError(result.error.message || "Failed to create account");
+          if (
+            result.error.message?.includes("expired") ||
+            result.error.message?.includes("invalid")
+          ) {
+            setError(
+              "This reset link has expired or is invalid. Please request a new one.",
+            );
+          } else if (result.error.message?.includes("pwned")) {
+            setError(
+              "This password has been found in a data breach. Please choose a different password.",
+            );
+          } else {
+            setError(result.error.message || "Failed to reset password");
+          }
         } else {
-          navigate({ to: "/verify-email" });
+          setSuccess(true);
+          setTimeout(() => {
+            navigate({ to: "/login" });
+          }, 2000);
         }
       } catch (err) {
         setError(
@@ -101,14 +109,56 @@ function SignUp() {
     },
   });
 
+  if (!token) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Invalid Link</CardTitle>
+            <CardDescription>
+              This password reset link is invalid or has expired.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link
+              to="/forgot-password"
+              className="text-primary hover:underline text-sm"
+            >
+              Request a new reset link
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (success) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Password Reset Successful</CardTitle>
+            <CardDescription>
+              Your password has been reset successfully. Redirecting to sign
+              in...
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link to="/login" className="text-primary hover:underline text-sm">
+              Sign in now
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Create Account</CardTitle>
-          <CardDescription>
-            Enter your information to create a new account
-          </CardDescription>
+        <CardHeader>
+          <CardTitle>Reset Password</CardTitle>
+          <CardDescription>Enter your new password below.</CardDescription>
         </CardHeader>
         <CardContent>
           <form
@@ -125,63 +175,13 @@ function SignUp() {
               )}
 
               <form.Field
-                name="name"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                      <FieldContent>
-                        <Input
-                          id={field.name}
-                          type="text"
-                          placeholder="John Doe"
-                          autoComplete="name"
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          onBlur={field.handleBlur}
-                        />
-                        <FieldError errors={field.state.meta.errors} />
-                      </FieldContent>
-                    </Field>
-                  );
-                }}
-              />
-
-              <form.Field
-                name="email"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                      <FieldContent>
-                        <Input
-                          id={field.name}
-                          type="email"
-                          placeholder="you@example.com"
-                          autoComplete="email"
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          onBlur={field.handleBlur}
-                        />
-                        <FieldError errors={field.state.meta.errors} />
-                      </FieldContent>
-                    </Field>
-                  );
-                }}
-              />
-
-              <form.Field
                 name="password"
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
                     <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                      <FieldLabel htmlFor={field.name}>New Password</FieldLabel>
                       <FieldContent>
                         <Input
                           id={field.name}
@@ -227,11 +227,11 @@ function SignUp() {
               />
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating account..." : "Sign Up"}
+                {isLoading ? "Resetting..." : "Reset Password"}
               </Button>
 
               <div className="text-center text-sm text-muted-foreground">
-                Already have an account?{" "}
+                Remember your password?{" "}
                 <Link to="/login" className="text-primary hover:underline">
                   Sign in
                 </Link>

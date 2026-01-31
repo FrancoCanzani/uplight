@@ -17,8 +17,11 @@ import { Route as UseCasesSlugRouteImport } from './routes/use-cases/$slug'
 import { Route as StatusSlugRouteImport } from './routes/status/$slug'
 import { Route as GuidesSlugRouteImport } from './routes/guides/$slug'
 import { Route as CompareSlugRouteImport } from './routes/compare/$slug'
+import { Route as authVerifyEmailRouteImport } from './routes/(auth)/verify-email'
 import { Route as authSignupRouteImport } from './routes/(auth)/signup'
+import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
+import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as dashboardTeamIdRouteRouteImport } from './routes/(dashboard)/$teamId/route'
 import { Route as GuidesIntegrationsSlugRouteImport } from './routes/guides/integrations/$slug'
 import { Route as dashboardTeamIdTeamRouteImport } from './routes/(dashboard)/$teamId/team'
@@ -82,14 +85,29 @@ const CompareSlugRoute = CompareSlugRouteImport.update({
   path: '/compare/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authVerifyEmailRoute = authVerifyEmailRouteImport.update({
+  id: '/(auth)/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const authSignupRoute = authSignupRouteImport.update({
   id: '/(auth)/signup',
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authResetPasswordRoute = authResetPasswordRouteImport.update({
+  id: '/(auth)/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const authLoginRoute = authLoginRouteImport.update({
   id: '/(auth)/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
+  id: '/(auth)/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const dashboardTeamIdRouteRoute = dashboardTeamIdRouteRouteImport.update({
@@ -222,8 +240,11 @@ const dashboardTeamIdHeartbeatsHeartbeatIdEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$teamId': typeof dashboardTeamIdRouteRouteWithChildren
+  '/forgot-password': typeof authForgotPasswordRoute
   '/login': typeof authLoginRoute
+  '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
+  '/verify-email': typeof authVerifyEmailRoute
   '/compare/$slug': typeof CompareSlugRoute
   '/guides/$slug': typeof GuidesSlugRoute
   '/status/$slug': typeof StatusSlugRoute
@@ -256,8 +277,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$teamId': typeof dashboardTeamIdRouteRouteWithChildren
+  '/forgot-password': typeof authForgotPasswordRoute
   '/login': typeof authLoginRoute
+  '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
+  '/verify-email': typeof authVerifyEmailRoute
   '/compare/$slug': typeof CompareSlugRoute
   '/guides/$slug': typeof GuidesSlugRoute
   '/status/$slug': typeof StatusSlugRoute
@@ -291,8 +315,11 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/(dashboard)/$teamId': typeof dashboardTeamIdRouteRouteWithChildren
+  '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/login': typeof authLoginRoute
+  '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/signup': typeof authSignupRoute
+  '/(auth)/verify-email': typeof authVerifyEmailRoute
   '/compare/$slug': typeof CompareSlugRoute
   '/guides/$slug': typeof GuidesSlugRoute
   '/status/$slug': typeof StatusSlugRoute
@@ -327,8 +354,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/$teamId'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/signup'
+    | '/verify-email'
     | '/compare/$slug'
     | '/guides/$slug'
     | '/status/$slug'
@@ -361,8 +391,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$teamId'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/signup'
+    | '/verify-email'
     | '/compare/$slug'
     | '/guides/$slug'
     | '/status/$slug'
@@ -395,8 +428,11 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/(dashboard)/$teamId'
+    | '/(auth)/forgot-password'
     | '/(auth)/login'
+    | '/(auth)/reset-password'
     | '/(auth)/signup'
+    | '/(auth)/verify-email'
     | '/compare/$slug'
     | '/guides/$slug'
     | '/status/$slug'
@@ -430,8 +466,11 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   dashboardTeamIdRouteRoute: typeof dashboardTeamIdRouteRouteWithChildren
+  authForgotPasswordRoute: typeof authForgotPasswordRoute
   authLoginRoute: typeof authLoginRoute
+  authResetPasswordRoute: typeof authResetPasswordRoute
   authSignupRoute: typeof authSignupRoute
+  authVerifyEmailRoute: typeof authVerifyEmailRoute
   CompareSlugRoute: typeof CompareSlugRoute
   GuidesSlugRoute: typeof GuidesSlugRoute
   StatusSlugRoute: typeof StatusSlugRoute
@@ -500,6 +539,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompareSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(auth)/verify-email': {
+      id: '/(auth)/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof authVerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(auth)/signup': {
       id: '/(auth)/signup'
       path: '/signup'
@@ -507,11 +553,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authSignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(auth)/reset-password': {
+      id: '/(auth)/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof authResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(auth)/login': {
       id: '/(auth)/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof authLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/forgot-password': {
+      id: '/(auth)/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof authForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(dashboard)/$teamId': {
@@ -731,8 +791,11 @@ const dashboardTeamIdRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   dashboardTeamIdRouteRoute: dashboardTeamIdRouteRouteWithChildren,
+  authForgotPasswordRoute: authForgotPasswordRoute,
   authLoginRoute: authLoginRoute,
+  authResetPasswordRoute: authResetPasswordRoute,
   authSignupRoute: authSignupRoute,
+  authVerifyEmailRoute: authVerifyEmailRoute,
   CompareSlugRoute: CompareSlugRoute,
   GuidesSlugRoute: GuidesSlugRoute,
   StatusSlugRoute: StatusSlugRoute,

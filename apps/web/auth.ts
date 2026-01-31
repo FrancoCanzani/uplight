@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { haveIBeenPwned } from "better-auth/plugins";
 import { drizzle } from "drizzle-orm/d1";
 import * as authSchema from "./src/backend/db/auth-schema";
 import { team, teamMember } from "./src/backend/db/schema";
@@ -22,7 +23,19 @@ function createAuth(env?: Env) {
         }),
     emailAndPassword: {
       enabled: true,
+      sendResetPassword: async ({ user, url }) => {
+        console.log(`[Password Reset] To: ${user.email}, URL: ${url}`);
+      },
+      resetPasswordTokenExpiresIn: 60 * 60, // 1 hour
+      revokeSessionsOnPasswordReset: true,
     },
+    emailVerification: {
+      sendVerificationEmail: async ({ user, url }) => {
+        console.log(`[Email Verification] To: ${user.email}, URL: ${url}`);
+      },
+      sendOnSignUp: true,
+    },
+    plugins: [haveIBeenPwned()],
     secret: env?.BETTER_AUTH_SECRET,
     baseURL: env?.BETTER_AUTH_URL,
     databaseHooks: {

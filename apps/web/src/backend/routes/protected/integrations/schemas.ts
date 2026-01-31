@@ -73,6 +73,20 @@ export const JiraConfigSchema = z
   })
   .openapi("JiraConfig");
 
+export const SmsConfigSchema = z
+  .object({
+    accountSid: z.string().min(1, "Account SID is required"),
+    authToken: z.string().min(1, "Auth Token is required"),
+    fromNumber: z
+      .string()
+      .regex(/^\+[1-9]\d{1,14}$/, "Must be E.164 format (+1234567890)"),
+    toNumbers: z
+      .array(z.string().regex(/^\+[1-9]\d{1,14}$/, "Must be E.164 format"))
+      .min(1, "At least one phone number is required")
+      .max(10, "Maximum 10 phone numbers allowed"),
+  })
+  .openapi("SmsConfig");
+
 export type EmailConfig = z.infer<typeof EmailConfigSchema>;
 export type SlackConfig = z.infer<typeof SlackConfigSchema>;
 export type DiscordConfig = z.infer<typeof DiscordConfigSchema>;
@@ -83,6 +97,7 @@ export type TeamsConfig = z.infer<typeof TeamsConfigSchema>;
 export type OpsgenieConfig = z.infer<typeof OpsgenieConfigSchema>;
 export type LinearConfig = z.infer<typeof LinearConfigSchema>;
 export type JiraConfig = z.infer<typeof JiraConfigSchema>;
+export type SmsConfig = z.infer<typeof SmsConfigSchema>;
 
 const IntegrationConfigSchema = z
   .union([
@@ -96,6 +111,7 @@ const IntegrationConfigSchema = z
     OpsgenieConfigSchema,
     LinearConfigSchema,
     JiraConfigSchema,
+    SmsConfigSchema,
   ])
   .openapi("IntegrationConfig");
 
@@ -112,6 +128,7 @@ export const CreateIntegrationSchema = z
       "opsgenie",
       "linear",
       "jira",
+      "sms",
     ]),
     enabled: z.boolean().default(false),
     config: IntegrationConfigSchema,
@@ -214,6 +231,15 @@ export const IntegrationResponseSchema = z
       type: z.literal("jira"),
       enabled: z.boolean(),
       config: JiraConfigSchema,
+      createdAt: z.number().int(),
+      updatedAt: z.number().int(),
+    }),
+    z.object({
+      id: z.number().int(),
+      teamId: z.number().int(),
+      type: z.literal("sms"),
+      enabled: z.boolean(),
+      config: SmsConfigSchema,
       createdAt: z.number().int(),
       updatedAt: z.number().int(),
     }),
