@@ -1,7 +1,6 @@
-"use client";
-
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
+import { useLandingStats } from "./api/use-landing-stats";
 
 interface StatItemProps {
   value: string;
@@ -12,7 +11,14 @@ interface StatItemProps {
   skipAnimation?: boolean;
 }
 
-function StatItem({ value, label, suffix = "", prefix = "", delay = 0, skipAnimation = false }: StatItemProps) {
+function StatItem({
+  value,
+  label,
+  suffix = "",
+  prefix = "",
+  delay = 0,
+  skipAnimation = false,
+}: StatItemProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true });
   const [displayValue, setDisplayValue] = useState(skipAnimation ? value : "0");
@@ -70,11 +76,35 @@ function StatItem({ value, label, suffix = "", prefix = "", delay = 0, skipAnima
 }
 
 export function HeroStats() {
+  const { data } = useLandingStats();
+
+  const checks = data?.checks ?? 0;
+  const uptime = data?.uptime ?? "100.00";
+  const avgMs = data?.avgResponseTime ?? 0;
+
   const stats = [
-    { value: "9", label: "Global Regions", suffix: "+" },
-    { value: "1", label: "Minute Intervals", suffix: " min" },
-    { value: "100", label: "Open Source", suffix: "%" },
-    { value: "1", label: "Click Deploy", suffix: "-click", skipAnimation: true },
+    {
+      value: checks > 0 ? checks.toLocaleString() : "0",
+      label: "Checks Today",
+      suffix: "",
+      skipAnimation: checks === 0,
+    },
+    {
+      value: uptime,
+      label: "Uptime",
+      suffix: "%",
+    },
+    {
+      value: avgMs > 0 ? String(avgMs) : "0",
+      label: "Avg Response",
+      suffix: "ms",
+      skipAnimation: avgMs === 0,
+    },
+    {
+      value: "9",
+      label: "Regions",
+      suffix: "",
+    },
   ];
 
   return (

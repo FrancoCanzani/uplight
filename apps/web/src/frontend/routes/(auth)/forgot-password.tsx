@@ -19,7 +19,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { forgetPassword } from "@/lib/auth/client";
+import { requestPasswordReset } from "@/lib/auth/client";
 
 const forgotPasswordSchema = z.object({
   email: z.email("Please enter a valid email address"),
@@ -53,7 +53,7 @@ function ForgotPassword() {
       setIsLoading(true);
 
       try {
-        const result = await forgetPassword({
+        const result = await requestPasswordReset({
           email: value.email,
           redirectTo: "/reset-password",
         });

@@ -232,7 +232,7 @@ export default function HeartbeatsList() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2 justify-start">
                     <HeartbeatStatusIndicator status={hb.status} />
-                    <h2 className="font-display">{hb.name}</h2>
+                    <h2>{hb.name}</h2>
                   </div>
                   <span className="text-xs text-muted-foreground">
                     Grace: {formatGracePeriod(hb.gracePeriod)}

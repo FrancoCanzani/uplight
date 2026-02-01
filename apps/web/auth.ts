@@ -52,6 +52,8 @@ function createAuth(env?: Env) {
               })
               .returning();
 
+            if (!personalTeam) return;
+
             await db.insert(teamMember).values({
               teamId: personalTeam.id,
               userId: user.id,

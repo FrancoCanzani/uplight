@@ -1,7 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { getContent, extractTableOfContents } from "@/lib/content";
-import { createArticleSchema, createBreadcrumbSchema } from "@/components/seo";
 import { ArticleLayout } from "@/components/content";
+import { createArticleSchema, createBreadcrumbSchema } from "@/components/seo";
+import { extractTableOfContents, getContent } from "@/lib/content";
 
 export const Route = createFileRoute("/compare/$slug")({
   loader: ({ params }) => {
@@ -14,8 +14,10 @@ export const Route = createFileRoute("/compare/$slug")({
   },
   component: ComparePage,
   head: ({ loaderData, params }) => {
+    if (!loaderData) return {};
     const { content } = loaderData;
-    const { title, description, publishedAt, updatedAt, author } = content.frontmatter;
+    const { title, description, publishedAt, updatedAt, author } =
+      content.frontmatter;
     const canonicalUrl = `https://uplight.dev/compare/${params.slug}`;
 
     return {
@@ -31,7 +33,14 @@ export const Route = createFileRoute("/compare/$slug")({
         {
           type: "application/ld+json",
           children: JSON.stringify([
-            createArticleSchema({ title, description, url: canonicalUrl, publishedAt, updatedAt, author }),
+            createArticleSchema({
+              title,
+              description,
+              url: canonicalUrl,
+              publishedAt,
+              updatedAt,
+              author,
+            }),
             createBreadcrumbSchema([
               { name: "Home", url: "https://uplight.dev" },
               { name: "Comparison", url: "https://uplight.dev/compare" },

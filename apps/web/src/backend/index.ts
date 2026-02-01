@@ -16,7 +16,7 @@ import { authMiddleware, requireAuth } from "./middleware/auth";
 import { authRateLimiter, publicApiRateLimiter } from "./middleware/rate-limit";
 import { protectedRouter } from "./routes/protected";
 import { publicRouter } from "./routes/public";
-import { registerSitemap, registerRobots } from "./routes/seo";
+import { registerRobots, registerSitemap } from "./routes/seo";
 import type { AppEnv } from "./types";
 
 export { CheckerDO } from "./checkers/executors/durable-object";
@@ -42,8 +42,10 @@ app.onError((error, c) => {
 
 app.use("*", authMiddleware);
 
-// Rate limit auth endpoints
-app.use("/api/auth/*", authRateLimiter);
+app.use("/api/auth/*", async (c, next) => {
+  if (c.req.path === "/api/auth/get-session") return next();
+  return authRateLimiter(c, next);
+});
 app.all("/api/auth/*", async (c) => {
   if (!c.env.DB) {
     return c.json({ error: "Database not available" }, 500);
@@ -52,7 +54,6 @@ app.all("/api/auth/*", async (c) => {
   return authInstance.handler(c.req.raw);
 });
 
-// Rate limit public API
 app.use("/api/public/*", publicApiRateLimiter);
 app.route("/api/public", publicRouter);
 
@@ -88,35 +89,11 @@ app.doc("/api/openapi", {
     { name: "maintenance", description: "Maintenance window management" },
     { name: "status-pages", description: "Public status page management" },
     { name: "teams", description: "Team and member management" },
-    { name: "integrations", description: "Alert integrations (Slack, Discord, webhooks)" },
+    {
+      name: "integrations",
+      description: "Alert integrations (Slack, Discord, webhooks)",
+    },
   ],
-});
-
-// Swagger UI endpoint
-app.get("/api/docs", (c) => {
-  return c.html(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Uplight API Documentation</title>
-      <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
-    </head>
-    <body>
-      <div id="swagger-ui"></div>
-      <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
-      <script>
-        SwaggerUIBundle({
-          url: '/api/openapi',
-          dom_id: '#swagger-ui',
-          presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
-          layout: 'StandaloneLayout',
-        });
-      </script>
-    </body>
-    </html>
-  `);
 });
 
 export default {

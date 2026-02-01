@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { GitFork, Star } from "lucide-react";
 import { motion, useInView } from "motion/react";
-import { Star, GitFork, ExternalLink } from "lucide-react";
 
 interface GitHubData {
   stars: number;
@@ -30,7 +30,7 @@ export function GitHubStats() {
     async function fetchGitHubData() {
       try {
         const repoRes = await fetch(
-          "https://api.github.com/repos/francocanzani/uplight"
+          "https://api.github.com/repos/francocanzani/uplight",
         );
         const repoData = await repoRes.json();
 
@@ -91,18 +91,21 @@ export function GitHubStats() {
             <>
               <div className="flex items-center gap-1.5">
                 <Star className="size-4 text-muted-foreground" />
-                <span className="font-mono tabular-nums">{data?.stars || 0}</span>
+                <span className="font-mono tabular-nums">
+                  {data?.stars || 0}
+                </span>
               </div>
               <div className="flex items-center gap-1.5">
                 <GitFork className="size-4 text-muted-foreground" />
-                <span className="font-mono tabular-nums">{data?.forks || 0}</span>
+                <span className="font-mono tabular-nums">
+                  {data?.forks || 0}
+                </span>
               </div>
             </>
           )}
         </div>
       </div>
 
-      {/* Cloudflare Deploy */}
       <div className="bg-background p-6 sm:p-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="size-10 rounded-full bg-surface ring-1 ring-border/50 flex items-center justify-center">
@@ -126,7 +129,6 @@ export function GitHubStats() {
           className="inline-flex items-center gap-2 text-sm px-4 py-2 bg-foreground text-background hover:opacity-90 transition-opacity"
         >
           Deploy to Cloudflare
-          <ExternalLink className="size-3.5" />
         </a>
       </div>
     </motion.div>

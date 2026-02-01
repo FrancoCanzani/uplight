@@ -1,5 +1,4 @@
 import Placeholder from "@tiptap/extension-placeholder";
-import Underline from "@tiptap/extension-underline";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
@@ -101,7 +100,6 @@ export default function TiptapEditor({
       StarterKit.configure({
         heading: { levels: [2, 3] },
       }),
-      Underline,
       Placeholder.configure({ placeholder }),
     ],
     content,
