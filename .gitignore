@@ -194,3 +194,4 @@ dist
 .tanstack
 .vscode
 .agents
+.cursor

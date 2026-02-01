@@ -73,15 +73,19 @@ export async function manageIncidents(
         null;
       try {
         console.log("[AI] Parsing incident for cause:", cause);
-        aiParsed = await parseIncidentWithAI({
-          cause,
-          monitorName: monitorCtx.name,
-          monitorUrl: monitorCtx.url,
-          statusCode: failedResult?.statusCode,
-          errorMessage: failedResult?.errorMessage,
-          responseTime: failedResult?.responseTime,
-          location: failedResult?.location,
-        });
+        aiParsed = await parseIncidentWithAI(
+          {
+            cause,
+            monitorName: monitorCtx.name,
+            monitorUrl: monitorCtx.url,
+            statusCode: failedResult?.statusCode,
+            errorMessage: failedResult?.errorMessage,
+            responseTime: failedResult?.responseTime,
+            location: failedResult?.location,
+            responseBody: failedResult?.responseBody,
+          },
+          env,
+        );
         console.log("[AI] Parsed result:", aiParsed);
       } catch (err) {
         console.error("[AI] Parsing failed:", err);

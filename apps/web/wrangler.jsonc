@@ -1,121 +1,120 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "uplight",
-	"main": "./src/backend/index.ts",
-	"compatibility_date": "2025-10-08",
-	"compatibility_flags": [
-		"nodejs_compat"
-	],
-	"observability": {
-		"enabled": true,
-	},
-	"upload_source_maps": true,
-	"assets": {
-		"directory": "./dist/client",
-		"not_found_handling": "single-page-application",
-		"run_worker_first": [
-			"/api/*",
-			"/sitemap.xml",
-			"/robots.txt"
-		],
-	},
-	"durable_objects": {
-		"bindings": [
-			{
-				"name": "CHECKER",
-				"class_name": "CheckerDO",
-			},
-		],
-	},
-	"migrations": [
-		{
-			"tag": "v1",
-			"new_sqlite_classes": [
-				"CheckerDO"
-			],
-		},
-	],
-	"triggers": {
-		"crons": [
-			"* * * * *",
-			"0 0,12 * * *",
-			"0 3 * * *"
-		],
-	},
-	"queues": {
-		"producers": [
-			{ "queue": "uplight-integrations", "binding": "INTEGRATIONS_QUEUE" }
-		],
-		"consumers": [
-			{ "queue": "uplight-integrations", "max_batch_size": 10, "max_retries": 3 }
-		]
-	},
-	"d1_databases": [
-		{
-			"binding": "DB",
-			"database_name": "uplight-dev",
-			"database_id": "b516a049-f7df-4d70-982b-5bc3b4a33bda",
-			"migrations_dir": "drizzle",
-		},
-	],
-	"env": {
-		"production": {
-			"name": "uplight",
-			"durable_objects": {
-				"bindings": [
-					{
-						"name": "CHECKER",
-						"class_name": "CheckerDO",
-					},
-				],
-			},
-			"d1_databases": [
-				{
-					"binding": "DB",
-					"database_name": "uplight-prod",
-					"database_id": "cc5a7fc6-109e-437b-8a00-612fb5b410bf",
-					"migrations_dir": "drizzle",
-				},
-			],
-			"r2_buckets": [
-				{
-					"bucket_name": "status-page-logos",
-					"binding": "status_page_logos"
-				}
-			],
-			"queues": {
-				"producers": [
-					{ "queue": "uplight-integrations", "binding": "INTEGRATIONS_QUEUE" }
-				],
-				"consumers": [
-					{ "queue": "uplight-integrations", "max_batch_size": 10, "max_retries": 3 }
-				]
-			},
-		},
-		"dev": {
-			"name": "uplight",
-			"durable_objects": {
-				"bindings": [
-					{
-						"name": "CHECKER",
-						"class_name": "CheckerDO",
-					},
-				],
-			},
-			"d1_databases": [
-				{
-					"binding": "DB",
-					"database_name": "uplight-dev",
-					"database_id": "b516a049-f7df-4d70-982b-5bc3b4a33bda",
-					"migrations_dir": "drizzle",
-				},
-			],
-		},
-	},
-	"r2_buckets": [
-		{
-			"bucket_name": "status-page-logos",
-			"binding": "status_page_logos"
-		}
-	],
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "uplight",
+  "main": "./src/backend/index.ts",
+  "compatibility_date": "2025-10-08",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+  },
+  "upload_source_maps": true,
+  "assets": {
+    "directory": "./dist/client",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/sitemap.xml", "/robots.txt"],
+  },
+  "ai": {
+    "binding": "AI",
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "CHECKER",
+        "class_name": "CheckerDO",
+      },
+    ],
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["CheckerDO"],
+    },
+  ],
+  "triggers": {
+    "crons": ["* * * * *", "0 0,12 * * *", "0 3 * * *"],
+  },
+  "queues": {
+    "producers": [
+      { "queue": "uplight-integrations", "binding": "INTEGRATIONS_QUEUE" },
+    ],
+    "consumers": [
+      {
+        "queue": "uplight-integrations",
+        "max_batch_size": 10,
+        "max_retries": 3,
+      },
+    ],
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "uplight-dev",
+      "database_id": "b516a049-f7df-4d70-982b-5bc3b4a33bda",
+      "migrations_dir": "drizzle",
+    },
+  ],
+  "env": {
+    "production": {
+      "name": "uplight",
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "CHECKER",
+            "class_name": "CheckerDO",
+          },
+        ],
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "uplight-prod",
+          "database_id": "cc5a7fc6-109e-437b-8a00-612fb5b410bf",
+          "migrations_dir": "drizzle",
+        },
+      ],
+      "r2_buckets": [
+        {
+          "bucket_name": "status-page-logos",
+          "binding": "status_page_logos",
+        },
+      ],
+      "queues": {
+        "producers": [
+          { "queue": "uplight-integrations", "binding": "INTEGRATIONS_QUEUE" },
+        ],
+        "consumers": [
+          {
+            "queue": "uplight-integrations",
+            "max_batch_size": 10,
+            "max_retries": 3,
+          },
+        ],
+      },
+    },
+    "dev": {
+      "name": "uplight",
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "CHECKER",
+            "class_name": "CheckerDO",
+          },
+        ],
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "uplight-dev",
+          "database_id": "b516a049-f7df-4d70-982b-5bc3b4a33bda",
+          "migrations_dir": "drizzle",
+        },
+      ],
+    },
+  },
+  "r2_buckets": [
+    {
+      "bucket_name": "status-page-logos",
+      "binding": "status_page_logos",
+    },
+  ],
 }
