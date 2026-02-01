@@ -16,6 +16,7 @@ import { authMiddleware, requireAuth } from "./middleware/auth";
 import { authRateLimiter, publicApiRateLimiter } from "./middleware/rate-limit";
 import { protectedRouter } from "./routes/protected";
 import { publicRouter } from "./routes/public";
+import { registerSitemap, registerRobots } from "./routes/seo";
 import type { AppEnv } from "./types";
 
 export { CheckerDO } from "./checkers/executors/durable-object";
@@ -26,6 +27,10 @@ app.use(logger());
 app.use(csrf());
 app.use(prettyJSON());
 app.use(secureHeaders());
+
+// SEO routes (before auth middleware)
+registerSitemap(app);
+registerRobots(app);
 
 app.onError((error, c) => {
   if (error instanceof HTTPException) {

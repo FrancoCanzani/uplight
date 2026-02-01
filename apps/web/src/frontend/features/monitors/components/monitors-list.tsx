@@ -283,7 +283,7 @@ export default function MonitorsList() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2 justify-start">
                     <MonitorStatusIndicator status={monitor.status} />
-                    <h2>{monitor.name}</h2>
+                    <h2 className="font-display">{monitor.name}</h2>
                   </div>
                   <span className="text-xs text-muted-foreground">
                     {urlOrHost}

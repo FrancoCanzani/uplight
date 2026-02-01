@@ -124,7 +124,7 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
     const limitNum = Number(limit);
     const offsetNum = Number(offset);
 
-    const checks = await db
+    const query = db
       .select({
         id: checkResult.id,
         location: checkResult.location,
@@ -137,11 +137,15 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
       .from(checkResult)
       .where(and(...conditions))
       .orderBy(desc(checkResult.checkedAt))
-      .limit(limitNum + 1)
       .offset(offsetNum);
 
-    const hasMore = checks.length > limitNum;
-    const paginatedChecks = checks.slice(0, limitNum);
+    const checks =
+      limitNum === 0
+        ? await query
+        : await query.limit(limitNum + 1);
+
+    const hasMore = limitNum === 0 ? false : checks.length > limitNum;
+    const paginatedChecks = limitNum === 0 ? checks : checks.slice(0, limitNum);
 
     const totalResult = await db
       .select({ id: checkResult.id })

@@ -78,8 +78,9 @@
 }
 
 @theme inline {
-  --font-sans: "Times New Roman", serif;
-  --font-display: "Times New Roman", serif;
+  --font-sans: "IBM Plex Sans", sans-serif;
+  --font-display: "Instrument Serif", serif;
+  --font-mono: "Geist Mono", monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -134,4 +135,137 @@
   html {
     @apply font-sans;
   }
+}
+
+/* Background patterns */
+.bg-grid {
+  background-image: radial-gradient(circle, oklch(0.145 0 0 / 8%) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.dark .bg-grid {
+  background-image: radial-gradient(circle, oklch(0.985 0 0 / 8%) 1px, transparent 1px);
+}
+
+.bg-noise {
+  position: relative;
+}
+
+.bg-noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Gradient mesh for hero */
+.hero-gradient {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.65 0.1 145 / 8%), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 50%, oklch(0.5 0.05 200 / 5%), transparent);
+}
+
+.dark .hero-gradient {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.65 0.15 145 / 12%), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 50%, oklch(0.5 0.08 200 / 8%), transparent);
+}
+
+/* Text accent color - matches app's green-700 */
+.text-accent-green {
+  @apply text-green-700 dark:text-green-500;
+}
+
+/* Utility for editorial typography */
+.font-editorial {
+  font-family: "Instrument Serif", serif;
+}
+
+.tracking-editorial {
+  letter-spacing: -0.02em;
+}
+
+/* Animated underline for links */
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* Count up animation for stats */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-count-up {
+  animation: countUp 0.6s ease-out forwards;
+}
+
+/* Terminal styling */
+.terminal-window {
+  background: oklch(0.12 0 0);
+  border: 1px solid oklch(1 0 0 / 10%);
+}
+
+.terminal-header {
+  background: oklch(0.16 0 0);
+  border-bottom: 1px solid oklch(1 0 0 / 10%);
+}
+
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+/* Smooth scroll reveal */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Feature card number overlay */
+.feature-number {
+  position: absolute;
+  top: -8px;
+  right: 12px;
+  font-family: "Instrument Serif", serif;
+  font-size: 4rem;
+  line-height: 1;
+  opacity: 0.04;
+  pointer-events: none;
+  user-select: none;
+}
+
+.dark .feature-number {
+  opacity: 0.06;
 }
