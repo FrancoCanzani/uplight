@@ -112,7 +112,7 @@ export default function TiptapEditor({
         class: cn(
           "text-sm outline-none",
           "[&_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]",
-          "[&_p.is-editor-empty:first-child::before]:text-sm",
+          "[&_p.is-editor-empty:first-child::before]:text-xs",
           "[&_p.is-editor-empty:first-child::before]:text-muted-foreground",
           "[&_p.is-editor-empty:first-child::before]:float-left",
           "[&_p.is-editor-empty:first-child::before]:pointer-events-none",

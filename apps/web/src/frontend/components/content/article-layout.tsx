@@ -37,7 +37,7 @@ export function ArticleLayout({
   const typePath = TYPE_PATHS[type] || "/guides";
 
   return (
-    <div className="min-h-screen font-mono antialiased">
+    <div className="min-h-screen font-classic antialiased">
         <div className="max-w-4xl mx-auto px-4 py-8">
           {/* Navigation */}
           <nav className="mb-8">
@@ -69,7 +69,7 @@ export function ArticleLayout({
                     {TYPE_LABELS[type] || type}
                   </span>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-light tracking-tight mb-4">
+                <h1 className="text-3xl sm:text-4xl font-bold mb-4">
                   {title}
                 </h1>
                 <p className="text-sm text-muted-foreground mb-4">
@@ -100,19 +100,19 @@ export function ArticleLayout({
 
               {/* Article body */}
               <div
-                className="prose prose-sm max-w-none
-                  prose-headings:font-light prose-headings:tracking-tight
-                  prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-4
-                  prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-3
+                className="prose prose-lg max-w-none font-classic
+                  prose-headings:font-classic prose-headings:font-bold prose-headings:tracking-normal
+                  prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
+                  prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
                   prose-p:text-muted-foreground prose-p:leading-relaxed
                   prose-a:text-foreground prose-a:underline prose-a:underline-offset-2
-                  prose-strong:text-foreground prose-strong:font-medium
-                  prose-code:text-sm prose-code:bg-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-                  prose-pre:bg-surface prose-pre:border prose-pre:border-border/30
+                  prose-strong:text-foreground prose-strong:font-bold
+                  prose-code:text-sm prose-code:font-mono prose-code:bg-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
+                  prose-pre:font-mono prose-pre:bg-surface prose-pre:border prose-pre:border-border/30
                   prose-ul:text-muted-foreground prose-ol:text-muted-foreground
                   prose-li:my-1
-                  prose-table:text-sm
-                  prose-th:bg-surface prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-medium
+                  prose-table:text-base
+                  prose-th:bg-surface prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-bold
                   prose-td:px-3 prose-td:py-2 prose-td:border-b prose-td:border-border/30
                   prose-blockquote:border-l-2 prose-blockquote:border-foreground/20 prose-blockquote:pl-4 prose-blockquote:italic"
                 dangerouslySetInnerHTML={{ __html: html }}

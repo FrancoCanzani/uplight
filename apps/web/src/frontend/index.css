@@ -78,9 +78,10 @@
 }
 
 @theme inline {
-  --font-sans: "IBM Plex Sans", sans-serif;
+  --font-sans: "Inter", sans-serif;
   --font-display: "Instrument Serif", serif;
   --font-mono: "Geist Mono", monospace;
+  --font-classic: "Times New Roman", "Times", serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -212,6 +213,53 @@
   letter-spacing: -0.02em;
 }
 
+/* Classic typography for machine/AI view and content pages */
+.font-classic {
+  font-family: "Times New Roman", "Times", serif;
+}
+
+.prose-classic {
+  font-family: "Times New Roman", "Times", serif;
+  line-height: 1.8;
+  font-size: 1.125rem;
+}
+
+.prose-classic h1,
+.prose-classic h2,
+.prose-classic h3,
+.prose-classic h4 {
+  font-family: "Times New Roman", "Times", serif;
+  font-weight: 700;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose-classic p {
+  margin-bottom: 1em;
+}
+
+.prose-classic ul,
+.prose-classic ol {
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+
+.prose-classic li {
+  margin-bottom: 0.25em;
+}
+
+.prose-classic a {
+  text-decoration: underline;
+}
+
+.prose-classic code {
+  font-family: var(--font-mono);
+  background: var(--surface);
+  padding: 0.125em 0.25em;
+  border-radius: 0.25em;
+  font-size: 0.9em;
+}
+
 /* Animated underline for links */
 .link-underline {
   position: relative;
@@ -277,4 +325,52 @@
 .scroll-reveal.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.bg-up {
+  @apply bg-green-700;
+}
+
+.bg-down {
+  @apply bg-red-700;
+}
+
+.bg-degraded {
+  @apply bg-amber-700;
+}
+
+.bg-maintenance {
+  @apply bg-blue-700;
+}
+
+.bg-paused {
+  @apply bg-slate-600;
+}
+
+.bg-initializing {
+  @apply bg-slate-700;
+}
+
+.text-up {
+  @apply text-green-700 dark:text-green-500;
+}
+
+.text-down {
+  @apply text-red-700 dark:text-red-500;
+}
+
+.text-degraded {
+  @apply text-amber-700 dark:text-amber-500;
+}
+
+.text-maintenance {
+  @apply text-blue-700 dark:text-blue-500;
+}
+
+.text-paused {
+  @apply text-slate-500 dark:text-slate-400;
+}
+
+.text-initializing {
+  @apply text-slate-500 dark:text-slate-400;
 }

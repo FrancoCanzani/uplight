@@ -20,7 +20,7 @@ function CompareIndex() {
   const comparisons = getContentByType("comparison");
 
   return (
-    <div className="min-h-screen font-mono antialiased">
+    <div className="min-h-screen font-classic antialiased">
         <div className="max-w-4xl mx-auto px-4 py-8">
           {/* Navigation */}
           <nav className="mb-8">
@@ -31,7 +31,7 @@ function CompareIndex() {
 
           {/* Header */}
           <header className="mb-12">
-            <h1 className="text-2xl sm:text-3xl font-light tracking-tight mb-4">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-4">
               Compare Uplight
             </h1>
             <p className="text-sm text-muted-foreground">

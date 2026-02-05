@@ -56,6 +56,9 @@
   "env": {
     "production": {
       "name": "uplight",
+      "ai": {
+        "binding": "AI",
+      },
       "durable_objects": {
         "bindings": [
           {

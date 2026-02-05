@@ -197,7 +197,7 @@ export function TeamManagementPage() {
   const canInvite = canManageMembers(currentTeam.role);
 
   return (
-    <div className="max-w-xl w-full mx-auto space-y-8">
+    <div className="max-w-xl w-full mx-auto space-y-8 px-4 lg:px-6 pb-20 md:pb-6">
       <PageHeader title="Team" />
       <section className="space-y-3">
         <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">

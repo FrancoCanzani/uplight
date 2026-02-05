@@ -118,7 +118,7 @@ function SettingsPage() {
   const isEmailVerified = session?.user?.emailVerified;
 
   return (
-    <div className="max-w-4xl w-full mx-auto space-y-6">
+    <div className="max-w-4xl w-full mx-auto space-y-6 px-4 lg:px-6 pb-20 md:pb-6">
       <PageHeader title="Settings" />
 
       <div className="border p-4 flex flex-row items-center justify-between">

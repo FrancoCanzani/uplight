@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UseCasesIndexRouteImport } from './routes/use-cases/index'
 import { Route as GuidesIndexRouteImport } from './routes/guides/index'
@@ -46,11 +45,6 @@ import { Route as dashboardTeamIdMonitorsMonitorIdMaintenanceRouteImport } from 
 import { Route as dashboardTeamIdMonitorsMonitorIdEditRouteImport } from './routes/(dashboard)/$teamId/monitors/$monitorId/edit'
 import { Route as dashboardTeamIdHeartbeatsHeartbeatIdEditRouteImport } from './routes/(dashboard)/$teamId/heartbeats/$heartbeatId/edit'
 
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -245,7 +239,6 @@ const dashboardTeamIdHeartbeatsHeartbeatIdEditRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/privacy': typeof PrivacyRoute
   '/$teamId': typeof dashboardTeamIdRouteRouteWithChildren
   '/forgot-password': typeof authForgotPasswordRoute
   '/login': typeof authLoginRoute
@@ -283,7 +276,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/privacy': typeof PrivacyRoute
   '/$teamId': typeof dashboardTeamIdRouteRouteWithChildren
   '/forgot-password': typeof authForgotPasswordRoute
   '/login': typeof authLoginRoute
@@ -322,7 +314,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/privacy': typeof PrivacyRoute
   '/(dashboard)/$teamId': typeof dashboardTeamIdRouteRouteWithChildren
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/login': typeof authLoginRoute
@@ -362,7 +353,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/privacy'
     | '/$teamId'
     | '/forgot-password'
     | '/login'
@@ -400,7 +390,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/privacy'
     | '/$teamId'
     | '/forgot-password'
     | '/login'
@@ -438,7 +427,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/privacy'
     | '/(dashboard)/$teamId'
     | '/(auth)/forgot-password'
     | '/(auth)/login'
@@ -477,7 +465,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  PrivacyRoute: typeof PrivacyRoute
   dashboardTeamIdRouteRoute: typeof dashboardTeamIdRouteRouteWithChildren
   authForgotPasswordRoute: typeof authForgotPasswordRoute
   authLoginRoute: typeof authLoginRoute
@@ -496,13 +483,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -810,7 +790,6 @@ const dashboardTeamIdRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  PrivacyRoute: PrivacyRoute,
   dashboardTeamIdRouteRoute: dashboardTeamIdRouteRouteWithChildren,
   authForgotPasswordRoute: authForgotPasswordRoute,
   authLoginRoute: authLoginRoute,

@@ -1,19 +1,19 @@
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion";
-import { useTeams } from "@/features/teams/api/use-teams";
-import { useSession } from "@/lib/auth/client";
+import { useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Bell, Clock, FileText, Globe, Shield, Users } from "lucide-react";
 import { motion, useInView } from "motion/react";
-import { useRef } from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { useTeams } from "@/features/teams/api/use-teams";
+import { useSession } from "@/lib/auth/client";
 import { GitHubStats } from "./github-stats";
 import { HeroStats } from "./hero-stats";
 import { IntegrationGrid } from "./integration-grid";
-import { MonitorDemo } from "./monitor-demo";
+import { MachineView } from "./machine-view";
 import { ScrollReveal } from "./scroll-reveal";
 import { TerminalCTA } from "./terminal-cta";
 
@@ -91,13 +91,69 @@ const features = [
   },
 ];
 
+function ViewToggle({
+  view,
+  setView,
+}: {
+  view: "human" | "machine";
+  setView: (view: "human" | "machine") => void;
+}) {
+  const isHuman = view === "human";
+  const isMachine = view === "machine";
+
+  return (
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 py-1.5 px-2.5 bg-background ring-1 ring-border text-sm font-classic select-none">
+      <button
+        onClick={() => setView("human")}
+        className="flex items-center gap-2 cursor-pointer"
+      >
+        <span className="w-4 h-4 ring-1 ring-foreground/30 flex items-center justify-center">
+          {isHuman && (
+            <span className="text-foreground text-xs font-bold">x</span>
+          )}
+        </span>
+        <span className={isHuman ? "text-foreground" : "text-muted-foreground"}>
+          Human
+        </span>
+      </button>
+      <span className="text-muted-foreground">|</span>
+      <button
+        onClick={() => setView("machine")}
+        className="flex items-center gap-2 cursor-pointer"
+      >
+        <span
+          className={isMachine ? "text-foreground" : "text-muted-foreground"}
+        >
+          Machine
+        </span>
+        <span className="w-4 h-4 ring-1 ring-foreground/30 flex items-center justify-center">
+          {isMachine && (
+            <span className="text-foreground text-xs font-bold">x</span>
+          )}
+        </span>
+      </button>
+    </div>
+  );
+}
+
 export default function LandingPage() {
   const { data: session } = useSession();
   const { data: teams } = useTeams();
   const firstTeamId = teams?.[0]?.id;
+  const [view, setView] = useState<"human" | "machine">("human");
+
+  if (view === "machine") {
+    return (
+      <>
+        <MachineView />
+        <ViewToggle view={view} setView={setView} />
+      </>
+    );
+  }
 
   return (
     <div className="min-h-screen antialiased">
+      <ViewToggle view={view} setView={setView} />
       <main>
         <div className="relative">
           <div className="absolute inset-0 opacity-50" />
@@ -134,62 +190,61 @@ export default function LandingPage() {
               </div>
             </nav>
 
-            <section className="pt-16 sm:pt-24 pb-20">
-              <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
-                >
+            <section className="pb-32">
+              <div
+                className="pointer-events-none relative mx-auto max-w-xl opacity-75 mix-blend-darken aspect-3/2"
+                style={{
+                  maskImage:
+                    "radial-gradient(ellipse 35% 75% at center, black, transparent)",
+                  WebkitMaskImage:
+                    "radial-gradient(ellipse 35% 75% at center, black, transparent)",
+                }}
+              >
+                <div className="bg-background absolute inset-0 mix-blend-overlay" />
+                <img
+                  src="https://images.unsplash.com/photo-1634595947394-87012e7b12ba?q=80&w=2340&auto=format&fit=crop"
+                  alt="watch"
+                  className="h-full w-full object-cover invert dark:invert-0 dark:mix-blend-lighten"
+                />
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="mx-auto max-w-md text-center"
+              >
+                <h1 className="font-editorial text-4xl sm:text-5xl tracking-editorial mb-4 leading-[1.1]">
+                  Ship faster. <span className="italic">We check.</span>
+                </h1>
+                <p className="text-muted-foreground mb-6">
+                  Open source uptime monitoring. Multi-region checks, instant
+                  alerts, beautiful status pages.
+                </p>
+
+                <div className="flex items-center justify-center gap-3">
+                  <Link
+                    to="/signup"
+                    className="inline-flex items-center gap-1 text-sm px-5 py-2.5 bg-foreground text-background hover:opacity-90 transition-opacity"
+                  >
+                    Start monitoring
+                  </Link>
                   <a
                     href="https://deploy.workers.cloudflare.com/?url=https://github.com/francocanzani/uplight"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 mb-6 group"
                   >
                     <img
                       src="https://deploy.workers.cloudflare.com/button"
                       alt="Deploy to Cloudflare"
-                      className="h-8"
+                      className="h-9.5"
                     />
                   </a>
-                  <h1 className="font-editorial text-6xl xl:text-7xl tracking-editorial mb-6 leading-[1.05]">
-                    Your infrastructure,
-                    <br />
-                    <span className="italic">always visible.</span>
-                  </h1>
-                  <p className="text-sm sm:text-base text-muted-foreground mb-8 max-w-lg mx-auto leading-relaxed">
-                    Monitor your services from multiple regions around the
-                    world. Get instant alerts when something breaks. Keep users
-                    informed with status pages.
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-3">
-                    <Link
-                      to="/signup"
-                      className="group inline-flex items-center gap-2 text-sm px-5 py-2.5 bg-foreground text-background hover:opacity-90 transition-opacity"
-                    >
-                      Start monitoring
-                    </Link>
-                    <a
-                      href="https://github.com/francocanzani/uplight"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm px-5 py-2.5 ring-1 ring-foreground/10 hover:bg-surface transition-colors inline-flex items-center gap-2"
-                    >
-                      View source
-                    </a>
-                  </div>
-                </motion.div>
-              </div>
+                </div>
+              </motion.div>
             </section>
           </div>
         </div>
-
-        <ScrollReveal>
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
-            <MonitorDemo />
-          </div>
-        </ScrollReveal>
 
         <ScrollReveal className="border-y border-border/30 bg-surface/30">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -394,7 +449,7 @@ export default function LandingPage() {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
                   <Link
-                    to="/privacy"
+                    to="/"
                     className="hover:text-foreground transition-colors"
                   >
                     Privacy Policy

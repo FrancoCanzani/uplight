@@ -14,33 +14,33 @@ export type OverallStatus = "operational" | "degraded" | "outage";
 export const MONITOR_STATUS_CONFIG = {
   up: {
     label: "Operational",
-    bgColor: "bg-green-500",
-    textColor: "text-green-600",
+    bgColor: "bg-up",
+    textColor: "text-up",
   },
   down: {
     label: "Down",
-    bgColor: "bg-red-500",
-    textColor: "text-red-600",
+    bgColor: "bg-down",
+    textColor: "text-down",
   },
   degraded: {
     label: "Degraded",
-    bgColor: "bg-orange-500",
-    textColor: "text-orange-500",
+    bgColor: "bg-degraded",
+    textColor: "text-degraded",
   },
   maintenance: {
     label: "Maintenance",
-    bgColor: "bg-blue-500",
-    textColor: "text-blue-500",
+    bgColor: "bg-maintenance",
+    textColor: "text-maintenance",
   },
   paused: {
     label: "Paused",
-    bgColor: "bg-zinc-400",
-    textColor: "text-zinc-500",
+    bgColor: "bg-paused",
+    textColor: "text-paused",
   },
   initializing: {
     label: "Initializing",
-    bgColor: "bg-amber-500",
-    textColor: "text-amber-500",
+    bgColor: "bg-initializing",
+    textColor: "text-initializing",
   },
 } as const;
 

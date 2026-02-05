@@ -27,7 +27,7 @@ export function NewTeamPage() {
   });
 
   return (
-    <div className="max-w-xl w-full mx-auto space-y-8">
+    <div className="max-w-xl w-full mx-auto space-y-8 px-4 lg:px-6 pb-20 md:pb-6">
       <PageHeader title="New Team" />
       <form
         onSubmit={(e: React.FormEvent<HTMLFormElement>) => {

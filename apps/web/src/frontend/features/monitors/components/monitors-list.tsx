@@ -17,59 +17,10 @@ import {
   getStatusBgColor,
   type MonitorStatus,
 } from "@lib/utils";
-import type { MonitorResponse, RecentCheck } from "../schemas";
+import type { MonitorResponse } from "../schemas";
+import ChecksVisualization from "./checks-visualization";
 import MonitorStatusIndicator from "./monitor-status-indicator";
-
-function ChecksVisualization({ checks }: { checks: RecentCheck[] | null }) {
-  if (!checks || checks.length === 0) {
-    return (
-      <div className="flex gap-0.5 h-2 overflow-hidden">
-        {Array.from({ length: 100 }).map((_, i) => (
-          <div
-            key={i}
-            className="flex-1 bg-muted"
-            style={{ minWidth: "2px" }}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  const displayChecks = checks.slice(-100);
-  const paddedChecks = Array.from({ length: 100 }, (_, i) => {
-    const checkIndex = i - (100 - displayChecks.length);
-    return checkIndex >= 0 ? displayChecks[checkIndex] : null;
-  });
-
-  return (
-    <div className="flex gap-0.5 h-4">
-      {paddedChecks.map((check, i) => {
-        if (!check) {
-          return (
-            <div
-              key={i}
-              className="flex-1 bg-muted"
-              style={{ minWidth: "1px" }}
-            />
-          );
-        }
-        const isSuccess =
-          check.result === "success" || check.result === "maintenance";
-
-        return (
-          <div
-            key={i}
-            className={cn(
-              "flex-1 hover:scale-110",
-              isSuccess ? "bg-green-700" : "bg-red-700",
-            )}
-            style={{ minWidth: "1px" }}
-          />
-        );
-      })}
-    </div>
-  );
-}
+import MonitorsTable from "./monitors-table";
 
 const ALL_STATUSES: MonitorStatus[] = [
   "up",
@@ -159,7 +110,7 @@ export default function MonitorsList() {
                 )}
               </Button>
             }
-          ></DropdownMenuTrigger>
+          />
           <DropdownMenuContent align="start" className="w-fit">
             <DropdownMenuGroup>
               <DropdownMenuLabel>Status</DropdownMenuLabel>
@@ -256,7 +207,11 @@ export default function MonitorsList() {
         />
       </div>
 
-      <div className="gap-3 flex flex-col">
+      <div className="hidden md:block">
+        <MonitorsTable monitors={filteredData} teamId={teamId} />
+      </div>
+
+      <div className="gap-3 flex flex-col md:hidden">
         {filteredData.length > 0 ? (
           filteredData.map((monitor) => {
             const urlOrHost =

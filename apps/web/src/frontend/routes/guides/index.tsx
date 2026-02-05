@@ -21,7 +21,7 @@ function GuidesIndex() {
   const integrationGuides = getContentByType("integration");
 
   return (
-    <div className="min-h-screen font-mono antialiased">
+    <div className="min-h-screen font-classic antialiased">
         <div className="max-w-4xl mx-auto px-4 py-8">
           {/* Navigation */}
           <nav className="mb-8">
@@ -32,7 +32,7 @@ function GuidesIndex() {
 
           {/* Header */}
           <header className="mb-12">
-            <h1 className="text-2xl sm:text-3xl font-light tracking-tight mb-4">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-4">
               Guides
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -44,7 +44,7 @@ function GuidesIndex() {
           {/* Integration Guides */}
           {integrationGuides.length > 0 && (
             <section className="mb-12">
-              <h2 className="text-lg font-light tracking-tight mb-4">
+              <h2 className="text-xl font-bold mb-4">
                 Integration Guides
               </h2>
               <div className="grid sm:grid-cols-2 gap-4">
@@ -74,7 +74,7 @@ function GuidesIndex() {
 
           {/* How-to Guides */}
           <section className="mb-12">
-            <h2 className="text-lg font-light tracking-tight mb-4">
+            <h2 className="text-xl font-bold mb-4">
               How-to Guides
             </h2>
             {guides.length > 0 ? (

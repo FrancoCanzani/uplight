@@ -2,22 +2,22 @@ export function getBgStatusColor(status: string) {
   switch (status) {
     case "up":
     case "success":
-      return "bg-green-700";
+      return "bg-up";
     case "down":
     case "failure":
-      return "bg-red-700";
+      return "bg-down";
     case "degraded":
-      return "bg-amber-700";
+      return "bg-degraded";
     case "timeout":
       return "bg-orange-700";
     case "maintenance":
-      return "bg-blue-700";
+      return "bg-maintenance";
     case "paused":
-      return "bg-slate-600";
+      return "bg-paused";
     case "initializing":
-      return "bg-slate-700";
+      return "bg-initializing";
     default:
-      return "bg-slate-700";
+      return "bg-initializing";
   }
 }
 
@@ -25,21 +25,21 @@ export function getTextStatusColor(status: string) {
   switch (status) {
     case "up":
     case "success":
-      return "text-green-700 dark:text-green-500";
+      return "text-up";
     case "down":
     case "failure":
-      return "text-red-700 dark:text-red-500";
+      return "text-down";
     case "degraded":
-      return "text-amber-700 dark:text-amber-500";
+      return "text-degraded";
     case "timeout":
       return "text-orange-700 dark:text-orange-500";
     case "maintenance":
-      return "text-blue-700 dark:text-blue-500";
+      return "text-maintenance";
     case "paused":
-      return "text-slate-500 dark:text-slate-400";
+      return "text-paused";
     case "initializing":
-      return "text-slate-500 dark:text-slate-400";
+      return "text-initializing";
     default:
-      return "text-slate-500 dark:text-slate-400";
+      return "text-initializing";
   }
 }

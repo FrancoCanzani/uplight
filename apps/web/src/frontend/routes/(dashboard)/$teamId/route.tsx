@@ -32,6 +32,11 @@ export const Route = createFileRoute("/(dashboard)/$teamId")({
     return { teams, currentTeam };
   },
   component: TeamLayoutComponent,
+  pendingComponent: () => (
+    <div className="h-screen w-full flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+    </div>
+  ),
 });
 
 function TeamLayoutComponent() {
@@ -40,7 +45,7 @@ function TeamLayoutComponent() {
       <div className="h-screen flex w-full">
         <DashboardSidebar />
         <SidebarInset className="flex-1 overflow-auto">
-          <main className="px-4 lg:px-6 flex-1 pb-20 md:pb-6">
+          <main className="flex-1 pb-20 md:pb-6">
             <Outlet />
           </main>
         </SidebarInset>

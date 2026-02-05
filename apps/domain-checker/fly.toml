@@ -12,6 +12,7 @@ primary_region = 'iad'
 
 [env]
   PORT = '8080'
+  CORS_ORIGINS = 'https://uplight.francocanzani.workers.dev,http://localhost:5173'
 
 [http_service]
   internal_port = 8080

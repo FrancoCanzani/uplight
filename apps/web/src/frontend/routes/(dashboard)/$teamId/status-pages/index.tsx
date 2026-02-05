@@ -1,3 +1,4 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,7 +9,6 @@ import {
 } from "@/components/ui/empty";
 import fetchStatusPages from "@/features/status-pages/api/fetch-status-pages";
 import StatusPagesList from "@/features/status-pages/components/status-pages-list";
-import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(dashboard)/$teamId/status-pages/")({
   loader: ({ params }) => fetchStatusPages(params.teamId),
@@ -21,7 +21,7 @@ function StatusPagesPage() {
   const { teamId } = Route.useParams();
 
   return (
-    <div className="space-y-10 w-full h-full flex-1 lg:max-w-3xl mx-auto">
+    <div className="space-y-10 w-full h-full flex-1 lg:max-w-4xl mx-auto px-4 lg:px-6 pb-20 md:pb-6">
       <PageHeader
         title="Status Pages"
         actions={

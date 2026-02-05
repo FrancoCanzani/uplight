@@ -35,7 +35,7 @@ function SupportPage() {
   }
 
   return (
-    <div className="max-w-3xl w-full mx-auto space-y-6">
+    <div className="max-w-3xl w-full mx-auto space-y-6 px-4 lg:px-6 pb-20 md:pb-6">
       <PageHeader title="Support" />
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
@@ -55,13 +55,15 @@ function SupportPage() {
             placeholder="Describe your issue or question..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="flex-1"
+            className="flex-1 min-h-56"
           />
         </div>
 
-        <Button type="submit" disabled={isSubmitting} className="w-fit">
-          {isSubmitting ? "Sending..." : "Send message"}
-        </Button>
+        <div className="w-full flex items-center justify-end">
+          <Button type="submit" disabled={isSubmitting} className="w-fit">
+            {isSubmitting ? "Sending..." : "Send message"}
+          </Button>
+        </div>
       </form>
     </div>
   );

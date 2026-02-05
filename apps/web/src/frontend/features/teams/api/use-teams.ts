@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useSession } from "@/lib/auth/client";
 import type { TeamResponse } from "../schemas";
 
 export async function fetchTeams(): Promise<TeamResponse[]> {
@@ -13,8 +14,11 @@ export async function fetchTeams(): Promise<TeamResponse[]> {
 }
 
 export function useTeams() {
+  const { data: session } = useSession();
+
   return useQuery({
     queryKey: ["teams"],
     queryFn: fetchTeams,
+    enabled: !!session?.user,
   });
 }

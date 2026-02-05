@@ -71,8 +71,9 @@ export async function handleDomainChecks(env: Env): Promise<void> {
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
         console.error(
-          `[DOMAIN-CHECK] Failed to check domain for monitor ${mon.id}: ${response.status}`,
+          `[DOMAIN-CHECK] Failed to check domain for monitor ${mon.id}: ${response.status} - ${errorText} (URL: ${checkUrl})`,
         );
         continue;
       }
