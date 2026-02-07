@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { BottomNav } from "@/components/bottom-nav";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Spinner } from "@/components/ui/spinner";
 import { fetchTeams } from "@/features/teams/api/use-teams";
 
 export const Route = createFileRoute("/(dashboard)/$teamId")({
@@ -34,7 +35,7 @@ export const Route = createFileRoute("/(dashboard)/$teamId")({
   component: TeamLayoutComponent,
   pendingComponent: () => (
     <div className="h-screen w-full flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+      <Spinner />
     </div>
   ),
 });

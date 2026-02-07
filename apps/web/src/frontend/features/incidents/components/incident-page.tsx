@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getRouteApi } from "@tanstack/react-router";
-import { useDebounce } from "use-debounce";
 import { PageHeader } from "@/components/page-header";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -13,11 +13,13 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TiptapEditor from "@/components/ui/tiptap-editor";
-import { formatCause, formatDate, formatDuration } from "@lib/utils";
+import { useSession } from "@/lib/auth/client";
+import { formatCause } from "@lib/utils";
 import { useTeamMembers } from "../../teams/api/use-team-members";
 import { useUpdateIncident } from "../api/use-update-incident";
 import useUpdateIncidentPostMortem from "../api/use-update-incident-post-mortem";
 import { IncidentActivity } from "./incident-activity";
+import { IncidentSidebar } from "./incident-sidebar";
 import { IncidentSeveritySelector } from "./incident-severity-selector";
 import { IncidentStatusSelector } from "./incident-status-selector";
 import { IncidentTypeSelector } from "./incident-type-selector";
@@ -27,7 +29,7 @@ export default function IncidentPage() {
   const incident = routeApi.useLoaderData();
   const { teamId, incidentId } = routeApi.useParams();
   const { data: teamMembersData } = useTeamMembers(teamId);
-  const updateIncident = useUpdateIncident();
+  const { data: session } = useSession();
 
   const [postMortemTitle, setPostMortemTitle] = useState(
     incident.postMortemTitle ?? "",
@@ -36,95 +38,44 @@ export default function IncidentPage() {
     incident.postMortemContent ?? "",
   );
 
-  const [debouncedTitle] = useDebounce(postMortemTitle, 1000);
-  const [debouncedContent] = useDebounce(postMortemContent, 1000);
-  const [showSaved, setShowSaved] = useState(false);
-
   const updateMutation = useUpdateIncidentPostMortem();
+  const updateIncident = useUpdateIncident();
 
-  useEffect(() => {
-    if (
-      debouncedTitle === postMortemTitle &&
-      debouncedContent === postMortemContent
-    ) {
-      const hasChanges =
-        debouncedTitle !== (incident.postMortemTitle ?? "") ||
-        debouncedContent !== (incident.postMortemContent ?? "");
-
-      if (hasChanges) {
-        updateMutation.mutate(
-          {
-            teamId,
-            incidentId,
-            postMortemTitle: debouncedTitle || null,
-            postMortemContent: debouncedContent || null,
-          },
-          {
-            onSuccess: () => {
-              setShowSaved(true);
-              setTimeout(() => setShowSaved(false), 2000);
-            },
-          },
-        );
-      }
-    }
-  }, [
-    debouncedTitle,
-    debouncedContent,
-    postMortemTitle,
-    postMortemContent,
-    teamId,
-    incidentId,
-    incident.postMortemTitle,
-    incident.postMortemContent,
-    updateMutation,
-  ]);
-
-  const duration = incident.resolvedAt
-    ? incident.resolvedAt - incident.startedAt
-    : incident.recoveredAt
-      ? incident.recoveredAt - incident.startedAt
-      : Date.now() - incident.startedAt;
-
-  const teamMembers = teamMembersData || [];
-  const currentAssignee = incident.assignees?.[0] || null;
-
-  const handleAssigneeChange = (userId: string | null) => {
-    if (!userId) return;
-    updateIncident.mutate({
-      teamId: Number(teamId),
-      incidentId: Number(incidentId),
-      assignees: userId === "unassigned" ? [] : [userId],
+  const handleSavePostMortem = () => {
+    updateMutation.mutate({
+      teamId,
+      incidentId,
+      postMortemTitle: postMortemTitle || null,
+      postMortemContent: postMortemContent || null,
     });
   };
 
-  return (
-    <div className="flex flex-col lg:flex-row h-full">
-      <div className="flex-1 overflow-auto">
-        <div className="px-4 lg:px-6 pb-20 md:pb-0 space-y-6">
-          <PageHeader title={incident.title ?? formatCause(incident.cause)} />
+  const teamMembers = teamMembersData || [];
+  const user = session?.user;
 
-          <Tabs defaultValue="activity">
-            <TabsList variant="line">
+  return (
+    <div className="flex flex-col lg:flex-row h-screen overflow-hidden -mb-20 md:-mb-6">
+      <div className="flex-1 flex flex-col min-h-0">
+        <div className="px-4 lg:px-6 shrink-0">
+          <PageHeader title={incident.title ?? formatCause(incident.cause)} />
+        </div>
+
+        <div className="flex-1 flex flex-col px-4 lg:px-6 pb-4 min-h-0">
+          <Tabs defaultValue="activity" className="flex flex-col h-full">
+            <TabsList variant="line" className="shrink-0">
               <TabsTrigger value="activity">Activity</TabsTrigger>
               <TabsTrigger value="postmortem">Post-mortem</TabsTrigger>
+              <TabsTrigger value="details" className="lg:hidden">Details</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="activity" className="mt-6">
+            <TabsContent value="activity" className="flex-1 flex flex-col mt-6 data-[state=active]:flex data-[state=inactive]:hidden min-h-0">
               <IncidentActivity teamMembers={teamMembers} />
             </TabsContent>
 
-            <TabsContent value="postmortem" className="mt-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground">
-                  Document what happened and how it was resolved.
-                </p>
-                {showSaved && (
-                  <span className="text-xs text-muted-foreground animate-pulse">
-                    Saved
-                  </span>
-                )}
-              </div>
+            <TabsContent value="postmortem" className="flex-1 overflow-y-auto mt-6 space-y-4">
+              <p className="text-xs text-muted-foreground">
+                Document what happened and how it was resolved.
+              </p>
 
               <div className="space-y-1.5">
                 <Label htmlFor="postmortem-title" className="text-xs">
@@ -148,144 +99,116 @@ export default function IncidentPage() {
                   />
                 </div>
               </div>
+
+              <div className="flex justify-end">
+                <Button
+                  size="xs"
+                  variant="outline"
+                  onClick={handleSavePostMortem}
+                  disabled={updateMutation.isPending}
+                >
+                  {updateMutation.isPending ? "Saving..." : "Save"}
+                </Button>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="details" className="flex-1 overflow-y-auto mt-6 lg:hidden">
+              <div className="space-y-4 text-sm">
+                {incident.description && (
+                  <div className="space-y-1.5 pb-4 border-b">
+                    <div className="text-xs font-medium text-muted-foreground">
+                      Description
+                    </div>
+                    <div className="text-xs leading-relaxed">{incident.description}</div>
+                  </div>
+                )}
+
+                {incident.hint && (
+                  <div className="space-y-1.5 pb-4 border-b">
+                    <div className="text-xs font-medium text-muted-foreground">
+                      Suggested action
+                    </div>
+                    <div className="text-xs leading-relaxed">{incident.hint}</div>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-normal text-muted-foreground">
+                      Status
+                    </Label>
+                    <IncidentStatusSelector currentStatus={incident.status} />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-normal text-muted-foreground">
+                      Severity
+                    </Label>
+                    <IncidentSeveritySelector
+                      currentSeverity={incident.severity}
+                      compact={false}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-normal text-muted-foreground">
+                      Type
+                    </Label>
+                    <IncidentTypeSelector
+                      currentType={incident.incidentType}
+                      compact={false}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-normal text-muted-foreground">
+                      Assigned to
+                    </Label>
+                    <Select
+                      value={incident.assignees?.[0] || "unassigned"}
+                      onValueChange={(userId) => {
+                        if (!userId) return;
+                        updateIncident.mutate({
+                          teamId: Number(teamId),
+                          incidentId: Number(incidentId),
+                          assignees: userId === "unassigned" ? [] : [userId],
+                        });
+                      }}
+                      disabled={updateIncident.isPending}
+                    >
+                      <SelectTrigger className="w-full h-8 text-xs">
+                        <SelectValue>
+                          {incident.assignees?.[0]
+                            ? teamMembers.find((m) => m.userId === incident.assignees?.[0])
+                                ?.name ||
+                              teamMembers.find((m) => m.userId === incident.assignees?.[0])
+                                ?.email ||
+                              "Unknown"
+                            : "Unassigned"}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="unassigned">
+                          <span className="text-muted-foreground">Unassigned</span>
+                        </SelectItem>
+                        {teamMembers.map((member) => (
+                          <SelectItem key={member.userId} value={member.userId}>
+                            {member.name || member.email}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
             </TabsContent>
           </Tabs>
         </div>
       </div>
 
-      <aside className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-border overflow-auto bg-surface/30">
-        <div className="p-4 space-y-6 text-sm">
-          <div className="space-y-3">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-normal text-muted-foreground">
-                Status
-              </Label>
-              <IncidentStatusSelector currentStatus={incident.status} />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-normal text-muted-foreground">
-                Severity
-              </Label>
-              <IncidentSeveritySelector
-                currentSeverity={incident.severity}
-                compact={false}
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-normal text-muted-foreground">
-                Type
-              </Label>
-              <IncidentTypeSelector
-                currentType={incident.incidentType}
-                compact={false}
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-normal text-muted-foreground">
-                Assigned to
-              </Label>
-              <Select
-                value={currentAssignee || "unassigned"}
-                onValueChange={handleAssigneeChange}
-                disabled={updateIncident.isPending}
-              >
-                <SelectTrigger className="w-full h-8 text-xs">
-                  <SelectValue>
-                    {currentAssignee
-                      ? teamMembers.find((m) => m.userId === currentAssignee)
-                          ?.name ||
-                        teamMembers.find((m) => m.userId === currentAssignee)
-                          ?.email ||
-                        "Unknown"
-                      : "Unassigned"}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="unassigned">
-                    <span className="text-muted-foreground">Unassigned</span>
-                  </SelectItem>
-                  {teamMembers.map((member) => (
-                    <SelectItem key={member.userId} value={member.userId}>
-                      {member.name || member.email}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="border-t pt-4 space-y-3">
-            <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Started</div>
-              <div className="text-xs tabular-nums">
-                {formatDate(incident.startedAt)}
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Duration</div>
-              <div className="text-xs tabular-nums">
-                {formatDuration(duration)}
-              </div>
-            </div>
-
-            {incident.acknowledgedAt && (
-              <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">
-                  Acknowledged
-                </div>
-                <div className="text-xs tabular-nums">
-                  {formatDate(incident.acknowledgedAt)}
-                </div>
-              </div>
-            )}
-
-            {incident.recoveredAt && (
-              <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Recovered</div>
-                <div className="text-xs text-green-600 tabular-nums">
-                  {formatDate(incident.recoveredAt)}
-                </div>
-              </div>
-            )}
-
-            {incident.resolvedAt && (
-              <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Resolved</div>
-                <div className="text-xs tabular-nums">
-                  {formatDate(incident.resolvedAt)}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {(incident.description || incident.hint) && (
-            <div className="border-t pt-4 space-y-3">
-              {incident.description && (
-                <div className="space-y-1.5">
-                  <div className="text-xs text-muted-foreground">
-                    Description
-                  </div>
-                  <div className="text-xs leading-relaxed">
-                    {incident.description}
-                  </div>
-                </div>
-              )}
-              {incident.hint && (
-                <div className="space-y-1.5">
-                  <div className="text-xs text-muted-foreground">
-                    Suggested action
-                  </div>
-                  <div className="text-xs leading-relaxed">{incident.hint}</div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </aside>
+      <div className="hidden lg:block">
+        <IncidentSidebar incident={incident} />
+      </div>
     </div>
   );
 }

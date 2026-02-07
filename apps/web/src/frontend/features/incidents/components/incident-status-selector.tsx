@@ -18,10 +18,10 @@ const STATUS_LABELS: Record<IncidentStatus, string> = {
 };
 
 const STATUS_COLORS: Record<IncidentStatus, string> = {
-  ongoing: "text-red-600",
-  acknowledged: "text-yellow-600",
-  fixing: "text-blue-600",
-  recovered: "text-green-600",
+  ongoing: "text-red-700 dark:text-red-500",
+  acknowledged: "text-amber-700 dark:text-amber-500",
+  fixing: "text-blue-700 dark:text-blue-500",
+  recovered: "text-green-700 dark:text-green-500",
   resolved: "text-muted-foreground",
 };
 
@@ -50,7 +50,7 @@ export function IncidentStatusSelector({
       onValueChange={handleChange}
       disabled={updateStatus.isPending}
     >
-      <SelectTrigger className="w-auto h-7 text-xs border-0 bg-transparent px-2">
+      <SelectTrigger className="w-full h-8 text-xs">
         <SelectValue>
           <span className={STATUS_COLORS[currentStatus]}>
             {STATUS_LABELS[currentStatus]}

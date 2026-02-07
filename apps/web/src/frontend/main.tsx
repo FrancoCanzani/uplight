@@ -22,6 +22,8 @@ const router = createRouter({
     auth: undefined!,
   },
   defaultNotFoundComponent: NotFound,
+  defaultPendingMs: 0,
+  defaultPendingMinMs: 0,
 });
 
 declare module "@tanstack/react-router" {

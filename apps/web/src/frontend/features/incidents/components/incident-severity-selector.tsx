@@ -17,10 +17,10 @@ const SEVERITY_LABELS: Record<IncidentSeverity, string> = {
 };
 
 const SEVERITY_COLORS: Record<IncidentSeverity, string> = {
-  low: "text-blue-600",
-  medium: "text-yellow-600",
-  high: "text-orange-600",
-  critical: "text-red-600",
+  low: "text-blue-700 dark:text-blue-500",
+  medium: "text-amber-700 dark:text-amber-500",
+  high: "text-orange-700 dark:text-orange-500",
+  critical: "text-red-700 dark:text-red-500",
 };
 
 export function IncidentSeveritySelector({

@@ -235,12 +235,12 @@ export default function MonitorsList() {
                 }}
                 className="border border-border/30 p-3 hover:bg-surface space-y-2.5 transition-colors cursor-pointer"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 justify-start">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center space-x-2 justify-start min-w-0">
                     <MonitorStatusIndicator status={monitor.status} />
-                    <h2>{monitor.name}</h2>
+                    <h2 className="truncate">{monitor.name}</h2>
                   </div>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground truncate max-w-[120px] shrink-0">
                     {urlOrHost}
                   </span>
                 </div>

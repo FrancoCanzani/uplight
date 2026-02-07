@@ -13,7 +13,7 @@ export const monitorsTableColumns: ColumnDef<MonitorResponse>[] = [
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => <span>{row.original.name}</span>,
+    cell: ({ row }) => <span className="truncate max-w-xs block">{row.original.name}</span>,
     enableSorting: true,
   },
   {
