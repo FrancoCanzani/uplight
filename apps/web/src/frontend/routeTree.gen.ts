@@ -42,6 +42,7 @@ import { Route as dashboardTeamIdMonitorsMonitorIdIndexRouteImport } from './rou
 import { Route as dashboardTeamIdHeartbeatsHeartbeatIdIndexRouteImport } from './routes/(dashboard)/$teamId/heartbeats/$heartbeatId/index'
 import { Route as dashboardTeamIdStatusPagesPageIdEditRouteImport } from './routes/(dashboard)/$teamId/status-pages/$pageId/edit'
 import { Route as dashboardTeamIdMonitorsMonitorIdMaintenanceRouteImport } from './routes/(dashboard)/$teamId/monitors/$monitorId/maintenance'
+import { Route as dashboardTeamIdMonitorsMonitorIdLogsRouteImport } from './routes/(dashboard)/$teamId/monitors/$monitorId/logs'
 import { Route as dashboardTeamIdMonitorsMonitorIdEditRouteImport } from './routes/(dashboard)/$teamId/monitors/$monitorId/edit'
 import { Route as dashboardTeamIdHeartbeatsHeartbeatIdEditRouteImport } from './routes/(dashboard)/$teamId/heartbeats/$heartbeatId/edit'
 
@@ -225,6 +226,12 @@ const dashboardTeamIdMonitorsMonitorIdMaintenanceRoute =
     path: '/monitors/$monitorId/maintenance',
     getParentRoute: () => dashboardTeamIdRouteRoute,
   } as any)
+const dashboardTeamIdMonitorsMonitorIdLogsRoute =
+  dashboardTeamIdMonitorsMonitorIdLogsRouteImport.update({
+    id: '/monitors/$monitorId/logs',
+    path: '/monitors/$monitorId/logs',
+    getParentRoute: () => dashboardTeamIdRouteRoute,
+  } as any)
 const dashboardTeamIdMonitorsMonitorIdEditRoute =
   dashboardTeamIdMonitorsMonitorIdEditRouteImport.update({
     id: '/monitors/$monitorId/edit',
@@ -269,6 +276,7 @@ export interface FileRoutesByFullPath {
   '/$teamId/status-pages': typeof dashboardTeamIdStatusPagesIndexRoute
   '/$teamId/heartbeats/$heartbeatId/edit': typeof dashboardTeamIdHeartbeatsHeartbeatIdEditRoute
   '/$teamId/monitors/$monitorId/edit': typeof dashboardTeamIdMonitorsMonitorIdEditRoute
+  '/$teamId/monitors/$monitorId/logs': typeof dashboardTeamIdMonitorsMonitorIdLogsRoute
   '/$teamId/monitors/$monitorId/maintenance': typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
   '/$teamId/status-pages/$pageId/edit': typeof dashboardTeamIdStatusPagesPageIdEditRoute
   '/$teamId/heartbeats/$heartbeatId': typeof dashboardTeamIdHeartbeatsHeartbeatIdIndexRoute
@@ -306,6 +314,7 @@ export interface FileRoutesByTo {
   '/$teamId/status-pages': typeof dashboardTeamIdStatusPagesIndexRoute
   '/$teamId/heartbeats/$heartbeatId/edit': typeof dashboardTeamIdHeartbeatsHeartbeatIdEditRoute
   '/$teamId/monitors/$monitorId/edit': typeof dashboardTeamIdMonitorsMonitorIdEditRoute
+  '/$teamId/monitors/$monitorId/logs': typeof dashboardTeamIdMonitorsMonitorIdLogsRoute
   '/$teamId/monitors/$monitorId/maintenance': typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
   '/$teamId/status-pages/$pageId/edit': typeof dashboardTeamIdStatusPagesPageIdEditRoute
   '/$teamId/heartbeats/$heartbeatId': typeof dashboardTeamIdHeartbeatsHeartbeatIdIndexRoute
@@ -344,6 +353,7 @@ export interface FileRoutesById {
   '/(dashboard)/$teamId/status-pages/': typeof dashboardTeamIdStatusPagesIndexRoute
   '/(dashboard)/$teamId/heartbeats/$heartbeatId/edit': typeof dashboardTeamIdHeartbeatsHeartbeatIdEditRoute
   '/(dashboard)/$teamId/monitors/$monitorId/edit': typeof dashboardTeamIdMonitorsMonitorIdEditRoute
+  '/(dashboard)/$teamId/monitors/$monitorId/logs': typeof dashboardTeamIdMonitorsMonitorIdLogsRoute
   '/(dashboard)/$teamId/monitors/$monitorId/maintenance': typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
   '/(dashboard)/$teamId/status-pages/$pageId/edit': typeof dashboardTeamIdStatusPagesPageIdEditRoute
   '/(dashboard)/$teamId/heartbeats/$heartbeatId/': typeof dashboardTeamIdHeartbeatsHeartbeatIdIndexRoute
@@ -383,6 +393,7 @@ export interface FileRouteTypes {
     | '/$teamId/status-pages'
     | '/$teamId/heartbeats/$heartbeatId/edit'
     | '/$teamId/monitors/$monitorId/edit'
+    | '/$teamId/monitors/$monitorId/logs'
     | '/$teamId/monitors/$monitorId/maintenance'
     | '/$teamId/status-pages/$pageId/edit'
     | '/$teamId/heartbeats/$heartbeatId'
@@ -420,6 +431,7 @@ export interface FileRouteTypes {
     | '/$teamId/status-pages'
     | '/$teamId/heartbeats/$heartbeatId/edit'
     | '/$teamId/monitors/$monitorId/edit'
+    | '/$teamId/monitors/$monitorId/logs'
     | '/$teamId/monitors/$monitorId/maintenance'
     | '/$teamId/status-pages/$pageId/edit'
     | '/$teamId/heartbeats/$heartbeatId'
@@ -457,6 +469,7 @@ export interface FileRouteTypes {
     | '/(dashboard)/$teamId/status-pages/'
     | '/(dashboard)/$teamId/heartbeats/$heartbeatId/edit'
     | '/(dashboard)/$teamId/monitors/$monitorId/edit'
+    | '/(dashboard)/$teamId/monitors/$monitorId/logs'
     | '/(dashboard)/$teamId/monitors/$monitorId/maintenance'
     | '/(dashboard)/$teamId/status-pages/$pageId/edit'
     | '/(dashboard)/$teamId/heartbeats/$heartbeatId/'
@@ -715,6 +728,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRouteImport
       parentRoute: typeof dashboardTeamIdRouteRoute
     }
+    '/(dashboard)/$teamId/monitors/$monitorId/logs': {
+      id: '/(dashboard)/$teamId/monitors/$monitorId/logs'
+      path: '/monitors/$monitorId/logs'
+      fullPath: '/$teamId/monitors/$monitorId/logs'
+      preLoaderRoute: typeof dashboardTeamIdMonitorsMonitorIdLogsRouteImport
+      parentRoute: typeof dashboardTeamIdRouteRoute
+    }
     '/(dashboard)/$teamId/monitors/$monitorId/edit': {
       id: '/(dashboard)/$teamId/monitors/$monitorId/edit'
       path: '/monitors/$monitorId/edit'
@@ -748,6 +768,7 @@ interface dashboardTeamIdRouteRouteChildren {
   dashboardTeamIdStatusPagesIndexRoute: typeof dashboardTeamIdStatusPagesIndexRoute
   dashboardTeamIdHeartbeatsHeartbeatIdEditRoute: typeof dashboardTeamIdHeartbeatsHeartbeatIdEditRoute
   dashboardTeamIdMonitorsMonitorIdEditRoute: typeof dashboardTeamIdMonitorsMonitorIdEditRoute
+  dashboardTeamIdMonitorsMonitorIdLogsRoute: typeof dashboardTeamIdMonitorsMonitorIdLogsRoute
   dashboardTeamIdMonitorsMonitorIdMaintenanceRoute: typeof dashboardTeamIdMonitorsMonitorIdMaintenanceRoute
   dashboardTeamIdStatusPagesPageIdEditRoute: typeof dashboardTeamIdStatusPagesPageIdEditRoute
   dashboardTeamIdHeartbeatsHeartbeatIdIndexRoute: typeof dashboardTeamIdHeartbeatsHeartbeatIdIndexRoute
@@ -774,6 +795,8 @@ const dashboardTeamIdRouteRouteChildren: dashboardTeamIdRouteRouteChildren = {
     dashboardTeamIdHeartbeatsHeartbeatIdEditRoute,
   dashboardTeamIdMonitorsMonitorIdEditRoute:
     dashboardTeamIdMonitorsMonitorIdEditRoute,
+  dashboardTeamIdMonitorsMonitorIdLogsRoute:
+    dashboardTeamIdMonitorsMonitorIdLogsRoute,
   dashboardTeamIdMonitorsMonitorIdMaintenanceRoute:
     dashboardTeamIdMonitorsMonitorIdMaintenanceRoute,
   dashboardTeamIdStatusPagesPageIdEditRoute:

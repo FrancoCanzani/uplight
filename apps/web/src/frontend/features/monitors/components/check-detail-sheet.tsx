@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { getRouteApi, useNavigate } from "@tanstack/react-router";
+import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,12 +15,13 @@ import getLocationLabel from "@/features/monitors/utils/get-location-label";
 import { formatDate } from "@/lib/utils";
 import { useCheckDetail } from "../api/use-check-detail";
 import { useInfiniteChecks } from "../api/use-infinite-checks";
-
-const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
+import { formatErrorMessage } from "../utils/format-error-message";
 
 export function CheckDetailSheet() {
-  const { teamId, monitorId } = routeApi.useParams();
-  const search = routeApi.useSearch() || {};
+  const params = useParams({ strict: false });
+  const teamId = params.teamId as string;
+  const monitorId = params.monitorId as string;
+  const search = useSearch({ strict: false }) || {};
   const navigate = useNavigate();
 
   const {
@@ -53,8 +54,6 @@ export function CheckDetailSheet() {
 
   const handleClose = () => {
     navigate({
-      to: "/$teamId/monitors/$monitorId",
-      params: { teamId, monitorId },
       search: (prev) => {
         if (!prev) return {};
         return Object.fromEntries(
@@ -67,8 +66,6 @@ export function CheckDetailSheet() {
   const handleNext = () => {
     if (nextCheckId) {
       navigate({
-        to: "/$teamId/monitors/$monitorId",
-        params: { teamId, monitorId },
         search: (prev) => ({ ...prev, checkId: String(nextCheckId) }),
       });
     }
@@ -77,8 +74,6 @@ export function CheckDetailSheet() {
   const handlePrev = () => {
     if (prevCheckId) {
       navigate({
-        to: "/$teamId/monitors/$monitorId",
-        params: { teamId, monitorId },
         search: (prev) => ({ ...prev, checkId: String(prevCheckId) }),
       });
     }
@@ -170,8 +165,8 @@ export function CheckDetailSheet() {
 
             {checkDetail.errorMessage && (
               <Section title="Error">
-                <div className="p-2 bg-destructive/10 border  text-xs  break-words">
-                  {checkDetail.errorMessage}
+                <div className="p-2 bg-destructive/10 border text-xs break-words">
+                  {formatErrorMessage(checkDetail.errorMessage)}
                 </div>
               </Section>
             )}

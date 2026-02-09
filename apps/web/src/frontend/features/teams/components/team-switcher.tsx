@@ -1,4 +1,5 @@
 import { getRouteApi, Link, useNavigate } from "@tanstack/react-router";
+import { Facehash } from "facehash";
 import { Check, ChevronsUpDown, Plus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,11 +34,7 @@ export function TeamSwitcher() {
             className="w-full h-14 justify-between gap-2 px-3 rounded-none border-b border-b-border/30"
           >
             <div className="flex items-center gap-2 min-w-0">
-              <div className="size-4 flex overflow-hidden shrink-0">
-                <div className="flex-1 bg-red-600" />
-                <div className="flex-1 bg-green-600" />
-                <div className="flex-1 bg-blue-600" />
-              </div>
+              <Facehash name={currentTeam.name} size={20} variant="gradient" />
               <span className="truncate text-sm font-medium">
                 {currentTeam.name}
               </span>

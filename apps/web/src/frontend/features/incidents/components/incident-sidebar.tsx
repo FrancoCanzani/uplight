@@ -1,4 +1,5 @@
 import { getRouteApi } from "@tanstack/react-router";
+import { Facehash } from "facehash";
 import {
   Select,
   SelectContent,
@@ -28,6 +29,11 @@ export function IncidentSidebar({ incident }: { incident: Incident }) {
 
   const teamMembers = (teamMembersData || []) as TeamMember[];
   const currentAssignee = incident.assignees?.[0] || null;
+  const currentAssigneeName = currentAssignee
+    ? teamMembers.find((m) => m.userId === currentAssignee)?.name ||
+      teamMembers.find((m) => m.userId === currentAssignee)?.email ||
+      "Unknown"
+    : null;
 
   const handleAssigneeChange = (userId: string | null) => {
     if (!userId) return;
@@ -100,13 +106,18 @@ export function IncidentSidebar({ incident }: { incident: Incident }) {
             >
               <SelectTrigger className="w-full h-8 text-xs">
                 <SelectValue>
-                  {currentAssignee
-                    ? teamMembers.find((m) => m.userId === currentAssignee)
-                        ?.name ||
-                      teamMembers.find((m) => m.userId === currentAssignee)
-                        ?.email ||
-                      "Unknown"
-                    : "Unassigned"}
+                  {currentAssignee ? (
+                    <div className="flex items-center gap-2">
+                      <Facehash
+                        name={currentAssigneeName || ""}
+                        size={16}
+                        variant="solid"
+                      />
+                      <span>{currentAssigneeName}</span>
+                    </div>
+                  ) : (
+                    "Unassigned"
+                  )}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
@@ -115,7 +126,14 @@ export function IncidentSidebar({ incident }: { incident: Incident }) {
                 </SelectItem>
                 {teamMembers.map((member) => (
                   <SelectItem key={member.userId} value={member.userId}>
-                    {member.name || member.email}
+                    <div className="flex items-center gap-2">
+                      <Facehash
+                        name={member.name || member.email}
+                        size={16}
+                        variant="solid"
+                      />
+                      <span>{member.name || member.email}</span>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>

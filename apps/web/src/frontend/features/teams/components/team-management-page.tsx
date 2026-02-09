@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { getRouteApi } from "@tanstack/react-router";
+import { Facehash } from "facehash";
 import { MoreHorizontal, Plus } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import {
@@ -13,7 +14,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -83,11 +83,11 @@ function MemberRow({
   return (
     <div className="flex items-center justify-between py-2">
       <div className="flex items-center gap-3">
-        <Avatar size="sm">
-          <AvatarFallback className="text-[10px]">
-            {member.name.charAt(0).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+        <Facehash
+          name={member.name || member.email}
+          size={32}
+          variant="solid"
+        />
         <div className="min-w-0">
           <div className="text-sm truncate">
             {member.name}
