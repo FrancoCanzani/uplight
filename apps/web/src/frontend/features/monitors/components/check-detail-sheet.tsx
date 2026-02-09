@@ -147,11 +147,13 @@ export function CheckDetailSheet() {
                 value={`${checkDetail.responseTime}ms`}
                 mono
               />
-              <ConfigItem
-                label="Status Code"
-                value={checkDetail.statusCode?.toString() ?? "—"}
-                mono
-              />
+              {checkDetail.statusCode !== null && (
+                <ConfigItem
+                  label="Status Code"
+                  value={checkDetail.statusCode.toString()}
+                  mono
+                />
+              )}
               <ConfigItem
                 label="Retry Count"
                 value={checkDetail.retryCount.toString()}

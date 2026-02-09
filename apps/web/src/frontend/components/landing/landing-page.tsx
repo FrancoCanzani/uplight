@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/accordion";
 import { useTeams } from "@/features/teams/api/use-teams";
 import { useSession } from "@/lib/auth/client";
+import { Button } from "../ui/button";
 import { GitHubStats } from "./github-stats";
 import { HeroStats } from "./hero-stats";
 import { IntegrationGrid } from "./integration-grid";
@@ -102,7 +103,7 @@ function ViewToggle({
   const isMachine = view === "machine";
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 py-1.5 px-2.5 bg-background ring-1 ring-border text-sm font-classic select-none">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 py-1.5 px-2.5 bg-background ring-1 ring-border text-sm font-classic select-none opacity-50 hover:opacity-100 transition-all">
       <button
         onClick={() => setView("human")}
         className="flex items-center gap-2 cursor-pointer"
@@ -168,6 +169,7 @@ export default function LandingPage() {
                     to="/$teamId/monitors"
                     params={{ teamId: firstTeamId.toString() }}
                     className="text-sm hover:underline underline-offset-4"
+                    preload={"viewport"}
                   >
                     Dashboard
                   </Link>
@@ -223,12 +225,6 @@ export default function LandingPage() {
                 </p>
 
                 <div className="flex items-center justify-center gap-3">
-                  <Link
-                    to="/signup"
-                    className="inline-flex items-center gap-1 text-sm px-5 py-2.5 bg-foreground text-background hover:opacity-90 transition-opacity"
-                  >
-                    Start monitoring
-                  </Link>
                   <a
                     href="https://deploy.workers.cloudflare.com/?url=https://github.com/francocanzani/uplight"
                     target="_blank"
@@ -237,9 +233,14 @@ export default function LandingPage() {
                     <img
                       src="https://deploy.workers.cloudflare.com/button"
                       alt="Deploy to Cloudflare"
-                      className="h-9.5"
+                      className="h-9.5 rounded-none"
                     />
                   </a>
+                  <Button
+                    size={"lg"}
+                    className={"h-9.5 text-base font-display"}
+                    render={<Link to="/signup">Start monitoring</Link>}
+                  />
                 </div>
               </motion.div>
             </section>
@@ -348,20 +349,21 @@ export default function LandingPage() {
                   required.
                 </p>
                 <div className="flex flex-wrap gap-3">
-                  <Link
-                    to="/signup"
-                    className="text-sm px-5 py-2.5 bg-background text-foreground hover:opacity-90 transition-opacity"
-                  >
-                    Create free account
-                  </Link>
-                  <a
-                    href="https://github.com/francocanzani/uplight"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm px-5 py-2.5 ring-1 ring-background/20 hover:ring-background/40 transition-colors"
-                  >
-                    Self-host instead
-                  </a>
+                  <Button
+                    variant={"secondary"}
+                    render={<Link to="/signup">Create free account</Link>}
+                  />
+                  <Button
+                    render={
+                      <a
+                        href="https://github.com/francocanzani/uplight"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Self-host
+                      </a>
+                    }
+                  />
                 </div>
               </ScrollReveal>
 
@@ -582,7 +584,7 @@ function HowItWorksTimeline() {
 
 function FAQSection({ faqs }: { faqs: typeof faqSchemaData }) {
   return (
-    <Accordion className="ring-1 ring-border/50">
+    <Accordion className="border-none ring-0">
       {faqs.map((faq, i) => (
         <AccordionItem key={i} value={i}>
           <AccordionTrigger className="text-left">

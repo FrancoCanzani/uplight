@@ -2,6 +2,7 @@ import { useState } from "react";
 import { getRouteApi } from "@tanstack/react-router";
 import { toast } from "sonner";
 import z from "zod";
+import { useHotkeys } from "react-hotkeys-hook";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -36,6 +37,16 @@ export default function MonitorQuickstart() {
   const [showDialog, setShowDialog] = useState(false);
   const [showSheet, setShowSheet] = useState(false);
   const createMonitor = useCreateMonitor();
+
+  // Cmd+Shift+K - Open monitor quickstart
+  useHotkeys('mod+shift+k', (e) => {
+    e.preventDefault();
+    if (isMobile) {
+      setShowSheet(true);
+    } else {
+      setShowDialog(true);
+    }
+  });
 
   const handleQuickstart = (e: React.FormEvent) => {
     e.preventDefault();

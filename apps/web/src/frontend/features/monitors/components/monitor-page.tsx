@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { getRouteApi } from "@tanstack/react-router";
 import AnimatedNumber from "@/components/motion/animated-number";
+import NoDataMessage from "@/components/no-data-message";
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -56,6 +57,8 @@ export default function MonitorPage() {
     return calculatePercentiles(times, [50, 75, 95, 99]);
   }, [filteredChecks]);
 
+  const hasNoData = checks.length === 0;
+
   return (
     <div className="space-y-10 w-full lg:max-w-4xl mx-auto px-4 lg:px-6 pb-20 md:pb-6">
       <PageHeader
@@ -75,124 +78,132 @@ export default function MonitorPage() {
         <MonitorStatusAlert status={monitor.status} />
       )}
 
-      <div className="flex items-center justify-start gap-x-1.5 flex-wrap">
-        <span>Data from</span>
-        <TimePeriodFilter
-          teamId={teamId}
-          monitorId={monitorId}
-          currentPeriod={period}
-        />
-        {showRegionFilter ? (
-          <>
-            <span>in</span>
-            <RegionFilter
+      {hasNoData ? (
+        <div className="space-y-6">
+          <NoDataMessage text="No data collected yet. Checks will start running shortly and results will appear here." />
+        </div>
+      ) : (
+        <>
+          <div className="flex items-center justify-start gap-x-1.5 flex-wrap">
+            <span>Data from</span>
+            <TimePeriodFilter
               teamId={teamId}
               monitorId={monitorId}
-              currentRegion={region}
-              availableRegions={availableRegions}
+              currentPeriod={period}
             />
-          </>
-        ) : (
-          availableRegions[0] && (
-            <>
-              <span>in</span>
-              <span className="text-muted-foreground">
-                {getLocationLabel(availableRegions[0])}
-              </span>
-            </>
-          )
-        )}
-      </div>
+            {showRegionFilter ? (
+              <>
+                <span>in</span>
+                <RegionFilter
+                  teamId={teamId}
+                  monitorId={monitorId}
+                  currentRegion={region}
+                  availableRegions={availableRegions}
+                />
+              </>
+            ) : (
+              availableRegions[0] && (
+                <>
+                  <span>in</span>
+                  <span className="text-muted-foreground">
+                    {getLocationLabel(availableRegions[0])}
+                  </span>
+                </>
+              )
+            )}
+          </div>
 
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <Card size="xs">
-          <CardHeader>
-            <CardDescription>Uptime ({periodLabel})</CardDescription>
-            <CardTitle className="text-lg">
-              <AnimatedNumber
-                value={stats.uptimePercentage}
-                decimals={2}
-                suffix="%"
-              />
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card size="xs">
-          <CardHeader>
-            <CardDescription>Avg Response Time</CardDescription>
-            <CardTitle className="text-lg">
-              <AnimatedNumber value={stats.avgResponseTime} suffix="ms" />
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card size="xs">
-          <CardHeader>
-            <CardDescription>P50 Response Time</CardDescription>
-            <CardTitle className="text-lg">
-              <AnimatedNumber value={percentileStats[50]} suffix="ms" />
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card size="xs">
-          <CardHeader>
-            <CardDescription>P75 Response Time</CardDescription>
-            <CardTitle className="text-lg">
-              <AnimatedNumber value={percentileStats[75]} suffix="ms" />
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card size="xs">
-          <CardHeader>
-            <CardDescription>P95 Response Time</CardDescription>
-            <CardTitle className="text-lg">
-              <AnimatedNumber value={percentileStats[95]} suffix="ms" />
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card size="xs">
-          <CardHeader>
-            <CardDescription>P99 Response Time</CardDescription>
-            <CardTitle className="text-lg">
-              <AnimatedNumber value={percentileStats[99]} suffix="ms" />
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card size="xs">
-          <CardHeader>
-            <CardDescription>Total Checks</CardDescription>
-            <CardTitle className="text-lg">
-              <AnimatedNumber value={stats.totalChecks} />
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card size="xs">
-          <CardHeader>
-            <CardDescription>Last Check</CardDescription>
-            <CardTitle className="tabular-nums text-lg font-light">
-              {stats.lastCheckAt ? formatDate(stats.lastCheckAt) : "-"}
-            </CardTitle>
-          </CardHeader>
-        </Card>
-      </div>
+          <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+            <Card size="xs">
+              <CardHeader>
+                <CardDescription>Uptime ({periodLabel})</CardDescription>
+                <CardTitle className="text-lg">
+                  <AnimatedNumber
+                    value={stats.uptimePercentage}
+                    decimals={2}
+                    suffix="%"
+                  />
+                </CardTitle>
+              </CardHeader>
+            </Card>
+            <Card size="xs">
+              <CardHeader>
+                <CardDescription>Avg Response Time</CardDescription>
+                <CardTitle className="text-lg">
+                  <AnimatedNumber value={stats.avgResponseTime} suffix="ms" />
+                </CardTitle>
+              </CardHeader>
+            </Card>
+            <Card size="xs">
+              <CardHeader>
+                <CardDescription>P50 Response Time</CardDescription>
+                <CardTitle className="text-lg">
+                  <AnimatedNumber value={percentileStats[50]} suffix="ms" />
+                </CardTitle>
+              </CardHeader>
+            </Card>
+            <Card size="xs">
+              <CardHeader>
+                <CardDescription>P75 Response Time</CardDescription>
+                <CardTitle className="text-lg">
+                  <AnimatedNumber value={percentileStats[75]} suffix="ms" />
+                </CardTitle>
+              </CardHeader>
+            </Card>
+            <Card size="xs">
+              <CardHeader>
+                <CardDescription>P95 Response Time</CardDescription>
+                <CardTitle className="text-lg">
+                  <AnimatedNumber value={percentileStats[95]} suffix="ms" />
+                </CardTitle>
+              </CardHeader>
+            </Card>
+            <Card size="xs">
+              <CardHeader>
+                <CardDescription>P99 Response Time</CardDescription>
+                <CardTitle className="text-lg">
+                  <AnimatedNumber value={percentileStats[99]} suffix="ms" />
+                </CardTitle>
+              </CardHeader>
+            </Card>
+            <Card size="xs">
+              <CardHeader>
+                <CardDescription>Total Checks</CardDescription>
+                <CardTitle className="text-lg">
+                  <AnimatedNumber value={stats.totalChecks} />
+                </CardTitle>
+              </CardHeader>
+            </Card>
+            <Card size="xs">
+              <CardHeader>
+                <CardDescription>Last Check</CardDescription>
+                <CardTitle className="tabular-nums text-lg font-light">
+                  {stats.lastCheckAt ? formatDate(stats.lastCheckAt) : "-"}
+                </CardTitle>
+              </CardHeader>
+            </Card>
+          </div>
 
-      <div className="space-y-4">
-        <h3 className="font-medium">Check Status</h3>
-        <CheckStatusChart checks={filteredChecks} />
-      </div>
+          <div className="space-y-4">
+            <h3 className="font-medium">Check Status</h3>
+            <CheckStatusChart checks={filteredChecks} />
+          </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-medium">Response Time</h3>
-          <ResponseTimeStats checks={filteredChecks} />
-        </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium">Response Time</h3>
+              <ResponseTimeStats checks={filteredChecks} />
+            </div>
 
-        <ResponseTimeChart checks={filteredChecks} />
-      </div>
+            <ResponseTimeChart checks={filteredChecks} />
+          </div>
 
-      <div className="space-y-4">
-        <h3 className="font-medium">Check Logs</h3>
-        <ChecksTable />
-      </div>
+          <div className="space-y-4">
+            <h3 className="font-medium">Check Logs</h3>
+            <ChecksTable />
+          </div>
+        </>
+      )}
     </div>
   );
 }

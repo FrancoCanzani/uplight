@@ -63,7 +63,11 @@ export function NewMonitorForm() {
       </div>
 
       <div>
-        {monitorType === "http" ? <HttpMonitorForm /> : <TcpMonitorForm />}
+        {monitorType === "http" ? (
+          <HttpMonitorForm />
+        ) : (
+          <TcpMonitorForm />
+        )}
       </div>
     </div>
   );

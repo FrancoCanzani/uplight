@@ -8,7 +8,7 @@ import MonitorPage from "@/features/monitors/components/monitor-page";
 
 const searchSchema = z.object({
   region: z.string().optional(),
-  period: z.string().optional().default("7"),
+  period: z.string().optional(),
   checkId: z.string().optional(),
   checkResult: z.string().optional(),
   checkLocation: z.string().optional(),

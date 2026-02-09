@@ -10,24 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as UseCasesIndexRouteImport } from './routes/use-cases/index'
-import { Route as GuidesIndexRouteImport } from './routes/guides/index'
-import { Route as CompareIndexRouteImport } from './routes/compare/index'
-import { Route as UseCasesSlugRouteImport } from './routes/use-cases/$slug'
-import { Route as StatusSlugRouteImport } from './routes/status/$slug'
-import { Route as GuidesSlugRouteImport } from './routes/guides/$slug'
-import { Route as CompareSlugRouteImport } from './routes/compare/$slug'
 import { Route as authVerifyEmailRouteImport } from './routes/(auth)/verify-email'
 import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as dashboardTeamIdRouteRouteImport } from './routes/(dashboard)/$teamId/route'
-import { Route as GuidesIntegrationsSlugRouteImport } from './routes/guides/integrations/$slug'
+import { Route as contentUseCasesIndexRouteImport } from './routes/(content)/use-cases/index'
+import { Route as contentGuidesIndexRouteImport } from './routes/(content)/guides/index'
+import { Route as contentCompareIndexRouteImport } from './routes/(content)/compare/index'
 import { Route as dashboardTeamIdTeamRouteImport } from './routes/(dashboard)/$teamId/team'
 import { Route as dashboardTeamIdSupportRouteImport } from './routes/(dashboard)/$teamId/support'
 import { Route as dashboardTeamIdSettingsRouteImport } from './routes/(dashboard)/$teamId/settings'
 import { Route as dashboardTeamIdNewTeamRouteImport } from './routes/(dashboard)/$teamId/new-team'
+import { Route as contentUseCasesSlugRouteImport } from './routes/(content)/use-cases/$slug'
+import { Route as contentStatusSlugRouteImport } from './routes/(content)/status/$slug'
+import { Route as contentGuidesSlugRouteImport } from './routes/(content)/guides/$slug'
+import { Route as contentCompareSlugRouteImport } from './routes/(content)/compare/$slug'
 import { Route as dashboardTeamIdStatusPagesIndexRouteImport } from './routes/(dashboard)/$teamId/status-pages/index'
 import { Route as dashboardTeamIdMonitorsIndexRouteImport } from './routes/(dashboard)/$teamId/monitors/index'
 import { Route as dashboardTeamIdIntegrationsIndexRouteImport } from './routes/(dashboard)/$teamId/integrations/index'
@@ -37,6 +36,7 @@ import { Route as dashboardTeamIdStatusPagesNewRouteImport } from './routes/(das
 import { Route as dashboardTeamIdMonitorsNewRouteImport } from './routes/(dashboard)/$teamId/monitors/new'
 import { Route as dashboardTeamIdIncidentsIncidentIdRouteImport } from './routes/(dashboard)/$teamId/incidents/$incidentId'
 import { Route as dashboardTeamIdHeartbeatsNewRouteImport } from './routes/(dashboard)/$teamId/heartbeats/new'
+import { Route as contentGuidesIntegrationsSlugRouteImport } from './routes/(content)/guides/integrations/$slug'
 import { Route as dashboardTeamIdStatusPagesPageIdIndexRouteImport } from './routes/(dashboard)/$teamId/status-pages/$pageId/index'
 import { Route as dashboardTeamIdMonitorsMonitorIdIndexRouteImport } from './routes/(dashboard)/$teamId/monitors/$monitorId/index'
 import { Route as dashboardTeamIdHeartbeatsHeartbeatIdIndexRouteImport } from './routes/(dashboard)/$teamId/heartbeats/$heartbeatId/index'
@@ -48,41 +48,6 @@ import { Route as dashboardTeamIdHeartbeatsHeartbeatIdEditRouteImport } from './
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UseCasesIndexRoute = UseCasesIndexRouteImport.update({
-  id: '/use-cases/',
-  path: '/use-cases/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GuidesIndexRoute = GuidesIndexRouteImport.update({
-  id: '/guides/',
-  path: '/guides/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CompareIndexRoute = CompareIndexRouteImport.update({
-  id: '/compare/',
-  path: '/compare/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UseCasesSlugRoute = UseCasesSlugRouteImport.update({
-  id: '/use-cases/$slug',
-  path: '/use-cases/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StatusSlugRoute = StatusSlugRouteImport.update({
-  id: '/status/$slug',
-  path: '/status/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GuidesSlugRoute = GuidesSlugRouteImport.update({
-  id: '/guides/$slug',
-  path: '/guides/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CompareSlugRoute = CompareSlugRouteImport.update({
-  id: '/compare/$slug',
-  path: '/compare/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const authVerifyEmailRoute = authVerifyEmailRouteImport.update({
@@ -115,9 +80,19 @@ const dashboardTeamIdRouteRoute = dashboardTeamIdRouteRouteImport.update({
   path: '/$teamId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GuidesIntegrationsSlugRoute = GuidesIntegrationsSlugRouteImport.update({
-  id: '/guides/integrations/$slug',
-  path: '/guides/integrations/$slug',
+const contentUseCasesIndexRoute = contentUseCasesIndexRouteImport.update({
+  id: '/(content)/use-cases/',
+  path: '/use-cases/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const contentGuidesIndexRoute = contentGuidesIndexRouteImport.update({
+  id: '/(content)/guides/',
+  path: '/guides/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const contentCompareIndexRoute = contentCompareIndexRouteImport.update({
+  id: '/(content)/compare/',
+  path: '/compare/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const dashboardTeamIdTeamRoute = dashboardTeamIdTeamRouteImport.update({
@@ -139,6 +114,26 @@ const dashboardTeamIdNewTeamRoute = dashboardTeamIdNewTeamRouteImport.update({
   id: '/new-team',
   path: '/new-team',
   getParentRoute: () => dashboardTeamIdRouteRoute,
+} as any)
+const contentUseCasesSlugRoute = contentUseCasesSlugRouteImport.update({
+  id: '/(content)/use-cases/$slug',
+  path: '/use-cases/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const contentStatusSlugRoute = contentStatusSlugRouteImport.update({
+  id: '/(content)/status/$slug',
+  path: '/status/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const contentGuidesSlugRoute = contentGuidesSlugRouteImport.update({
+  id: '/(content)/guides/$slug',
+  path: '/guides/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const contentCompareSlugRoute = contentCompareSlugRouteImport.update({
+  id: '/(content)/compare/$slug',
+  path: '/compare/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const dashboardTeamIdStatusPagesIndexRoute =
   dashboardTeamIdStatusPagesIndexRouteImport.update({
@@ -194,6 +189,12 @@ const dashboardTeamIdHeartbeatsNewRoute =
     path: '/heartbeats/new',
     getParentRoute: () => dashboardTeamIdRouteRoute,
   } as any)
+const contentGuidesIntegrationsSlugRoute =
+  contentGuidesIntegrationsSlugRouteImport.update({
+    id: '/(content)/guides/integrations/$slug',
+    path: '/guides/integrations/$slug',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const dashboardTeamIdStatusPagesPageIdIndexRoute =
   dashboardTeamIdStatusPagesPageIdIndexRouteImport.update({
     id: '/status-pages/$pageId/',
@@ -245,18 +246,18 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
   '/verify-email': typeof authVerifyEmailRoute
-  '/compare/$slug': typeof CompareSlugRoute
-  '/guides/$slug': typeof GuidesSlugRoute
-  '/status/$slug': typeof StatusSlugRoute
-  '/use-cases/$slug': typeof UseCasesSlugRoute
-  '/compare': typeof CompareIndexRoute
-  '/guides': typeof GuidesIndexRoute
-  '/use-cases': typeof UseCasesIndexRoute
+  '/compare/$slug': typeof contentCompareSlugRoute
+  '/guides/$slug': typeof contentGuidesSlugRoute
+  '/status/$slug': typeof contentStatusSlugRoute
+  '/use-cases/$slug': typeof contentUseCasesSlugRoute
   '/$teamId/new-team': typeof dashboardTeamIdNewTeamRoute
   '/$teamId/settings': typeof dashboardTeamIdSettingsRoute
   '/$teamId/support': typeof dashboardTeamIdSupportRoute
   '/$teamId/team': typeof dashboardTeamIdTeamRoute
-  '/guides/integrations/$slug': typeof GuidesIntegrationsSlugRoute
+  '/compare': typeof contentCompareIndexRoute
+  '/guides': typeof contentGuidesIndexRoute
+  '/use-cases': typeof contentUseCasesIndexRoute
+  '/guides/integrations/$slug': typeof contentGuidesIntegrationsSlugRoute
   '/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
   '/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
@@ -282,18 +283,18 @@ export interface FileRoutesByTo {
   '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
   '/verify-email': typeof authVerifyEmailRoute
-  '/compare/$slug': typeof CompareSlugRoute
-  '/guides/$slug': typeof GuidesSlugRoute
-  '/status/$slug': typeof StatusSlugRoute
-  '/use-cases/$slug': typeof UseCasesSlugRoute
-  '/compare': typeof CompareIndexRoute
-  '/guides': typeof GuidesIndexRoute
-  '/use-cases': typeof UseCasesIndexRoute
+  '/compare/$slug': typeof contentCompareSlugRoute
+  '/guides/$slug': typeof contentGuidesSlugRoute
+  '/status/$slug': typeof contentStatusSlugRoute
+  '/use-cases/$slug': typeof contentUseCasesSlugRoute
   '/$teamId/new-team': typeof dashboardTeamIdNewTeamRoute
   '/$teamId/settings': typeof dashboardTeamIdSettingsRoute
   '/$teamId/support': typeof dashboardTeamIdSupportRoute
   '/$teamId/team': typeof dashboardTeamIdTeamRoute
-  '/guides/integrations/$slug': typeof GuidesIntegrationsSlugRoute
+  '/compare': typeof contentCompareIndexRoute
+  '/guides': typeof contentGuidesIndexRoute
+  '/use-cases': typeof contentUseCasesIndexRoute
+  '/guides/integrations/$slug': typeof contentGuidesIntegrationsSlugRoute
   '/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
   '/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
@@ -320,18 +321,18 @@ export interface FileRoutesById {
   '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/signup': typeof authSignupRoute
   '/(auth)/verify-email': typeof authVerifyEmailRoute
-  '/compare/$slug': typeof CompareSlugRoute
-  '/guides/$slug': typeof GuidesSlugRoute
-  '/status/$slug': typeof StatusSlugRoute
-  '/use-cases/$slug': typeof UseCasesSlugRoute
-  '/compare/': typeof CompareIndexRoute
-  '/guides/': typeof GuidesIndexRoute
-  '/use-cases/': typeof UseCasesIndexRoute
+  '/(content)/compare/$slug': typeof contentCompareSlugRoute
+  '/(content)/guides/$slug': typeof contentGuidesSlugRoute
+  '/(content)/status/$slug': typeof contentStatusSlugRoute
+  '/(content)/use-cases/$slug': typeof contentUseCasesSlugRoute
   '/(dashboard)/$teamId/new-team': typeof dashboardTeamIdNewTeamRoute
   '/(dashboard)/$teamId/settings': typeof dashboardTeamIdSettingsRoute
   '/(dashboard)/$teamId/support': typeof dashboardTeamIdSupportRoute
   '/(dashboard)/$teamId/team': typeof dashboardTeamIdTeamRoute
-  '/guides/integrations/$slug': typeof GuidesIntegrationsSlugRoute
+  '/(content)/compare/': typeof contentCompareIndexRoute
+  '/(content)/guides/': typeof contentGuidesIndexRoute
+  '/(content)/use-cases/': typeof contentUseCasesIndexRoute
+  '/(content)/guides/integrations/$slug': typeof contentGuidesIntegrationsSlugRoute
   '/(dashboard)/$teamId/heartbeats/new': typeof dashboardTeamIdHeartbeatsNewRoute
   '/(dashboard)/$teamId/incidents/$incidentId': typeof dashboardTeamIdIncidentsIncidentIdRoute
   '/(dashboard)/$teamId/monitors/new': typeof dashboardTeamIdMonitorsNewRoute
@@ -363,13 +364,13 @@ export interface FileRouteTypes {
     | '/guides/$slug'
     | '/status/$slug'
     | '/use-cases/$slug'
-    | '/compare'
-    | '/guides'
-    | '/use-cases'
     | '/$teamId/new-team'
     | '/$teamId/settings'
     | '/$teamId/support'
     | '/$teamId/team'
+    | '/compare'
+    | '/guides'
+    | '/use-cases'
     | '/guides/integrations/$slug'
     | '/$teamId/heartbeats/new'
     | '/$teamId/incidents/$incidentId'
@@ -400,13 +401,13 @@ export interface FileRouteTypes {
     | '/guides/$slug'
     | '/status/$slug'
     | '/use-cases/$slug'
-    | '/compare'
-    | '/guides'
-    | '/use-cases'
     | '/$teamId/new-team'
     | '/$teamId/settings'
     | '/$teamId/support'
     | '/$teamId/team'
+    | '/compare'
+    | '/guides'
+    | '/use-cases'
     | '/guides/integrations/$slug'
     | '/$teamId/heartbeats/new'
     | '/$teamId/incidents/$incidentId'
@@ -433,18 +434,18 @@ export interface FileRouteTypes {
     | '/(auth)/reset-password'
     | '/(auth)/signup'
     | '/(auth)/verify-email'
-    | '/compare/$slug'
-    | '/guides/$slug'
-    | '/status/$slug'
-    | '/use-cases/$slug'
-    | '/compare/'
-    | '/guides/'
-    | '/use-cases/'
+    | '/(content)/compare/$slug'
+    | '/(content)/guides/$slug'
+    | '/(content)/status/$slug'
+    | '/(content)/use-cases/$slug'
     | '/(dashboard)/$teamId/new-team'
     | '/(dashboard)/$teamId/settings'
     | '/(dashboard)/$teamId/support'
     | '/(dashboard)/$teamId/team'
-    | '/guides/integrations/$slug'
+    | '/(content)/compare/'
+    | '/(content)/guides/'
+    | '/(content)/use-cases/'
+    | '/(content)/guides/integrations/$slug'
     | '/(dashboard)/$teamId/heartbeats/new'
     | '/(dashboard)/$teamId/incidents/$incidentId'
     | '/(dashboard)/$teamId/monitors/new'
@@ -471,14 +472,14 @@ export interface RootRouteChildren {
   authResetPasswordRoute: typeof authResetPasswordRoute
   authSignupRoute: typeof authSignupRoute
   authVerifyEmailRoute: typeof authVerifyEmailRoute
-  CompareSlugRoute: typeof CompareSlugRoute
-  GuidesSlugRoute: typeof GuidesSlugRoute
-  StatusSlugRoute: typeof StatusSlugRoute
-  UseCasesSlugRoute: typeof UseCasesSlugRoute
-  CompareIndexRoute: typeof CompareIndexRoute
-  GuidesIndexRoute: typeof GuidesIndexRoute
-  UseCasesIndexRoute: typeof UseCasesIndexRoute
-  GuidesIntegrationsSlugRoute: typeof GuidesIntegrationsSlugRoute
+  contentCompareSlugRoute: typeof contentCompareSlugRoute
+  contentGuidesSlugRoute: typeof contentGuidesSlugRoute
+  contentStatusSlugRoute: typeof contentStatusSlugRoute
+  contentUseCasesSlugRoute: typeof contentUseCasesSlugRoute
+  contentCompareIndexRoute: typeof contentCompareIndexRoute
+  contentGuidesIndexRoute: typeof contentGuidesIndexRoute
+  contentUseCasesIndexRoute: typeof contentUseCasesIndexRoute
+  contentGuidesIntegrationsSlugRoute: typeof contentGuidesIntegrationsSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -488,55 +489,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/use-cases/': {
-      id: '/use-cases/'
-      path: '/use-cases'
-      fullPath: '/use-cases'
-      preLoaderRoute: typeof UseCasesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/guides/': {
-      id: '/guides/'
-      path: '/guides'
-      fullPath: '/guides'
-      preLoaderRoute: typeof GuidesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/compare/': {
-      id: '/compare/'
-      path: '/compare'
-      fullPath: '/compare'
-      preLoaderRoute: typeof CompareIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/use-cases/$slug': {
-      id: '/use-cases/$slug'
-      path: '/use-cases/$slug'
-      fullPath: '/use-cases/$slug'
-      preLoaderRoute: typeof UseCasesSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/status/$slug': {
-      id: '/status/$slug'
-      path: '/status/$slug'
-      fullPath: '/status/$slug'
-      preLoaderRoute: typeof StatusSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/guides/$slug': {
-      id: '/guides/$slug'
-      path: '/guides/$slug'
-      fullPath: '/guides/$slug'
-      preLoaderRoute: typeof GuidesSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/compare/$slug': {
-      id: '/compare/$slug'
-      path: '/compare/$slug'
-      fullPath: '/compare/$slug'
-      preLoaderRoute: typeof CompareSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(auth)/verify-email': {
@@ -581,11 +533,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardTeamIdRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/guides/integrations/$slug': {
-      id: '/guides/integrations/$slug'
-      path: '/guides/integrations/$slug'
-      fullPath: '/guides/integrations/$slug'
-      preLoaderRoute: typeof GuidesIntegrationsSlugRouteImport
+    '/(content)/use-cases/': {
+      id: '/(content)/use-cases/'
+      path: '/use-cases'
+      fullPath: '/use-cases'
+      preLoaderRoute: typeof contentUseCasesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(content)/guides/': {
+      id: '/(content)/guides/'
+      path: '/guides'
+      fullPath: '/guides'
+      preLoaderRoute: typeof contentGuidesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(content)/compare/': {
+      id: '/(content)/compare/'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof contentCompareIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(dashboard)/$teamId/team': {
@@ -615,6 +581,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/$teamId/new-team'
       preLoaderRoute: typeof dashboardTeamIdNewTeamRouteImport
       parentRoute: typeof dashboardTeamIdRouteRoute
+    }
+    '/(content)/use-cases/$slug': {
+      id: '/(content)/use-cases/$slug'
+      path: '/use-cases/$slug'
+      fullPath: '/use-cases/$slug'
+      preLoaderRoute: typeof contentUseCasesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(content)/status/$slug': {
+      id: '/(content)/status/$slug'
+      path: '/status/$slug'
+      fullPath: '/status/$slug'
+      preLoaderRoute: typeof contentStatusSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(content)/guides/$slug': {
+      id: '/(content)/guides/$slug'
+      path: '/guides/$slug'
+      fullPath: '/guides/$slug'
+      preLoaderRoute: typeof contentGuidesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(content)/compare/$slug': {
+      id: '/(content)/compare/$slug'
+      path: '/compare/$slug'
+      fullPath: '/compare/$slug'
+      preLoaderRoute: typeof contentCompareSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/(dashboard)/$teamId/status-pages/': {
       id: '/(dashboard)/$teamId/status-pages/'
@@ -678,6 +672,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/$teamId/heartbeats/new'
       preLoaderRoute: typeof dashboardTeamIdHeartbeatsNewRouteImport
       parentRoute: typeof dashboardTeamIdRouteRoute
+    }
+    '/(content)/guides/integrations/$slug': {
+      id: '/(content)/guides/integrations/$slug'
+      path: '/guides/integrations/$slug'
+      fullPath: '/guides/integrations/$slug'
+      preLoaderRoute: typeof contentGuidesIntegrationsSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/(dashboard)/$teamId/status-pages/$pageId/': {
       id: '/(dashboard)/$teamId/status-pages/$pageId/'
@@ -796,14 +797,14 @@ const rootRouteChildren: RootRouteChildren = {
   authResetPasswordRoute: authResetPasswordRoute,
   authSignupRoute: authSignupRoute,
   authVerifyEmailRoute: authVerifyEmailRoute,
-  CompareSlugRoute: CompareSlugRoute,
-  GuidesSlugRoute: GuidesSlugRoute,
-  StatusSlugRoute: StatusSlugRoute,
-  UseCasesSlugRoute: UseCasesSlugRoute,
-  CompareIndexRoute: CompareIndexRoute,
-  GuidesIndexRoute: GuidesIndexRoute,
-  UseCasesIndexRoute: UseCasesIndexRoute,
-  GuidesIntegrationsSlugRoute: GuidesIntegrationsSlugRoute,
+  contentCompareSlugRoute: contentCompareSlugRoute,
+  contentGuidesSlugRoute: contentGuidesSlugRoute,
+  contentStatusSlugRoute: contentStatusSlugRoute,
+  contentUseCasesSlugRoute: contentUseCasesSlugRoute,
+  contentCompareIndexRoute: contentCompareIndexRoute,
+  contentGuidesIndexRoute: contentGuidesIndexRoute,
+  contentUseCasesIndexRoute: contentUseCasesIndexRoute,
+  contentGuidesIntegrationsSlugRoute: contentGuidesIntegrationsSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

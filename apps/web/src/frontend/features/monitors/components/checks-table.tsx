@@ -39,7 +39,7 @@ export default function ChecksTable() {
 
   return (
     <div className="space-y-8">
-      <ChecksFilters isFetchingMore={isFetchingNextPage} />
+      <ChecksFilters />
       <div className="h-120">
         <ChecksDataTable
           columns={checksTableColumns}

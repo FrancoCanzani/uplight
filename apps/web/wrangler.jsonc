@@ -96,6 +96,9 @@
     },
     "dev": {
       "name": "uplight",
+      "ai": {
+        "binding": "AI",
+      },
       "durable_objects": {
         "bindings": [
           {
@@ -112,6 +115,24 @@
           "migrations_dir": "drizzle",
         },
       ],
+      "r2_buckets": [
+        {
+          "bucket_name": "status-page-logos",
+          "binding": "status_page_logos",
+        },
+      ],
+      "queues": {
+        "producers": [
+          { "queue": "uplight-integrations", "binding": "INTEGRATIONS_QUEUE" },
+        ],
+        "consumers": [
+          {
+            "queue": "uplight-integrations",
+            "max_batch_size": 10,
+            "max_retries": 3,
+          },
+        ],
+      },
     },
   },
   "r2_buckets": [

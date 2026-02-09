@@ -47,8 +47,14 @@ export function useUpdateMonitor() {
       });
     },
     onError: (error) => {
+      const description = error.message.toLowerCase().includes("validation")
+        ? "Please check your input and try again"
+        : error.message.toLowerCase().includes("network") ||
+            error.message.toLowerCase().includes("fetch")
+          ? "Network error. Please check your connection"
+          : error.message;
       toast.error("Failed to update monitor", {
-        description: error.message,
+        description,
       });
     },
   });

@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import { useCreateMonitor } from "../api/use-create-monitor";
 import { useUpdateMonitor } from "../api/use-update-monitor";
 import { INTERVALS, LOCATIONS } from "../constants";
@@ -93,7 +94,7 @@ export function TcpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
       <div className="space-y-6">
         <div className="space-y-4">
           <div>
-            <FieldLabel>Basic InfoIconrmation</FieldLabel>
+            <FieldLabel>Basic Information</FieldLabel>
             <FieldDescription>
               Provide a name and connection details for your TCP monitor.
             </FieldDescription>
@@ -378,8 +379,6 @@ export function TcpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
           />
         </div>
 
-        <Separator />
-
         <div className="flex justify-end w-full gap-3 pt-4">
           <Button
             type="button"
@@ -391,6 +390,7 @@ export function TcpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
             Reset
           </Button>
           <Button type="submit" size={"xs"} disabled={isPending}>
+            {isPending && <Spinner className="size-3 mr-2" />}
             {isPending
               ? isEditing
                 ? "Saving..."

@@ -8,6 +8,14 @@ export type MonitorStatus =
 
 export type HeartbeatStatus = "up" | "down" | "paused" | "initializing";
 
+export type CheckResultStatus =
+  | "success"
+  | "failure"
+  | "timeout"
+  | "error"
+  | "maintenance"
+  | "degraded";
+
 export type OverallStatus = "operational" | "degraded" | "outage";
 
 // Monitor status display configuration
@@ -42,6 +50,26 @@ export const MONITOR_STATUS_CONFIG = {
     bgColor: "bg-initializing",
     textColor: "text-initializing",
   },
+  success: {
+    label: "Success",
+    bgColor: "bg-up",
+    textColor: "text-up",
+  },
+  failure: {
+    label: "Failure",
+    bgColor: "bg-down",
+    textColor: "text-down",
+  },
+  timeout: {
+    label: "Timeout",
+    bgColor: "bg-down",
+    textColor: "text-down",
+  },
+  error: {
+    label: "Error",
+    bgColor: "bg-down",
+    textColor: "text-down",
+  },
 } as const;
 
 // Overall system status for status pages
@@ -61,18 +89,31 @@ export const OVERALL_STATUS_CONFIG = {
 } as const;
 
 // Helper functions for getting status colors
-export function getStatusBgColor(status: string): string {
-  const config = MONITOR_STATUS_CONFIG[status as MonitorStatus];
+export function getStatusBgColor(
+  status: string,
+): string {
+  const config =
+    MONITOR_STATUS_CONFIG[
+      status as MonitorStatus | CheckResultStatus
+    ];
   return config?.bgColor ?? "bg-zinc-400";
 }
 
-export function getStatusTextColor(status: string): string {
-  const config = MONITOR_STATUS_CONFIG[status as MonitorStatus];
+export function getStatusTextColor(
+  status: string,
+): string {
+  const config =
+    MONITOR_STATUS_CONFIG[
+      status as MonitorStatus | CheckResultStatus
+    ];
   return config?.textColor ?? "text-zinc-500";
 }
 
 export function getStatusLabel(status: string): string {
-  const config = MONITOR_STATUS_CONFIG[status as MonitorStatus];
+  const config =
+    MONITOR_STATUS_CONFIG[
+      status as MonitorStatus | CheckResultStatus
+    ];
   return config?.label ?? status;
 }
 

@@ -3,22 +3,22 @@ import { ArticleLayout } from "@/components/content";
 import { createArticleSchema, createBreadcrumbSchema } from "@/components/seo";
 import { extractTableOfContents, getContent } from "@/lib/content";
 
-export const Route = createFileRoute("/guides/integrations/$slug")({
+export const Route = createFileRoute("/(content)/guides/$slug")({
   loader: ({ params }) => {
     const content = getContent(params.slug);
-    if (!content || content.frontmatter.type !== "integration") {
+    if (!content || content.frontmatter.type !== "guide") {
       throw notFound();
     }
     const toc = extractTableOfContents(content.content);
     return { content, toc };
   },
-  component: IntegrationGuidePage,
+  component: GuidePage,
   head: ({ loaderData, params }) => {
     if (!loaderData) return {};
     const { content } = loaderData;
     const { title, description, publishedAt, updatedAt, author } =
       content.frontmatter;
-    const canonicalUrl = `https://uplight.dev/guides/integrations/${params.slug}`;
+    const canonicalUrl = `https://uplight.dev/guides/${params.slug}`;
 
     return {
       meta: [
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/guides/integrations/$slug")({
             }),
             createBreadcrumbSchema([
               { name: "Home", url: "https://uplight.dev" },
-              { name: "Integration Guide", url: "https://uplight.dev/guides" },
+              { name: "Guide", url: "https://uplight.dev/guides" },
               { name: title, url: canonicalUrl },
             ]),
           ]),
@@ -53,12 +53,12 @@ export const Route = createFileRoute("/guides/integrations/$slug")({
   },
   notFoundComponent: () => (
     <div className="min-h-screen flex items-center justify-center">
-      <p className="text-muted-foreground">Integration guide not found.</p>
+      <p className="text-muted-foreground">Guide not found.</p>
     </div>
   ),
 });
 
-function IntegrationGuidePage() {
+function GuidePage() {
   const { content, toc } = Route.useLoaderData();
 
   return (

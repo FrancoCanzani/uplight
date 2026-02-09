@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { getContentByType } from "@/lib/content";
 
-export const Route = createFileRoute("/guides/")({
+export const Route = createFileRoute("/(content)/guides/")({
   component: GuidesIndex,
   head: () => ({
     meta: [

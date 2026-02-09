@@ -3,19 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { GitFork, Star } from "lucide-react";
 import { motion, useInView } from "motion/react";
+import CloudflareLogo from "../logos/cloudflare";
+import { Button } from "../ui/button";
 
 interface GitHubData {
   stars: number;
   forks: number;
-}
-
-function CloudflareIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M16.5088 16.8447c.1475-.5068.0908-.9707-.1553-1.2678-.2246-.2699-.5765-.4426-1.008-.4906l-8.4432-.1123c-.0591-.0001-.1182-.0206-.1587-.0613a.2033.2033 0 0 1-.0413-.1704c.0145-.0888.0847-.1573.1728-.1683l8.5182-.1124c.9843-.0645 2.0529-.8916 2.4195-1.8738l.4627-1.2378c.0289-.0767.0242-.1573-.0141-.2256a7.1308 7.1308 0 0 0-6.4389-4.0621c-3.5057 0-6.4629 2.5245-7.0675 5.8558-.3989-.2938-.8893-.4479-1.4201-.4033-1.0252.0863-1.8423.9181-1.9313 1.944-.0218.2508.0003.4954.0587.7248-1.4872.0885-2.6741 1.2924-2.7372 2.7947-.0066.1533.1152.2813.2682.2813h15.5765c.1364.0001.2566-.0892.2966-.222l.2393-.813z" />
-      <path d="M19.4058 12.0137c-.0685 0-.1367.0019-.2047.0057-.0554.003-.0921.0537-.0823.1079l.2155 1.1914c.0862.4766.0482.9143-.1041 1.2365-.4916 1.0409-1.5135 1.3235-2.2741 1.3235H9.019c-.1527 0-.2861.1079-.3163.2571l-.3118 1.5482c-.0354.176.0943.3425.2756.3542l8.4864.1011c.4315.0515.7834.2209 1.008.4906.227.2972.2811.7609.1553 1.2678l-.0857.2897-.1531.5194c-.0223.075.0343.1498.1129.1498h2.1762c.8583 0 1.6242-.5683 1.8771-1.3952l.5728-1.8754c.0273-.088.0397-.1786.0371-.2695.0012-.0168.001-.0336.001-.0504 0-2.1207-1.7202-3.8408-3.8409-3.8408l.0001-.0002-.0002.0001z" />
-    </svg>
-  );
 }
 
 export function GitHubStats() {
@@ -90,14 +83,14 @@ export function GitHubStats() {
           ) : (
             <>
               <div className="flex items-center gap-1.5">
-                <Star className="size-4 text-muted-foreground" />
-                <span className="font-mono tabular-nums">
+                <Star className="size-3 text-muted-foreground" />
+                <span className="font-mono text-xs tabular-nums">
                   {data?.stars || 0}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <GitFork className="size-4 text-muted-foreground" />
-                <span className="font-mono tabular-nums">
+                <GitFork className="size-3 text-muted-foreground" />
+                <span className="font-mono text-xs tabular-nums">
                   {data?.forks || 0}
                 </span>
               </div>
@@ -109,7 +102,7 @@ export function GitHubStats() {
       <div className="bg-background p-6 sm:p-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="size-10 rounded-full bg-surface ring-1 ring-border/50 flex items-center justify-center">
-            <CloudflareIcon className="size-5 text-orange-500" />
+            <CloudflareLogo className="size-6" />
           </div>
           <div>
             <h3 className="font-medium">One-Click Deploy</h3>
@@ -122,14 +115,17 @@ export function GitHubStats() {
           starts, generous free tier.
         </p>
 
-        <a
-          href="https://deploy.workers.cloudflare.com/?url=https://github.com/francocanzani/uplight"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm px-4 py-2 bg-foreground text-background hover:opacity-90 transition-opacity"
-        >
-          Deploy to Cloudflare
-        </a>
+        <Button
+          render={
+            <a
+              href="https://deploy.workers.cloudflare.com/?url=https://github.com/francocanzani/uplight"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Deploy to Cloudflare
+            </a>
+          }
+        />
       </div>
     </motion.div>
   );

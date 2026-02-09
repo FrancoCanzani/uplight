@@ -27,6 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { useDeleteMonitor } from "../api/use-delete-monitor";
 import { useToggleMonitorStatus } from "../api/use-toggle-monitor-status";
 
@@ -94,7 +95,7 @@ export default function MonitorActions() {
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button variant="outline" size="xs">
+            <Button variant="outline" size="xs" aria-label="Monitor actions menu">
               <MoreVertical className="size-3" />
             </Button>
           }
@@ -108,7 +109,12 @@ export default function MonitorActions() {
             disabled={toggleStatus.isPending}
             className="text-xs"
           >
-            {isPaused ? (
+            {toggleStatus.isPending ? (
+              <>
+                <Spinner className="size-2.5" />
+                {isPaused ? "Resuming..." : "Pausing..."}
+              </>
+            ) : isPaused ? (
               <>
                 <Play className="size-2.5" />
                 Resume

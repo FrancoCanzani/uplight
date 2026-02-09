@@ -101,7 +101,7 @@ export default function MonitorsList() {
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button variant="outline" size="xs">
+              <Button variant="outline" size="xs" aria-label="Filter monitors">
                 <Funnel className="size-3" />
                 {activeFilterCount > 0 && (
                   <span className="bg-primary text-primary-foreground -full size-4 text-[10px] flex items-center justify-center">
@@ -215,7 +215,7 @@ export default function MonitorsList() {
         {filteredData.length > 0 ? (
           filteredData.map((monitor) => {
             const urlOrHost =
-              monitor.type === "http"
+              monitor.type != "tcp"
                 ? monitor.url
                 : `${monitor.host}:${monitor.port}`;
 
@@ -240,7 +240,7 @@ export default function MonitorsList() {
                     <MonitorStatusIndicator status={monitor.status} />
                     <h2 className="truncate">{monitor.name}</h2>
                   </div>
-                  <span className="text-xs text-muted-foreground truncate max-w-[120px] shrink-0">
+                  <span className="text-xs text-muted-foreground truncate max-w-44 sm:max-w-full shrink-0">
                     {urlOrHost}
                   </span>
                 </div>

@@ -77,7 +77,10 @@ export const TcpMonitorSchema = z
   .openapi("TcpMonitor");
 
 export const CreateMonitorSchema = z
-  .discriminatedUnion("type", [HttpMonitorSchema, TcpMonitorSchema])
+  .discriminatedUnion("type", [
+    HttpMonitorSchema,
+    TcpMonitorSchema,
+  ])
   .openapi("CreateMonitor");
 
 export const MonitorStatusSchema = z.enum([

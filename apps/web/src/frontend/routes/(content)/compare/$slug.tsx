@@ -3,22 +3,22 @@ import { ArticleLayout } from "@/components/content";
 import { createArticleSchema, createBreadcrumbSchema } from "@/components/seo";
 import { extractTableOfContents, getContent } from "@/lib/content";
 
-export const Route = createFileRoute("/guides/$slug")({
+export const Route = createFileRoute("/(content)/compare/$slug")({
   loader: ({ params }) => {
     const content = getContent(params.slug);
-    if (!content || content.frontmatter.type !== "guide") {
+    if (!content || content.frontmatter.type !== "comparison") {
       throw notFound();
     }
     const toc = extractTableOfContents(content.content);
     return { content, toc };
   },
-  component: GuidePage,
+  component: ComparePage,
   head: ({ loaderData, params }) => {
     if (!loaderData) return {};
     const { content } = loaderData;
     const { title, description, publishedAt, updatedAt, author } =
       content.frontmatter;
-    const canonicalUrl = `https://uplight.dev/guides/${params.slug}`;
+    const canonicalUrl = `https://uplight.dev/compare/${params.slug}`;
 
     return {
       meta: [
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/guides/$slug")({
             }),
             createBreadcrumbSchema([
               { name: "Home", url: "https://uplight.dev" },
-              { name: "Guide", url: "https://uplight.dev/guides" },
+              { name: "Comparison", url: "https://uplight.dev/compare" },
               { name: title, url: canonicalUrl },
             ]),
           ]),
@@ -53,12 +53,12 @@ export const Route = createFileRoute("/guides/$slug")({
   },
   notFoundComponent: () => (
     <div className="min-h-screen flex items-center justify-center">
-      <p className="text-muted-foreground">Guide not found.</p>
+      <p className="text-muted-foreground">Comparison not found.</p>
     </div>
   ),
 });
 
-function GuidePage() {
+function ComparePage() {
   const { content, toc } = Route.useLoaderData();
 
   return (

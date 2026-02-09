@@ -42,7 +42,7 @@ export default function MonitorsTable({
   });
 
   return (
-    <div>
+    <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -59,7 +59,7 @@ export default function MonitorsTable({
                   )}
                   onClick={header.column.getToggleSortingHandler()}
                 >
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     {header.isPlaceholder
                       ? null
                       : flexRender(

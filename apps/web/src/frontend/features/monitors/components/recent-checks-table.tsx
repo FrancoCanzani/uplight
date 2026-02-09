@@ -24,7 +24,8 @@ export default function RecentChecksTable({
   }
 
   return (
-    <Table>
+    <div className="overflow-x-auto">
+      <Table>
       <TableHeader>
         <TableRow>
           <TableHead>Status</TableHead>
@@ -59,5 +60,6 @@ export default function RecentChecksTable({
         ))}
       </TableBody>
     </Table>
+    </div>
   );
 }

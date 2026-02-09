@@ -135,7 +135,12 @@ export default {
     }
     console.log("cron processed");
   },
-  async queue(batch: MessageBatch<QueueMessage>, env: Env) {
-    await handleIntegrationQueue(batch, env);
+  async queue(
+    batch: MessageBatch<QueueMessage>,
+    env: Env,
+  ) {
+    if (batch.queue === "uplight-integrations") {
+      await handleIntegrationQueue(batch as MessageBatch<QueueMessage>, env);
+    }
   },
 };

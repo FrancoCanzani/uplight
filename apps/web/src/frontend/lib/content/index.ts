@@ -1,3 +1,5 @@
+import "./loader";
+
 export type { ContentType, ContentFrontmatter, ContentItem, ContentMetadata } from "./types";
 
 export {

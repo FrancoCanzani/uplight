@@ -1,3 +1,9 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useForm } from "@tanstack/react-form";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "@tanstack/react-router";
+import { ChevronDown, ChevronUp, Plus, Trash2, X } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldError } from "@/components/ui/field";
@@ -15,12 +21,6 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import fetchMonitors from "@/features/monitors/api/fetch-monitors";
 import type { MonitorResponse } from "@/features/monitors/schemas";
-import { useForm } from "@tanstack/react-form";
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "@tanstack/react-router";
-import { ChevronDown, ChevronUp, Plus, Trash2, X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
 import { useCheckSlug } from "../api/use-check-slug";
 import { useCreateStatusPage } from "../api/use-create-status-page";
 import { createStatusPageSchema, type CreateStatusPage } from "../schemas";
@@ -81,10 +81,13 @@ export default function StatusPageForm() {
         if (logoFile) {
           const formData = new FormData();
           formData.append("logo", logoFile);
-          const logoResponse = await fetch(`/api/status-pages/${teamId}/${result.id}/logo`, {
-            method: "POST",
-            body: formData,
-          });
+          const logoResponse = await fetch(
+            `/api/status-pages/${teamId}/${result.id}/logo`,
+            {
+              method: "POST",
+              body: formData,
+            },
+          );
           if (!logoResponse.ok) {
             console.error("Failed to upload logo:", await logoResponse.text());
           }
@@ -115,18 +118,24 @@ export default function StatusPageForm() {
           );
 
           for (const monitor of monitorsInGroup) {
-            const monitorResponse = await fetch(`/api/status-pages/${teamId}/${result.id}/monitors`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                monitorId: monitor.monitorId,
-                groupId: createdGroup.id,
-                displayName: monitor.displayName || null,
-                displayOrder: monitor.displayOrder,
-              }),
-            });
+            const monitorResponse = await fetch(
+              `/api/status-pages/${teamId}/${result.id}/monitors`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  monitorId: monitor.monitorId,
+                  groupId: createdGroup.id,
+                  displayName: monitor.displayName || null,
+                  displayOrder: monitor.displayOrder,
+                }),
+              },
+            );
             if (!monitorResponse.ok) {
-              console.error("Failed to add monitor to group:", await monitorResponse.text());
+              console.error(
+                "Failed to add monitor to group:",
+                await monitorResponse.text(),
+              );
             }
           }
         }
@@ -135,18 +144,24 @@ export default function StatusPageForm() {
           (m) => m.groupId === null,
         );
         for (const monitor of ungroupedMonitors) {
-          const monitorResponse = await fetch(`/api/status-pages/${teamId}/${result.id}/monitors`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              monitorId: monitor.monitorId,
-              groupId: null,
-              displayName: monitor.displayName || null,
-              displayOrder: monitor.displayOrder,
-            }),
-          });
+          const monitorResponse = await fetch(
+            `/api/status-pages/${teamId}/${result.id}/monitors`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                monitorId: monitor.monitorId,
+                groupId: null,
+                displayName: monitor.displayName || null,
+                displayOrder: monitor.displayOrder,
+              }),
+            },
+          );
           if (!monitorResponse.ok) {
-            console.error("Failed to add ungrouped monitor:", await monitorResponse.text());
+            console.error(
+              "Failed to add ungrouped monitor:",
+              await monitorResponse.text(),
+            );
           }
         }
       } catch (error) {
@@ -380,14 +395,19 @@ export default function StatusPageForm() {
                       onChange={(e) => {
                         field.handleChange(e.target.value);
                         if (!slugTouched) {
-                          form.setFieldValue("slug", generateSlug(e.target.value));
+                          form.setFieldValue(
+                            "slug",
+                            generateSlug(e.target.value),
+                          );
                         }
                       }}
                       aria-invalid={isInvalid}
                       placeholder="Production Status"
                       autoComplete="off"
                     />
-                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
                   </Field>
                 );
               }}
@@ -426,7 +446,9 @@ export default function StatusPageForm() {
                         This slug is already in use
                       </p>
                     )}
-                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
                   </Field>
                 );
               }}
@@ -449,7 +471,9 @@ export default function StatusPageForm() {
                       placeholder="Real-time status and uptime monitoring"
                       rows={3}
                     />
-                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
                   </Field>
                 );
               }}
@@ -596,10 +620,9 @@ export default function StatusPageForm() {
                 .sort((a, b) => a.displayOrder - b.displayOrder);
 
               const allInGroup = selected.groupId
-                ? [
-                    ...monitorsInSameGroup,
-                    selected,
-                  ].sort((a, b) => a.displayOrder - b.displayOrder)
+                ? [...monitorsInSameGroup, selected].sort(
+                    (a, b) => a.displayOrder - b.displayOrder,
+                  )
                 : [
                     ...Array.from(selectedMonitors.values()).filter(
                       (m) => m.groupId === null,
@@ -747,8 +770,7 @@ export default function StatusPageForm() {
         <Button
           type="submit"
           disabled={
-            createMutation.isPending ||
-            (slugCheck && !slugCheck.available)
+            createMutation.isPending || (slugCheck && !slugCheck.available)
           }
         >
           {createMutation.isPending ? "Creating..." : "Create Status Page"}

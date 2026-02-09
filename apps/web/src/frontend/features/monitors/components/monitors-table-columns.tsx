@@ -13,7 +13,9 @@ export const monitorsTableColumns: ColumnDef<MonitorResponse>[] = [
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => <span className="truncate max-w-xs block">{row.original.name}</span>,
+    cell: ({ row }) => (
+      <span className="truncate max-w-xs block">{row.original.name}</span>
+    ),
     enableSorting: true,
   },
   {
@@ -33,7 +35,7 @@ export const monitorsTableColumns: ColumnDef<MonitorResponse>[] = [
       row.type === "http" ? row.url : `${row.host}:${row.port}`,
     cell: ({ row }) => {
       const endpoint =
-        row.original.type === "http"
+        row.original.type != "tcp"
           ? row.original.url
           : `${row.original.host}:${row.original.port}`;
       return (
@@ -43,6 +45,10 @@ export const monitorsTableColumns: ColumnDef<MonitorResponse>[] = [
       );
     },
     enableSorting: true,
+    meta: {
+      headerClassName: "hidden xl:table-cell",
+      cellClassName: "hidden xl:table-cell",
+    },
   },
   {
     accessorKey: "interval",
@@ -57,6 +63,10 @@ export const monitorsTableColumns: ColumnDef<MonitorResponse>[] = [
       );
     },
     enableSorting: true,
+    meta: {
+      headerClassName: "hidden lg:table-cell",
+      cellClassName: "hidden lg:table-cell",
+    },
   },
   {
     accessorKey: "lastResponseTime",
@@ -79,7 +89,7 @@ export const monitorsTableColumns: ColumnDef<MonitorResponse>[] = [
     id: "recentChecks",
     header: "Recent Checks",
     cell: ({ row }) => (
-      <div style={{ width: "100px" }}>
+      <div>
         <ChecksVisualization
           checks={row.original.recentChecks}
           maxChecks={15}

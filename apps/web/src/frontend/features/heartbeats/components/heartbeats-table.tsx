@@ -234,7 +234,7 @@ export default function HeartbeatsTable() {
         />
       </div>
 
-      <div className=" p-1 bg-background overflow-x-scroll">
+      <div className=" p-1 bg-background overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

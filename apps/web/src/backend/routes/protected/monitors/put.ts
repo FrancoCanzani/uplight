@@ -20,7 +20,10 @@ const UpdateTcpMonitorSchema = TcpMonitorSchema.partial().extend({
 });
 
 const UpdateMonitorSchema = z
-  .discriminatedUnion("type", [UpdateHttpMonitorSchema, UpdateTcpMonitorSchema])
+  .discriminatedUnion("type", [
+    UpdateHttpMonitorSchema,
+    UpdateTcpMonitorSchema,
+  ])
   .openapi("UpdateMonitor");
 
 const route = createRoute({

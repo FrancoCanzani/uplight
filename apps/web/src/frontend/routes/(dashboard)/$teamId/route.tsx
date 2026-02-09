@@ -1,4 +1,11 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { useHotkeys } from "react-hotkeys-hook";
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useLocation,
+  useNavigate,
+} from "@tanstack/react-router";
 import { BottomNav } from "@/components/bottom-nav";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -41,6 +48,26 @@ export const Route = createFileRoute("/(dashboard)/$teamId")({
 });
 
 function TeamLayoutComponent() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { teamId } = Route.useParams();
+
+  useHotkeys(
+    "mod+k",
+    (e) => {
+      e.preventDefault();
+
+      if (location.pathname.includes("/monitors")) {
+        navigate({ to: "/$teamId/monitors/new", params: { teamId } });
+      } else if (location.pathname.includes("/heartbeats")) {
+        navigate({ to: "/$teamId/heartbeats/new", params: { teamId } });
+      } else if (location.pathname.includes("/status-pages")) {
+        navigate({ to: "/$teamId/status-pages/new", params: { teamId } });
+      }
+    },
+    [location.pathname, teamId],
+  );
+
   return (
     <SidebarProvider>
       <div className="h-screen flex w-full">

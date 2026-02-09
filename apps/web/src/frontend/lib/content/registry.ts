@@ -1,7 +1,5 @@
 import type { ContentFrontmatter, ContentItem, ContentType } from "./types";
 
-// This will be populated by the content loader at build time
-// For now, it's an empty registry that content files will register to
 const contentRegistry = new Map<string, ContentItem>();
 
 export function registerContent(slug: string, item: ContentItem) {
@@ -46,5 +44,4 @@ export function getContentByCompetitor(competitor: string): ContentItem[] {
   );
 }
 
-// Export the registry for direct access if needed
 export { contentRegistry };

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { getContentByType } from "@/lib/content";
 
-export const Route = createFileRoute("/use-cases/")({
+export const Route = createFileRoute("/(content)/use-cases/")({
   component: UseCasesIndex,
   head: () => ({
     meta: [

@@ -91,5 +91,7 @@ export async function handleMonitorChecks(env: Env): Promise<void> {
 
   await runPipeline(monitorsToCheck, env);
 
-  console.log(`[CRON] Processed checks for ${monitorsToCheck.length} monitors`);
+  console.log(
+    `[CRON] Processed checks for ${monitorsToCheck.length} monitors`,
+  );
 }

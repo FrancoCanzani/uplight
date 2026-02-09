@@ -2,7 +2,10 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { checkResult, monitor } from "../../../db/schema";
+import {
+  checkResult,
+  monitor,
+} from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 
 const CheckDetailSchema = z.object({

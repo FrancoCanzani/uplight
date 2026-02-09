@@ -11,16 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 import { useInfiniteChecks } from "../api/use-infinite-checks";
 import getLocationLabel from "../utils/get-location-label";
 
 const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
 
-export function ChecksFilters({
-  isFetchingMore,
-}: {
-  isFetchingMore?: boolean;
-}) {
+export function ChecksFilters() {
   const { teamId, monitorId } = routeApi.useParams();
   const search = routeApi.useSearch() || {};
   const navigate = useNavigate();
@@ -102,6 +99,9 @@ export function ChecksFilters({
       const now = new Date();
       now.setHours(0, 0, 0, 0);
       if (selectedDate > now) {
+        toast.error("Invalid date", {
+          description: "Cannot select future dates",
+        });
         return;
       }
       updateFilter("checkDateFrom", String(selectedDate.getTime()));
@@ -117,6 +117,9 @@ export function ChecksFilters({
       selectedDate.setHours(23, 59, 59, 999);
       const now = new Date();
       if (selectedDate > now) {
+        toast.error("Invalid date", {
+          description: "Cannot select future dates",
+        });
         return;
       }
       updateFilter("checkDateTo", String(selectedDate.getTime()));
@@ -155,6 +158,9 @@ export function ChecksFilters({
 
   return (
     <div className="flex items-center justify-between gap-4 flex-wrap">
+      <span id="date-constraint-desc" className="sr-only">
+        Future dates cannot be selected
+      </span>
       <div className="flex items-start justify-start gap-2 flex-wrap">
         <div className="space-y-2">
           <Label htmlFor="result-filter">Result</Label>
@@ -213,6 +219,7 @@ export function ChecksFilters({
             value={dateFromValue}
             onChange={handleDateFromChange}
             max={maxDate}
+            aria-describedby="date-constraint-desc"
           />
         </div>
 
@@ -224,23 +231,17 @@ export function ChecksFilters({
             type="date"
             value={dateToValue}
             onChange={handleDateToChange}
+            aria-describedby="date-constraint-desc"
             max={maxDate}
           />
         </div>
       </div>
-      <div className="flex items-center justify-end gap-2 ml-auto">
-        {isFetchingMore && (
-          <span className="text-xs text-muted-foreground">
-            Loading more data...
-          </span>
-        )}
-        {hasActiveFilters && (
-          <Button variant="outline" size="xs" onClick={handleClearFilters}>
-            <FilterX className="size-3.5" />
-            Clear
-          </Button>
-        )}
-      </div>
+      {hasActiveFilters && (
+        <Button variant="outline" size="xs" onClick={handleClearFilters}>
+          <FilterX className="size-3.5" />
+          Clear
+        </Button>
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -13,9 +13,7 @@ export function TerminalCTA() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [visibleLines, setVisibleLines] = useState<number>(0);
-  const [typedText, setTypedText] = useState<string[]>(
-    commands.map(() => "")
-  );
+  const [typedText, setTypedText] = useState<string[]>(commands.map(() => ""));
   const [showCursor, setShowCursor] = useState(true);
 
   useEffect(() => {
@@ -49,7 +47,7 @@ export function TerminalCTA() {
         if (currentLine < commands.length) {
           timeout = setTimeout(
             typeNextChar,
-            commands[currentLine].delay - commands[currentLine - 1].delay - 400
+            commands[currentLine].delay - commands[currentLine - 1].delay - 400,
           );
         }
       }
@@ -73,7 +71,7 @@ export function TerminalCTA() {
       initial={{ opacity: 0, y: 20 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5 }}
-      className="terminal-window rounded-lg overflow-hidden max-w-xl mx-auto"
+      className="terminal-window overflow-hidden max-w-xl mx-auto"
     >
       <div className="terminal-header px-4 py-3 flex items-center gap-2">
         <div className="terminal-dot bg-red-500/80" />
@@ -88,17 +86,17 @@ export function TerminalCTA() {
             key={i}
             className={cn(
               "transition-opacity duration-200",
-              i < visibleLines ? "opacity-100" : "opacity-0"
+              i < visibleLines ? "opacity-100" : "opacity-0",
             )}
           >
-            <span className="text-green-500">$</span>{" "}
+            <span className="text-green-700">$</span>{" "}
             <span className="text-white/90">{typedText[i]}</span>
             {i === visibleLines - 1 &&
               typedText[i].length < command.text.length && (
                 <span
                   className={cn(
                     "inline-block w-2 h-4 bg-white/80 ml-0.5 align-middle",
-                    showCursor ? "opacity-100" : "opacity-0"
+                    showCursor ? "opacity-100" : "opacity-0",
                   )}
                 />
               )}
@@ -114,7 +112,7 @@ export function TerminalCTA() {
               transition={{ delay: 0.3 }}
               className="mt-3 pt-3 border-t border-white/10"
             >
-              <span className="text-green-500">Deployed to</span>{" "}
+              <span className="text-green-700">Deployed to</span>{" "}
               <span className="text-blue-400 underline">
                 uplight.your-domain.workers.dev
               </span>

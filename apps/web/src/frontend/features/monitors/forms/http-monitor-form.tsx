@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@lib/utils";
@@ -142,7 +143,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
       <FieldGroup className="space-y-6">
         <div className="space-y-4">
           <div>
-            <FieldLabel>Basic InfoIconrmation</FieldLabel>
+            <FieldLabel>Basic Information</FieldLabel>
             <FieldDescription>
               Provide a name and URL for the monitor.
             </FieldDescription>
@@ -185,6 +186,12 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Tab" && !field.state.value.trim()) {
+                        e.preventDefault();
+                        field.handleChange("https://");
+                      }
+                    }}
                     aria-invalid={isInvalid}
                     placeholder="https://api.example.com/health"
                     autoComplete="off"
@@ -883,7 +890,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
                   return (
                     <Field data-invalid={isInvalid}>
                       <FieldLabel htmlFor="http-content-check-content">
-                        Content to SearchIcon
+                        Content to Search
                       </FieldLabel>
                       <Textarea
                         id="http-content-check-content"
@@ -920,6 +927,7 @@ export function HttpMonitorForm({ monitor }: { monitor?: MonitorResponse }) {
             Reset
           </Button>
           <Button type="submit" size={"xs"} disabled={isPending}>
+            {isPending && <Spinner className="size-3 mr-2" />}
             {isPending
               ? isEditing
                 ? "Saving..."

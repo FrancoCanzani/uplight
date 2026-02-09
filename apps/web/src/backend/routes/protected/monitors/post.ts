@@ -80,6 +80,7 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
               : null,
           }
         : {
+            // tcp type
             teamId: teamContext.teamId,
             type: data.type,
             name: data.name,
