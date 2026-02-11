@@ -23,7 +23,7 @@ export class CheckerDO extends DurableObject<Env> {
   }
 
   private async performCheck(request: CheckRequest): Promise<CheckResult> {
-    const startTime = Date.now();
+    const startTime = performance.now();
     const timeoutMs = request.timeout * 1000;
 
     const hostname =

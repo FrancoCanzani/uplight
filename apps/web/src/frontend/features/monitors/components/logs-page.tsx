@@ -18,11 +18,20 @@ export default function LogsPage() {
   const filters = useMemo(
     () => ({
       date: search.date || "all",
+      dateFrom: search.dateFrom || "",
+      dateTo: search.dateTo || "",
       status: search.status || "all",
       region: search.region || "all",
       search: search.search || "",
     }),
-    [search.date, search.status, search.region, search.search],
+    [
+      search.date,
+      search.dateFrom,
+      search.dateTo,
+      search.status,
+      search.region,
+      search.search,
+    ],
   );
 
   const filteredChecks = useMemo(() => {
@@ -70,12 +79,24 @@ function filterChecks(
   checks: CheckResult[],
   filters: {
     date: string;
+    dateFrom: string;
+    dateTo: string;
     status: string;
     region: string;
     search: string;
   },
 ): CheckResult[] {
   return checks.filter((check) => {
+    if (filters.dateFrom) {
+      const min = Number(filters.dateFrom);
+      if (!Number.isNaN(min) && check.checkedAt < min) return false;
+    }
+
+    if (filters.dateTo) {
+      const max = Number(filters.dateTo);
+      if (!Number.isNaN(max) && check.checkedAt > max) return false;
+    }
+
     if (filters.date === "today") {
       const today = startOfDay(new Date()).getTime();
       if (check.checkedAt < today) return false;
@@ -88,8 +109,16 @@ function filterChecks(
       if (check.checkedAt < last7days) return false;
     }
 
-    if (filters.status !== "all" && check.result !== filters.status) {
-      return false;
+    if (filters.status !== "all") {
+      if (filters.status === "issues") {
+        const isIssue =
+          check.result !== "success" &&
+          check.result !== "degraded" &&
+          check.result !== "maintenance";
+        if (!isIssue) return false;
+      } else if (check.result !== filters.status) {
+        return false;
+      }
     }
 
     if (filters.region !== "all" && check.location !== filters.region) {

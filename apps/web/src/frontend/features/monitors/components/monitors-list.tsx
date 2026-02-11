@@ -104,7 +104,7 @@ export default function MonitorsList() {
               <Button variant="outline" size="xs" aria-label="Filter monitors">
                 <Funnel className="size-3" />
                 {activeFilterCount > 0 && (
-                  <span className="bg-primary text-primary-foreground -full size-4 text-[10px] flex items-center justify-center">
+                  <span className="bg-primary text-primary-foreground rounded-full size-4 text-[10px] flex items-center justify-center">
                     {activeFilterCount}
                   </span>
                 )}
@@ -121,7 +121,9 @@ export default function MonitorsList() {
                 onCheckedChange={() => toggleStatus("up")}
               >
                 <div className="flex items-center gap-2">
-                  <div className={cn("size-2 -full", getStatusBgColor("up"))} />
+                  <div
+                    className={cn("size-2 rounded-full", getStatusBgColor("up"))}
+                  />
                   Up ({statusCounts.up})
                 </div>
               </DropdownMenuCheckboxItem>
@@ -133,7 +135,7 @@ export default function MonitorsList() {
               >
                 <div className="flex items-center gap-2">
                   <div
-                    className={cn("size-2 -full", getStatusBgColor("down"))}
+                    className={cn("size-2 rounded-full", getStatusBgColor("down"))}
                   />
                   Down ({statusCounts.down})
                 </div>
@@ -146,7 +148,10 @@ export default function MonitorsList() {
               >
                 <div className="flex items-center gap-2">
                   <div
-                    className={cn("size-2 -full", getStatusBgColor("degraded"))}
+                    className={cn(
+                      "size-2 rounded-full",
+                      getStatusBgColor("degraded"),
+                    )}
                   />
                   Degraded ({statusCounts.degraded})
                 </div>
@@ -160,7 +165,7 @@ export default function MonitorsList() {
                 <div className="flex items-center gap-2">
                   <div
                     className={cn(
-                      "size-2 -full",
+                      "size-2 rounded-full",
                       getStatusBgColor("maintenance"),
                     )}
                   />
@@ -175,7 +180,10 @@ export default function MonitorsList() {
               >
                 <div className="flex items-center gap-2">
                   <div
-                    className={cn("size-2 -full", getStatusBgColor("paused"))}
+                    className={cn(
+                      "size-2 rounded-full",
+                      getStatusBgColor("paused"),
+                    )}
                   />
                   Paused ({statusCounts.paused})
                 </div>
@@ -189,7 +197,7 @@ export default function MonitorsList() {
                 <div className="flex items-center gap-2">
                   <div
                     className={cn(
-                      "size-2 -full",
+                      "size-2 rounded-full",
                       getStatusBgColor("initializing"),
                     )}
                   />
@@ -200,7 +208,7 @@ export default function MonitorsList() {
           </DropdownMenuContent>
         </DropdownMenu>
         <Input
-          placeholder="SearchIcon by name..."
+          placeholder="Search by name..."
           value={nameFilter}
           onChange={(e) => setNameFilter(e.target.value)}
           className="h-7 max-w-xs"

@@ -14,4 +14,5 @@ export default {
   maintenance: "Maintenance Windows",
   teams: "Teams",
   "self-hosting": "Self-Hosting",
+  "mcp-server": "MCP Server",
 };

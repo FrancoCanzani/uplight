@@ -1,5 +1,5 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { and, desc, eq, gte, lte } from "drizzle-orm";
+import { and, count, desc, eq, gte, lte } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import { checkResult, monitor } from "../../../db/schema";
@@ -147,8 +147,8 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
     const hasMore = limitNum === 0 ? false : checks.length > limitNum;
     const paginatedChecks = limitNum === 0 ? checks : checks.slice(0, limitNum);
 
-    const totalResult = await db
-      .select({ id: checkResult.id })
+    const [totalResult] = await db
+      .select({ total: count() })
       .from(checkResult)
       .where(and(...conditions));
 
@@ -159,7 +159,7 @@ export function registerGetChecks(api: OpenAPIHono<AppEnv>) {
           checkedAt: c.checkedAt.getTime(),
         })),
         hasMore,
-        total: totalResult.length,
+        total: totalResult?.total ?? 0,
       },
       200,
     );

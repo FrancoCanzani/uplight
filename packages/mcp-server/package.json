@@ -1,0 +1,21 @@
+{
+  "name": "@uplight/mcp-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "uplight-mcp": "./build/index.js"
+  },
+  "scripts": {
+    "build": "bun build src/index.ts --outdir build --target node --format esm --splitting",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "typescript": "^5.7.3"
+  }
+}

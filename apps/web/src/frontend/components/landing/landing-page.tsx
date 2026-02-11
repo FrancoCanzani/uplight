@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Bell, Clock, FileText, Globe, Shield, Users } from "lucide-react";
+import { Bell, Bot, Clock, FileText, Globe, Shield, Users } from "lucide-react";
 import { motion, useInView } from "motion/react";
 import {
   Accordion,
@@ -89,6 +89,12 @@ const features = [
     title: "Team collaboration",
     description:
       "Invite your team, assign monitors, and share responsibility. Everyone stays in the loop.",
+  },
+  {
+    icon: Bot,
+    title: "AI-ready via MCP",
+    description:
+      "Query monitors, manage incidents, and check uptime from Claude, Cursor, or any MCP-compatible AI assistant.",
   },
 ];
 

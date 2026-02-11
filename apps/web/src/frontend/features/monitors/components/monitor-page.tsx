@@ -13,6 +13,7 @@ import RegionFilter from "./region-filter";
 import ResponseTimeChart from "./response-time-chart";
 import ResponseTimeStats from "./response-time-stats";
 import TimePeriodFilter from "./time-period-filter";
+import ErrorTimeHeatmap from "./error-time-heatmap";
 
 export default function MonitorPage() {
   const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
@@ -99,6 +100,8 @@ export default function MonitorPage() {
 
             <ResponseTimeChart checks={filteredChecks} />
           </div>
+
+          <ErrorTimeHeatmap checks={filteredChecks} />
 
           <div className="space-y-4">
             <h3 className="font-medium">Recent Logs</h3>

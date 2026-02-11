@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { format } from "date-fns";
 import { FilterX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,8 @@ export function LogsFilters({
   monitorId: string;
   filters: {
     date: string;
+    dateFrom: string;
+    dateTo: string;
     status: string;
     region: string;
     search: string;
@@ -46,20 +49,47 @@ export function LogsFilters({
 
   const availableStatuses = useMemo(() => {
     const statuses = new Set(checks.map((c) => c.result));
+    const hasIssues = checks.some(
+      (c) =>
+        c.result !== "success" &&
+        c.result !== "degraded" &&
+        c.result !== "maintenance",
+    );
     return {
       success: statuses.has("success"),
       failure: statuses.has("failure"),
       timeout: statuses.has("timeout"),
+      issues: hasIssues,
     };
   }, [checks]);
 
   const hasActiveFilters =
     filters.date !== "all" ||
+    filters.dateFrom !== "" ||
+    filters.dateTo !== "" ||
     filters.status !== "all" ||
     filters.region !== "all" ||
     filters.search !== "";
 
   const showRegionFilter = regions.length > 1;
+  const hasDateWindow = filters.dateFrom !== "" || filters.dateTo !== "";
+
+  const dateWindowLabel = useMemo(() => {
+    if (!hasDateWindow) return null;
+
+    const min = Number(filters.dateFrom);
+    const max = Number(filters.dateTo);
+
+    if (Number.isNaN(min) && Number.isNaN(max)) return "Custom time window";
+    if (Number.isNaN(min) && !Number.isNaN(max)) {
+      return `Until ${format(new Date(max), "MMM d, HH:mm")}`;
+    }
+    if (!Number.isNaN(min) && Number.isNaN(max)) {
+      return `From ${format(new Date(min), "MMM d, HH:mm")}`;
+    }
+
+    return `${format(new Date(min), "MMM d, HH:mm")} - ${format(new Date(max), "HH:mm")}`;
+  }, [filters.dateFrom, filters.dateTo, hasDateWindow]);
 
   const updateFilter = (key: string, value: string | null) => {
     navigate({
@@ -91,6 +121,18 @@ export function LogsFilters({
     });
   };
 
+  const clearDateWindow = () => {
+    navigate({
+      to: "/$teamId/monitors/$monitorId/logs",
+      params: { teamId, monitorId },
+      search: (prev) => ({
+        ...prev,
+        dateFrom: undefined,
+        dateTo: undefined,
+      }),
+    });
+  };
+
   const dateLabel =
     {
       all: "Last 14 Days",
@@ -102,6 +144,7 @@ export function LogsFilters({
   const statusLabel =
     {
       all: "All Status",
+      issues: "All Issues",
       success: "Success",
       failure: "Failure",
       timeout: "Timeout",
@@ -138,6 +181,9 @@ export function LogsFilters({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Status</SelectItem>
+          {availableStatuses.issues && (
+            <SelectItem value="issues">All Issues</SelectItem>
+          )}
           {availableStatuses.success && (
             <SelectItem value="success">Success</SelectItem>
           )}
@@ -169,6 +215,13 @@ export function LogsFilters({
             ))}
           </SelectContent>
         </Select>
+      )}
+
+      {dateWindowLabel && (
+        <Button variant="outline" size="xs" onClick={clearDateWindow}>
+          <span className="text-muted-foreground">Window:</span>
+          <span className="font-mono">{dateWindowLabel}</span>
+        </Button>
       )}
 
       {hasActiveFilters && (

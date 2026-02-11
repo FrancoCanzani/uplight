@@ -1,0 +1,162 @@
+# MCP Server
+
+Query your Uplight monitoring data and manage incidents from AI assistants like Claude Desktop, Claude Code, Cursor, and any tool that supports the [Model Context Protocol](https://modelcontextprotocol.io/).
+
+The MCP server runs as a local Node.js process and calls the Uplight API over HTTP. It doesn't access the database directly.
+
+## Setup
+
+### 1. Build
+
+```bash
+cd packages/mcp-server
+bun install
+bun run build
+```
+
+### 2. Get Your Session Token
+
+The MCP server authenticates using your Uplight session cookie.
+
+1. Log in to Uplight in your browser
+2. Open DevTools → Application → Cookies
+3. Copy the value of the `better-auth.session_token` cookie
+
+### 3. Find Your Team ID
+
+Your team ID is visible in the URL when you're on the dashboard: `https://uplight.app/dashboard/{teamId}/monitors`.
+
+You can also use the `list_teams` tool after setup to find it.
+
+### 4. Configure Your AI Tool
+
+#### Claude Desktop
+
+Add to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "uplight": {
+      "command": "node",
+      "args": ["/path/to/uplight/packages/mcp-server/build/index.js"],
+      "env": {
+        "UPLIGHT_API_URL": "https://uplight.app",
+        "UPLIGHT_SESSION_TOKEN": "your-session-token",
+        "UPLIGHT_TEAM_ID": "1"
+      }
+    }
+  }
+}
+```
+
+#### Claude Code
+
+Add to your project's `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "uplight": {
+      "command": "node",
+      "args": ["packages/mcp-server/build/index.js"],
+      "env": {
+        "UPLIGHT_API_URL": "https://uplight.app",
+        "UPLIGHT_SESSION_TOKEN": "your-session-token",
+        "UPLIGHT_TEAM_ID": "1"
+      }
+    }
+  }
+}
+```
+
+---
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `UPLIGHT_API_URL` | Yes | Your Uplight instance URL (e.g. `https://uplight.app` or `http://localhost:5173`) |
+| `UPLIGHT_SESSION_TOKEN` | Yes | Better Auth session cookie value |
+| `UPLIGHT_TEAM_ID` | No | Default team ID. When set, you don't need to specify `teamId` on every tool call |
+
+---
+
+## Available Tools
+
+### Monitors
+
+| Tool | Description |
+|------|-------------|
+| `list_monitors` | List all monitors with their current status and recent checks |
+| `get_monitor` | Get full details for a specific monitor including domain/SSL info |
+| `get_monitor_stats` | Get uptime percentage, average response time, and per-location stats |
+| `get_monitor_checks` | Get check history with filtering by result, location, and date range |
+
+### Incidents
+
+| Tool | Description |
+|------|-------------|
+| `list_incidents` | List incidents, optionally filtered by monitor or heartbeat |
+| `get_incident` | Get full incident details including severity, assignees, and post-mortem |
+| `get_incident_activities` | Get the activity timeline (status changes, comments, assignments) |
+| `update_incident_status` | Change status: acknowledge, fixing, recovered, or resolved |
+| `add_incident_comment` | Add a comment to an incident's timeline |
+
+### Heartbeats
+
+| Tool | Description |
+|------|-------------|
+| `list_heartbeats` | List all heartbeat monitors with recent pings |
+| `get_heartbeat` | Get heartbeat details and ping history |
+
+### Overview
+
+| Tool | Description |
+|------|-------------|
+| `list_teams` | List all teams you belong to |
+| `list_status_pages` | List public status pages for a team |
+| `list_integrations` | List alert integrations (Slack, Discord, email, etc.) |
+| `list_maintenance_windows` | List maintenance windows for a monitor |
+
+---
+
+## Example Prompts
+
+Once configured, you can ask your AI assistant things like:
+
+- "Show me which monitors are currently down"
+- "What's the uptime for the API monitor over the last 30 days?"
+- "List all open incidents"
+- "Acknowledge incident 42 and add a comment that I'm looking into it"
+- "Show me the recent check failures for monitor 5"
+- "Which monitoring locations have the highest response times?"
+- "Are there any active maintenance windows?"
+
+---
+
+## Testing
+
+You can test the MCP server with the official MCP Inspector:
+
+```bash
+npx @modelcontextprotocol/inspector node packages/mcp-server/build/index.js
+```
+
+This opens a web UI where you can call each tool interactively.
+
+---
+
+## Troubleshooting
+
+### "Unauthorized" errors
+
+Your session token has likely expired. Log in to Uplight again and copy a fresh token from the browser cookies.
+
+### "Monitor not found" or "Incident not found"
+
+Make sure `UPLIGHT_TEAM_ID` is set to the correct team, or pass the right `teamId` parameter in your queries.
+
+### CSRF errors on write operations
+
+The MCP server automatically sets the `Origin` header to bypass CSRF checks on POST/PATCH requests. If you see CSRF errors, ensure `UPLIGHT_API_URL` matches the exact origin your Uplight instance expects.

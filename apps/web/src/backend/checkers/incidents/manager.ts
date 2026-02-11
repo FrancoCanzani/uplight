@@ -18,6 +18,43 @@ interface MonitorContext {
   url?: string;
 }
 
+async function enrichIncidentWithAI(
+  incidentId: number,
+  cause: IncidentCause,
+  monitorCtx: MonitorContext,
+  failedResult: CheckResult | undefined,
+  env: Env,
+): Promise<void> {
+  try {
+    const aiParsed = await parseIncidentWithAI(
+      {
+        cause,
+        monitorName: monitorCtx.name,
+        monitorUrl: monitorCtx.url,
+        statusCode: failedResult?.statusCode,
+        errorMessage: failedResult?.errorMessage,
+        responseTime: failedResult?.responseTime,
+        location: failedResult?.location,
+        responseBody: failedResult?.responseBody,
+      },
+      env,
+    );
+
+    const db = createDb(env.DB);
+    await db
+      .update(incident)
+      .set({
+        title: aiParsed.title,
+        description: aiParsed.description,
+        hint: aiParsed.hint,
+        severity: aiParsed.severity,
+      })
+      .where(eq(incident.id, incidentId));
+  } catch (err) {
+    console.error("[AI] Incident enrichment failed:", err);
+  }
+}
+
 export async function manageIncidents(
   monitorId: number,
   results: CheckResult[],
@@ -69,28 +106,6 @@ export async function manageIncidents(
 
       const failedResult = failedResults.find((r) => r.cause === cause);
 
-      let aiParsed: Awaited<ReturnType<typeof parseIncidentWithAI>> | null =
-        null;
-      try {
-        console.log("[AI] Parsing incident for cause:", cause);
-        aiParsed = await parseIncidentWithAI(
-          {
-            cause,
-            monitorName: monitorCtx.name,
-            monitorUrl: monitorCtx.url,
-            statusCode: failedResult?.statusCode,
-            errorMessage: failedResult?.errorMessage,
-            responseTime: failedResult?.responseTime,
-            location: failedResult?.location,
-            responseBody: failedResult?.responseBody,
-          },
-          env,
-        );
-        console.log("[AI] Parsed result:", aiParsed);
-      } catch (err) {
-        console.error("[AI] Parsing failed:", err);
-      }
-
       const [created] = await db
         .insert(incident)
         .values({
@@ -98,12 +113,14 @@ export async function manageIncidents(
           cause,
           status: "ongoing",
           startedAt: new Date(now),
-          title: aiParsed?.title ?? null,
-          description: aiParsed?.description ?? null,
-          hint: aiParsed?.hint ?? null,
-          severity: aiParsed?.severity ?? null,
+          title: null,
+          description: null,
+          hint: null,
+          severity: null,
         })
         .returning({ id: incident.id });
+
+      void enrichIncidentWithAI(created.id, cause, monitorCtx, failedResult, env);
 
       events.push({
         type: "created",

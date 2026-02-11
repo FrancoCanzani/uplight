@@ -47,7 +47,9 @@ uplight/
 │   │   └── drizzle/      # Database migrations
 │   ├── docs/             # Documentation site (Nextra)
 │   └── domain-checker/   # Domain/SSL checker service (Fly.io)
-└── packages/             # Shared packages
+├── packages/
+│   └── mcp-server/       # MCP server for AI assistants
+└── ...
 ```
 
 ## Local Development
@@ -95,6 +97,25 @@ Copy `apps/web/.env.example` to `apps/web/.env` and configure:
 | `BETTER_AUTH_URL` | Your app URL |
 | `ENCRYPTION_SECRET` | Encryption key for sensitive data (min 32 chars) |
 | `DOMAIN_CHECKER_URL` | Optional: Domain checker service URL |
+
+## MCP Server
+
+Uplight includes an [MCP](https://modelcontextprotocol.io/) server that lets AI assistants (Claude Desktop, Claude Code, etc.) query your monitoring data and manage incidents via natural language.
+
+```bash
+# Build the MCP server
+cd packages/mcp-server && bun run build
+```
+
+Configure it in your AI tool with these environment variables:
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `UPLIGHT_API_URL` | Yes | Your Uplight instance URL |
+| `UPLIGHT_SESSION_TOKEN` | Yes | Better Auth session cookie value |
+| `UPLIGHT_TEAM_ID` | No | Default team ID |
+
+See the [MCP server docs](https://docs.uplight.dev/mcp-server) for full setup instructions.
 
 ## Documentation
 

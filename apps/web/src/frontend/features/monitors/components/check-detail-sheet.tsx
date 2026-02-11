@@ -23,6 +23,21 @@ export function CheckDetailSheet() {
   const monitorId = params.monitorId as string;
   const search = useSearch({ strict: false }) || {};
   const navigate = useNavigate();
+  const statusFilter = (search.status || search.checkResult) as
+    | string
+    | undefined;
+  const locationFilter = (search.region || search.checkLocation) as
+    | string
+    | undefined;
+  const dateFromFilter = (search.dateFrom || search.checkDateFrom) as
+    | string
+    | undefined;
+  const dateToFilter = (search.dateTo || search.checkDateTo) as
+    | string
+    | undefined;
+  const days =
+    Number(search.period) ||
+    (search.date === "last7days" ? 7 : 14);
 
   const {
     data: checkDetail,
@@ -33,16 +48,56 @@ export function CheckDetailSheet() {
   const { data } = useInfiniteChecks({
     teamId,
     monitorId,
-    days: Number(search.period || 7),
-    result: search.checkResult,
-    location: search.checkLocation,
-    dateFrom: search.checkDateFrom,
-    dateTo: search.checkDateTo,
+    days,
+    result:
+      statusFilter && statusFilter !== "all" && statusFilter !== "issues"
+        ? statusFilter
+        : undefined,
+    location:
+      locationFilter && locationFilter !== "all" ? locationFilter : undefined,
+    dateFrom: dateFromFilter,
+    dateTo: dateToFilter,
   });
 
   const checks = useMemo(() => {
-    return data?.pages.flatMap((page) => page.checks) ?? [];
-  }, [data]);
+    const allChecks = data?.pages.flatMap((page) => page.checks) ?? [];
+    const min = Number(dateFromFilter);
+    const max = Number(dateToFilter);
+
+    return allChecks.filter((check) => {
+      if (statusFilter === "issues") {
+        const isIssue =
+          check.result !== "success" &&
+          check.result !== "degraded" &&
+          check.result !== "maintenance";
+        if (!isIssue) return false;
+      } else if (
+        statusFilter &&
+        statusFilter !== "all" &&
+        check.result !== statusFilter
+      ) {
+        return false;
+      }
+
+      if (
+        locationFilter &&
+        locationFilter !== "all" &&
+        check.location !== locationFilter
+      ) {
+        return false;
+      }
+
+      if (!Number.isNaN(min) && check.checkedAt < min) {
+        return false;
+      }
+
+      if (!Number.isNaN(max) && check.checkedAt > max) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [data, dateFromFilter, dateToFilter, locationFilter, statusFilter]);
 
   const currentIndex =
     checks.findIndex((check) => check.id === Number(search.checkId)) ?? -1;

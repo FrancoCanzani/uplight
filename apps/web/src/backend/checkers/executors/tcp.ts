@@ -6,25 +6,24 @@ export async function performTcpCheck(
   timeout: number,
 ): Promise<RawCheckResult> {
   const startTime = performance.now();
+  let socket: ReturnType<typeof connect> | null = null;
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
   try {
-    const socket = connect({
+    socket = connect({
       hostname: request.host,
       port: request.port,
     });
 
-    await socket.opened;
-    const connectTime = Math.round(performance.now() - startTime);
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutId = setTimeout(() => {
+        socket?.close();
+        reject(new Error(`TCP connection timed out after ${timeout}ms`));
+      }, timeout);
+    });
 
-    if (connectTime > timeout) {
-      socket.close();
-      return {
-        result: "timeout",
-        responseTime: connectTime,
-        errorMessage: `Connection took ${connectTime}ms, exceeding timeout of ${timeout}ms`,
-        cause: "timeout",
-      };
-    }
+    await Promise.race([socket.opened, timeoutPromise]);
+    const connectTime = Math.round(performance.now() - startTime);
 
     socket.close();
 
@@ -70,5 +69,10 @@ export async function performTcpCheck(
       errorMessage: "Unknown TCP error",
       cause: "tcp_failure",
     };
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    socket?.close();
   }
 }

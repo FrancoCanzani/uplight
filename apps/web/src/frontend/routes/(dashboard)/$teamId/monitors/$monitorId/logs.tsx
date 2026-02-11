@@ -6,6 +6,8 @@ import LogsPage from "@/features/monitors/components/logs-page";
 
 const searchSchema = z.object({
   date: z.string().optional(),
+  dateFrom: z.string().optional(),
+  dateTo: z.string().optional(),
   status: z.string().optional(),
   region: z.string().optional(),
   search: z.string().optional(),

@@ -25,6 +25,7 @@ export default function LogsTable({
   checks,
   monitor,
   onRowClick,
+  preview = false,
 }: {
   checks: CheckResult[];
   monitor: MonitorResponse;
@@ -192,11 +193,18 @@ export default function LogsTable({
             <TableRow
               key={row.original.id}
               className={cn(
-                "cursor-pointer border-dashed",
+                "border-dashed",
+                !preview && "cursor-pointer",
                 index < array.length - 1 && "border-b",
                 getRowClassName(row.original.result, row.original.statusCode),
               )}
-              onClick={() => onRowClick(row.original)}
+              onClick={
+                preview
+                  ? undefined
+                  : () => {
+                      onRowClick(row.original);
+                    }
+              }
             >
               {row.getVisibleCells().map((cell) => (
                 <TableCell key={cell.id}>

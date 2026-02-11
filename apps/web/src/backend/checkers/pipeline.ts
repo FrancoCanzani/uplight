@@ -118,6 +118,7 @@ async function dispatchChecks(
   monitors: MonitorRow[],
   env: Env,
 ): Promise<CheckResult[]> {
+  // TODO: Add bounded concurrency to avoid unbounded Promise.all fan-out under large monitor/location counts.
   const promises: Promise<CheckResult>[] = [];
 
   for (const mon of monitors) {
