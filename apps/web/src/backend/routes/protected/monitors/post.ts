@@ -12,7 +12,7 @@ const route = createRoute({
   path: "/:teamId",
   tags: ["monitors"],
   summary: "Create a new monitor",
-  description: "Creates an HTTP or TCP monitor for uptime monitoring",
+  description: "Creates an HTTP, TCP, or DNS monitor for uptime monitoring",
   request: {
     body: {
       content: {
@@ -79,8 +79,28 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
               ? JSON.stringify(data.contentCheck)
               : null,
           }
-        : {
-            // tcp type
+        : data.type === "tcp"
+          ? {
+              // tcp type
+              teamId: teamContext.teamId,
+              type: data.type,
+              name: data.name,
+              interval: data.interval,
+              timeout: data.timeout,
+              responseTimeThreshold: data.responseTimeThreshold ?? null,
+              locations: JSON.stringify(data.locations),
+              status: "initializing" as const,
+              host: data.host,
+              port: data.port,
+              followRedirects: false,
+              checkDomain: false,
+              contentCheck: null,
+              dnsRecordType: null,
+              dnsExpectedValue: null,
+              dnsResolver: "cloudflare" as const,
+            }
+          : {
+            // dns type
             teamId: teamContext.teamId,
             type: data.type,
             name: data.name,
@@ -90,10 +110,14 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
             locations: JSON.stringify(data.locations),
             status: "initializing" as const,
             host: data.host,
-            port: data.port,
             followRedirects: false,
             checkDomain: false,
             contentCheck: null,
+            dnsRecordType: JSON.stringify(
+              Array.from(new Set(data.assertions.map((a) => a.recordType))),
+            ),
+            dnsExpectedValue: JSON.stringify(data.assertions),
+            dnsResolver: "cloudflare" as const,
           };
 
     const [createdMonitor] = await db

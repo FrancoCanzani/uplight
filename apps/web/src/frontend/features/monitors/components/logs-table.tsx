@@ -36,9 +36,9 @@ export default function LogsTable({
     { id: "checkedAt", desc: true },
   ]);
 
-  const isTcp = monitor.type === "tcp";
+  const isHttp = monitor.type === "http";
   const columnVisibility = {
-    statusCode: !isTcp,
+    statusCode: isHttp,
   };
 
   const getRowClassName = (result: string, statusCode: number | null) => {

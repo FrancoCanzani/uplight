@@ -5,7 +5,14 @@ import { dispatchIntegrations } from "../integrations/dispatcher";
 import { decrypt } from "../lib/crypto";
 import { manageIncidents } from "./incidents/manager";
 import { sleep } from "./retry";
-import type { CheckRequest, CheckResult, Location, MonitorRow } from "./types";
+import type {
+  CheckRequest,
+  CheckResult,
+  DnsAssertion,
+  DnsRecordType,
+  Location,
+  MonitorRow,
+} from "./types";
 
 type MonitorStatus =
   | "up"
@@ -29,6 +36,100 @@ const LOCATION_HINTS: Record<Location, DurableObjectLocationHint> = {
 
 const DISPATCH_MAX_RETRIES = 2;
 const DISPATCH_INITIAL_DELAY = 500;
+const MAX_DISPATCH_CONCURRENCY = 20;
+const DNS_RECORD_TYPES: DnsRecordType[] = [
+  "A",
+  "AAAA",
+  "CNAME",
+  "MX",
+  "TXT",
+  "NS",
+];
+
+function parseDnsRecordTypes(value: string | null): DnsRecordType[] {
+  if (!value) return ["A"];
+
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      const filtered = parsed.filter((item): item is DnsRecordType =>
+        DNS_RECORD_TYPES.includes(item as DnsRecordType),
+      );
+      if (filtered.length > 0) return filtered;
+    }
+  } catch {
+    if (DNS_RECORD_TYPES.includes(value as DnsRecordType)) {
+      return [value as DnsRecordType];
+    }
+  }
+
+  return ["A"];
+}
+
+function parseDnsAssertions(mon: MonitorRow): DnsAssertion[] {
+  if (mon.dnsExpectedValue) {
+    try {
+      const parsed = JSON.parse(mon.dnsExpectedValue);
+      if (Array.isArray(parsed)) {
+        const assertions = parsed
+          .filter(
+            (item): item is DnsAssertion =>
+              !!item &&
+              typeof item === "object" &&
+              DNS_RECORD_TYPES.includes(item.recordType as DnsRecordType) &&
+              typeof item.value === "string" &&
+              item.value.trim().length > 0,
+          )
+          .map((item) => ({
+            recordType: item.recordType as DnsRecordType,
+            value: item.value.trim(),
+          }));
+        if (assertions.length > 0) return assertions;
+      }
+    } catch {
+      // Backward compatibility fallback below.
+    }
+  }
+
+  const recordTypes = parseDnsRecordTypes(mon.dnsRecordType);
+  const fallbackValue = mon.dnsExpectedValue?.trim() ?? "";
+
+  return recordTypes.map((recordType) => ({
+    recordType,
+    value: fallbackValue,
+  }));
+}
+
+function computeDispatchJitter(monitorId: number, location: string): number {
+  // Deterministic jitter spreads bursts inside each cron run.
+  const seed = `${monitorId}:${location}`;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+  return hash % 300;
+}
+
+async function runWithConcurrency<T>(
+  tasks: Array<() => Promise<T>>,
+  limit: number,
+): Promise<T[]> {
+  if (tasks.length === 0) return [];
+
+  const results = new Array<T>(tasks.length);
+  let cursor = 0;
+
+  async function worker(): Promise<void> {
+    while (cursor < tasks.length) {
+      const index = cursor++;
+      results[index] = await tasks[index]();
+    }
+  }
+
+  const workerCount = Math.min(limit, tasks.length);
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
+  return results;
+}
 
 async function buildCheckRequest(
   mon: MonitorRow,
@@ -65,6 +166,16 @@ async function buildCheckRequest(
         ? JSON.parse(mon.expectedStatusCodes)
         : [200],
       followRedirects: mon.followRedirects,
+    };
+  }
+
+  if (mon.type === "dns") {
+    return {
+      ...base,
+      type: "dns",
+      host: mon.host!,
+      assertions: parseDnsAssertions(mon),
+      resolver: mon.dnsResolver,
     };
   }
 
@@ -118,17 +229,23 @@ async function dispatchChecks(
   monitors: MonitorRow[],
   env: Env,
 ): Promise<CheckResult[]> {
-  // TODO: Add bounded concurrency to avoid unbounded Promise.all fan-out under large monitor/location counts.
-  const promises: Promise<CheckResult>[] = [];
+  const tasks: Array<() => Promise<CheckResult>> = [];
 
   for (const mon of monitors) {
     const locations: Location[] = JSON.parse(mon.locations);
 
     for (const location of locations) {
-      const dispatchPromise = buildCheckRequest(mon, location, env)
-        .then((request) => dispatchToLocation(request, location, env))
-        .catch(
-          (error): CheckResult => ({
+      tasks.push(async () => {
+        try {
+          const jitterMs = computeDispatchJitter(mon.id, location);
+          if (jitterMs > 0) {
+            await sleep(jitterMs);
+          }
+
+          const request = await buildCheckRequest(mon, location, env);
+          return await dispatchToLocation(request, location, env);
+        } catch (error) {
+          return {
             monitorId: mon.id,
             location,
             result: "error" as const,
@@ -138,13 +255,13 @@ async function dispatchChecks(
             cause: "network_error",
             retryCount: 0,
             checkedAt: Date.now(),
-          }),
-        );
-      promises.push(dispatchPromise);
+          };
+        }
+      });
     }
   }
 
-  return Promise.all(promises);
+  return runWithConcurrency(tasks, MAX_DISPATCH_CONCURRENCY);
 }
 
 function resolveStatus(results: CheckResult[]): MonitorStatus {

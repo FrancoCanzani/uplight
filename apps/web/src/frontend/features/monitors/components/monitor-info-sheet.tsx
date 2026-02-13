@@ -18,6 +18,41 @@ import { getSslStatus } from "../utils/get-ssl-status";
 import { getWhoisStatus } from "../utils/get-whois-status";
 import { getTextStatusColor } from "../utils/get-status-color";
 
+function formatDnsRecordTypes(raw: string | null): string {
+  if (!raw) return "A";
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed.join(", ");
+    }
+  } catch {
+    return raw;
+  }
+  return "A";
+}
+
+function formatDnsAssertions(raw: string | null): string {
+  if (!raw) return "";
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      return parsed
+        .filter(
+          (item) =>
+            item &&
+            typeof item === "object" &&
+            typeof item.recordType === "string" &&
+            typeof item.value === "string",
+        )
+        .map((item) => `${item.recordType} = ${item.value}`)
+        .join(", ");
+    }
+  } catch {
+    return raw;
+  }
+  return "";
+}
+
 export default function MonitorInfoSheet({
   monitor,
 }: {
@@ -94,6 +129,21 @@ export default function MonitorInfoSheet({
             <Section title="TCP Settings">
               <ConfigItem label="Host" value={monitor.host} mono />
               <ConfigItem label="Port" value={monitor.port?.toString()} mono />
+            </Section>
+          )}
+
+          {monitor.type === "dns" && (
+            <Section title="DNS Settings">
+              <ConfigItem label="Host" value={monitor.host} mono />
+              <ConfigItem
+                label="Record"
+                value={formatDnsRecordTypes(monitor.dnsRecordType)}
+              />
+              <ConfigItem
+                label="Assertions"
+                value={formatDnsAssertions(monitor.dnsExpectedValue)}
+                mono
+              />
             </Section>
           )}
 

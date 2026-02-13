@@ -1,4 +1,9 @@
 const UNSAFE_METHODS = new Set(["POST", "PATCH", "PUT", "DELETE"]);
+const REQUEST_TIMEOUT_MS = 15_000;
+
+function encodePathSegment(value: string | number): string {
+  return encodeURIComponent(String(value));
+}
 
 export class UplightApiClient {
   private baseUrl: string;
@@ -35,11 +40,27 @@ export class UplightApiClient {
       headers["Content-Type"] = "application/json";
     }
 
-    const res = await fetch(url, {
-      method,
-      headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        method,
+        headers,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+        signal: controller.signal,
+      });
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new Error(
+          `API ${method} ${path} timed out after ${REQUEST_TIMEOUT_MS}ms`,
+        );
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!res.ok) {
       const text = await res.text().catch(() => "");
@@ -58,29 +79,37 @@ export class UplightApiClient {
 
   // --- Monitors ---
 
-  async listMonitors(teamId: string) {
-    return this.request<unknown[]>("GET", `/monitors/${teamId}`);
+  async listMonitors(teamId: string | number) {
+    return this.request<unknown[]>(
+      "GET",
+      `/monitors/${encodePathSegment(teamId)}`,
+    );
   }
 
-  async getMonitor(teamId: string, monitorId: string) {
-    return this.request<unknown>("GET", `/monitors/${teamId}/${monitorId}`);
+  async getMonitor(teamId: string | number, monitorId: string | number) {
+    return this.request<unknown>(
+      "GET",
+      `/monitors/${encodePathSegment(teamId)}/${encodePathSegment(monitorId)}`,
+    );
   }
 
   async getMonitorStats(
-    teamId: string,
-    monitorId: string,
+    teamId: string | number,
+    monitorId: string | number,
     days?: number,
   ) {
     const query = days ? `?days=${days}` : "";
     return this.request<unknown>(
       "GET",
-      `/monitors/${teamId}/${monitorId}/stats${query}`,
+      `/monitors/${encodePathSegment(teamId)}/${encodePathSegment(
+        monitorId,
+      )}/stats${query}`,
     );
   }
 
   async getMonitorChecks(
-    teamId: string,
-    monitorId: string,
+    teamId: string | number,
+    monitorId: string | number,
     params?: {
       limit?: number;
       offset?: number;
@@ -98,14 +127,16 @@ export class UplightApiClient {
     const query = searchParams.toString();
     return this.request<unknown>(
       "GET",
-      `/monitors/${teamId}/${monitorId}/checks${query ? `?${query}` : ""}`,
+      `/monitors/${encodePathSegment(teamId)}/${encodePathSegment(
+        monitorId,
+      )}/checks${query ? `?${query}` : ""}`,
     );
   }
 
   // --- Incidents ---
 
   async listIncidents(
-    teamId: string,
+    teamId: string | number,
     params?: {
       limit?: number;
       offset?: number;
@@ -121,53 +152,73 @@ export class UplightApiClient {
     const query = searchParams.toString();
     return this.request<unknown>(
       "GET",
-      `/incidents/${teamId}${query ? `?${query}` : ""}`,
+      `/incidents/${encodePathSegment(teamId)}${query ? `?${query}` : ""}`,
     );
   }
 
-  async getIncident(teamId: string, incidentId: string) {
-    return this.request<unknown>("GET", `/incidents/${teamId}/${incidentId}`);
-  }
-
-  async getIncidentActivities(teamId: string, incidentId: string) {
+  async getIncident(teamId: string | number, incidentId: string | number) {
     return this.request<unknown>(
       "GET",
-      `/incidents/${teamId}/${incidentId}/activities`,
+      `/incidents/${encodePathSegment(teamId)}/${encodePathSegment(
+        incidentId,
+      )}`,
+    );
+  }
+
+  async getIncidentActivities(
+    teamId: string | number,
+    incidentId: string | number,
+  ) {
+    return this.request<unknown>(
+      "GET",
+      `/incidents/${encodePathSegment(teamId)}/${encodePathSegment(
+        incidentId,
+      )}/activities`,
     );
   }
 
   async updateIncidentStatus(
-    teamId: string,
-    incidentId: string,
+    teamId: string | number,
+    incidentId: string | number,
     status: string,
   ) {
     return this.request<unknown>(
       "PATCH",
-      `/incidents/${teamId}/${incidentId}`,
+      `/incidents/${encodePathSegment(teamId)}/${encodePathSegment(incidentId)}`,
       { status },
     );
   }
 
   async addIncidentComment(
-    teamId: string,
-    incidentId: string,
+    teamId: string | number,
+    incidentId: string | number,
     content: string,
   ) {
     return this.request<unknown>(
       "POST",
-      `/incidents/${teamId}/${incidentId}/activities`,
+      `/incidents/${encodePathSegment(teamId)}/${encodePathSegment(
+        incidentId,
+      )}/activities`,
       { content },
     );
   }
 
   // --- Heartbeats ---
 
-  async listHeartbeats(teamId: string) {
-    return this.request<unknown[]>("GET", `/heartbeats/${teamId}`);
+  async listHeartbeats(teamId: string | number) {
+    return this.request<unknown[]>(
+      "GET",
+      `/heartbeats/${encodePathSegment(teamId)}`,
+    );
   }
 
-  async getHeartbeat(teamId: string, heartbeatId: string) {
-    return this.request<unknown>("GET", `/heartbeats/${teamId}/${heartbeatId}`);
+  async getHeartbeat(teamId: string | number, heartbeatId: string | number) {
+    return this.request<unknown>(
+      "GET",
+      `/heartbeats/${encodePathSegment(teamId)}/${encodePathSegment(
+        heartbeatId,
+      )}`,
+    );
   }
 
   // --- Teams ---
@@ -178,22 +229,33 @@ export class UplightApiClient {
 
   // --- Status Pages ---
 
-  async listStatusPages(teamId: string) {
-    return this.request<unknown[]>("GET", `/status-pages/${teamId}`);
+  async listStatusPages(teamId: string | number) {
+    return this.request<unknown[]>(
+      "GET",
+      `/status-pages/${encodePathSegment(teamId)}`,
+    );
   }
 
   // --- Integrations ---
 
-  async listIntegrations(teamId: string) {
-    return this.request<unknown[]>("GET", `/integrations/${teamId}`);
+  async listIntegrations(teamId: string | number) {
+    return this.request<unknown[]>(
+      "GET",
+      `/integrations/${encodePathSegment(teamId)}`,
+    );
   }
 
   // --- Maintenance ---
 
-  async listMaintenanceWindows(teamId: string, monitorId: string) {
+  async listMaintenanceWindows(
+    teamId: string | number,
+    monitorId: string | number,
+  ) {
     return this.request<unknown[]>(
       "GET",
-      `/maintenance/${teamId}/${monitorId}`,
+      `/maintenance/${encodePathSegment(teamId)}/${encodePathSegment(
+        monitorId,
+      )}`,
     );
   }
 }

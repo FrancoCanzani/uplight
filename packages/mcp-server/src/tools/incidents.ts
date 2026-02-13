@@ -4,23 +4,28 @@ import type { UplightApiClient } from "../api-client.js";
 
 export function registerIncidentTools(server: McpServer, api: UplightApiClient) {
   const defaultTeamId = api.getDefaultTeamId();
+  const teamIdSchema = defaultTeamId
+    ? z.string().regex(/^\d+$/).optional().describe(`Team ID (default: ${defaultTeamId})`)
+    : z.string().regex(/^\d+$/).describe("Team ID");
+  const incidentIdSchema = z.string().regex(/^\d+$/).describe("Incident ID");
 
   server.tool(
     "list_incidents",
     "List incidents for a team, optionally filtered by monitor or heartbeat",
     {
-      teamId: defaultTeamId
-        ? z.string().optional().describe(`Team ID (default: ${defaultTeamId})`)
-        : z.string().describe("Team ID"),
+      teamId: teamIdSchema,
       limit: z.number().int().optional().describe("Number of results (default: 20)"),
       offset: z.number().int().optional().describe("Offset for pagination (default: 0)"),
-      monitorId: z.string().optional().describe("Filter by monitor ID"),
-      heartbeatId: z.string().optional().describe("Filter by heartbeat ID"),
+      monitorId: z.string().regex(/^\d+$/).optional().describe("Filter by monitor ID"),
+      heartbeatId: z.string().regex(/^\d+$/).optional().describe("Filter by heartbeat ID"),
     },
     async ({ teamId, ...params }) => {
       const tid = teamId ?? defaultTeamId;
       if (!tid) {
-        return { content: [{ type: "text", text: "Error: teamId is required" }] };
+        return {
+          content: [{ type: "text", text: "Error: teamId is required" }],
+          isError: true,
+        };
       }
       try {
         const data = await api.listIncidents(tid, params);
@@ -35,15 +40,16 @@ export function registerIncidentTools(server: McpServer, api: UplightApiClient) 
     "get_incident",
     "Get full details for a specific incident including status timeline and assignees",
     {
-      teamId: defaultTeamId
-        ? z.string().optional().describe(`Team ID (default: ${defaultTeamId})`)
-        : z.string().describe("Team ID"),
-      incidentId: z.string().describe("Incident ID"),
+      teamId: teamIdSchema,
+      incidentId: incidentIdSchema,
     },
     async ({ teamId, incidentId }) => {
       const tid = teamId ?? defaultTeamId;
       if (!tid) {
-        return { content: [{ type: "text", text: "Error: teamId is required" }] };
+        return {
+          content: [{ type: "text", text: "Error: teamId is required" }],
+          isError: true,
+        };
       }
       try {
         const data = await api.getIncident(tid, incidentId);
@@ -58,15 +64,16 @@ export function registerIncidentTools(server: McpServer, api: UplightApiClient) 
     "get_incident_activities",
     "Get the activity timeline for an incident (status changes, comments, assignments)",
     {
-      teamId: defaultTeamId
-        ? z.string().optional().describe(`Team ID (default: ${defaultTeamId})`)
-        : z.string().describe("Team ID"),
-      incidentId: z.string().describe("Incident ID"),
+      teamId: teamIdSchema,
+      incidentId: incidentIdSchema,
     },
     async ({ teamId, incidentId }) => {
       const tid = teamId ?? defaultTeamId;
       if (!tid) {
-        return { content: [{ type: "text", text: "Error: teamId is required" }] };
+        return {
+          content: [{ type: "text", text: "Error: teamId is required" }],
+          isError: true,
+        };
       }
       try {
         const data = await api.getIncidentActivities(tid, incidentId);
@@ -81,10 +88,8 @@ export function registerIncidentTools(server: McpServer, api: UplightApiClient) 
     "update_incident_status",
     "Update the status of an incident (acknowledge, fixing, recovered, resolved)",
     {
-      teamId: defaultTeamId
-        ? z.string().optional().describe(`Team ID (default: ${defaultTeamId})`)
-        : z.string().describe("Team ID"),
-      incidentId: z.string().describe("Incident ID"),
+      teamId: teamIdSchema,
+      incidentId: incidentIdSchema,
       status: z
         .enum(["ongoing", "acknowledged", "fixing", "recovered", "resolved"])
         .describe("New status for the incident"),
@@ -92,7 +97,10 @@ export function registerIncidentTools(server: McpServer, api: UplightApiClient) 
     async ({ teamId, incidentId, status }) => {
       const tid = teamId ?? defaultTeamId;
       if (!tid) {
-        return { content: [{ type: "text", text: "Error: teamId is required" }] };
+        return {
+          content: [{ type: "text", text: "Error: teamId is required" }],
+          isError: true,
+        };
       }
       try {
         const data = await api.updateIncidentStatus(tid, incidentId, status);
@@ -107,16 +115,17 @@ export function registerIncidentTools(server: McpServer, api: UplightApiClient) 
     "add_incident_comment",
     "Add a comment to an incident's activity timeline",
     {
-      teamId: defaultTeamId
-        ? z.string().optional().describe(`Team ID (default: ${defaultTeamId})`)
-        : z.string().describe("Team ID"),
-      incidentId: z.string().describe("Incident ID"),
+      teamId: teamIdSchema,
+      incidentId: incidentIdSchema,
       content: z.string().describe("Comment text to add"),
     },
     async ({ teamId, incidentId, content }) => {
       const tid = teamId ?? defaultTeamId;
       if (!tid) {
-        return { content: [{ type: "text", text: "Error: teamId is required" }] };
+        return {
+          content: [{ type: "text", text: "Error: teamId is required" }],
+          isError: true,
+        };
       }
       try {
         const data = await api.addIncidentComment(tid, incidentId, content);

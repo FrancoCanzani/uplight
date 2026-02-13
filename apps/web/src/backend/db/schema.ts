@@ -45,7 +45,7 @@ export const monitor = sqliteTable(
     teamId: integer()
       .notNull()
       .references(() => team.id, { onDelete: "cascade" }),
-    type: text({ enum: ["http", "tcp"] }).notNull(),
+    type: text({ enum: ["http", "tcp", "dns"] }).notNull(),
     name: text().notNull(),
     interval: integer().notNull(),
     timeout: integer().notNull().default(30),
@@ -65,6 +65,11 @@ export const monitor = sqliteTable(
     checkDomain: integer({ mode: "boolean" }).default(true).notNull(),
     host: text(),
     port: integer(),
+    dnsRecordType: text(),
+    dnsExpectedValue: text(),
+    dnsResolver: text({ enum: ["cloudflare", "google"] })
+      .default("cloudflare")
+      .notNull(),
     status: text({
       enum: ["up", "down", "degraded", "maintenance", "paused", "initializing"],
     })

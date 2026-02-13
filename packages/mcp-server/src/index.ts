@@ -22,6 +22,11 @@ if (!sessionToken) {
   process.exit(1);
 }
 
+if (defaultTeamId && !/^\d+$/.test(defaultTeamId)) {
+  console.error("UPLIGHT_TEAM_ID must be a numeric team ID");
+  process.exit(1);
+}
+
 const api = new UplightApiClient(apiUrl, sessionToken, defaultTeamId);
 
 const server = new McpServer({

@@ -2,7 +2,7 @@ import { DurableObject } from "cloudflare:workers";
 import { extractHostname } from "../../lib/utils";
 import { withRetry } from "../retry";
 import type { CheckConfig, CheckRequest, CheckResult } from "../types";
-import { checkDns } from "./dns";
+import { checkDns, performDnsCheck } from "./dns";
 import { performHttpCheck } from "./http";
 import { performTcpCheck } from "./tcp";
 
@@ -23,24 +23,26 @@ export class CheckerDO extends DurableObject<Env> {
   }
 
   private async performCheck(request: CheckRequest): Promise<CheckResult> {
-    const startTime = performance.now();
     const timeoutMs = request.timeout * 1000;
 
-    const hostname =
-      request.type === "http" ? extractHostname(request.url) : request.host;
-
-    const dnsOk = await checkDns(hostname);
-    if (!dnsOk) {
-      return {
-        monitorId: request.monitorId,
-        location: request.location,
-        result: "error",
-        responseTime: Math.round(performance.now() - startTime),
-        errorMessage: `DNS resolution failed for ${hostname}`,
-        cause: "dns_failure",
-        retryCount: 0,
-        checkedAt: Date.now(),
-      };
+    if (request.type !== "dns") {
+      const hostname =
+        request.type === "http" ? extractHostname(request.url) : request.host;
+      try {
+        const dnsOk = await checkDns(hostname);
+        // DNS preflight is a hint only; don't hard-fail checks here because
+        // resolver endpoint outages can mark every monitor as down.
+        if (!dnsOk) {
+          console.warn(
+            `DNS preflight failed for ${hostname}, continuing with ${request.type} check`,
+          );
+        }
+      } catch (error) {
+        console.warn(
+          `DNS preflight error for ${hostname}, continuing with ${request.type} check`,
+          error,
+        );
+      }
     }
 
     const config: CheckConfig = {
@@ -52,7 +54,9 @@ export class CheckerDO extends DurableObject<Env> {
     const checkFn =
       request.type === "http"
         ? () => performHttpCheck(request, timeoutMs)
-        : () => performTcpCheck(request, timeoutMs);
+        : request.type === "tcp"
+          ? () => performTcpCheck(request, timeoutMs)
+          : () => performDnsCheck(request, timeoutMs);
 
     const result = await withRetry(checkFn, config);
 

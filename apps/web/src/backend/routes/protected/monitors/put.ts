@@ -6,6 +6,7 @@ import { checkResult, domainCheckResult, monitor } from "../../../db/schema";
 import { encrypt } from "../../../lib/crypto";
 import type { AppEnv } from "../../../types";
 import {
+  DnsMonitorSchema,
   HttpMonitorSchema,
   MonitorResponseSchema,
   TcpMonitorSchema,
@@ -19,10 +20,15 @@ const UpdateTcpMonitorSchema = TcpMonitorSchema.partial().extend({
   type: z.literal("tcp"),
 });
 
+const UpdateDnsMonitorSchema = DnsMonitorSchema.partial().extend({
+  type: z.literal("dns"),
+});
+
 const UpdateMonitorSchema = z
   .discriminatedUnion("type", [
     UpdateHttpMonitorSchema,
     UpdateTcpMonitorSchema,
+    UpdateDnsMonitorSchema,
   ])
   .openapi("UpdateMonitor");
 
@@ -31,7 +37,7 @@ const route = createRoute({
   path: "/:teamId/:monitorId",
   tags: ["monitors"],
   summary: "Update a monitor",
-  description: "Updates an HTTP or TCP monitor",
+  description: "Updates an HTTP, TCP, or DNS monitor",
   request: {
     body: {
       content: {
@@ -126,9 +132,28 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
       if (data.checkDomain !== undefined) {
         baseUpdates.checkDomain = data.checkDomain;
       }
+      baseUpdates.dnsRecordType = null;
+      baseUpdates.dnsExpectedValue = null;
+      baseUpdates.dnsResolver = "cloudflare";
     } else if (data.type === "tcp") {
       if (data.host !== undefined) baseUpdates.host = data.host;
       if (data.port !== undefined) baseUpdates.port = data.port;
+      baseUpdates.dnsRecordType = null;
+      baseUpdates.dnsExpectedValue = null;
+      baseUpdates.dnsResolver = "cloudflare";
+    } else if (data.type === "dns") {
+      if (data.host !== undefined) baseUpdates.host = data.host;
+      if (data.assertions !== undefined) {
+        baseUpdates.dnsRecordType = JSON.stringify(
+          Array.from(new Set(data.assertions.map((a) => a.recordType))),
+        );
+        baseUpdates.dnsExpectedValue = JSON.stringify(data.assertions);
+      }
+      baseUpdates.dnsResolver = "cloudflare";
+      baseUpdates.port = null;
+      baseUpdates.followRedirects = false;
+      baseUpdates.checkDomain = false;
+      baseUpdates.contentCheck = null;
     }
 
     const [updatedMonitor] = await db

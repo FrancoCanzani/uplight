@@ -20,6 +20,7 @@ import { FileTextIcon } from "./motion/icons/file-text";
 import { HeartIcon } from "./motion/icons/heart";
 import { LayoutPanelTopIcon } from "./motion/icons/layout-panel-top";
 import { MessageSquareIcon } from "./motion/icons/message-square";
+import { ServerIcon } from "./motion/icons/server";
 import { SettingsIcon } from "./motion/icons/settings";
 
 const routeApi = getRouteApi("/(dashboard)/$teamId");
@@ -39,7 +40,7 @@ export function DashboardSidebar() {
       <SidebarHeader className="h-14 p-0">
         <TeamSwitcher />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="[&_svg]:!size-3.5">
         <SidebarGroup className="py-2">
           <SidebarGroupLabel>Workspace</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -52,7 +53,7 @@ export function DashboardSidebar() {
                   )}
                 >
                   <Link
-                    className="w-full flex items-center gap-x-2 text-base font-light"
+                    className="w-full flex items-center gap-x-2 text-sm font-light"
                     to="/$teamId/monitors"
                     params={{ teamId }}
                   >
@@ -65,11 +66,28 @@ export function DashboardSidebar() {
                 <SidebarMenuButton
                   className={cn(
                     "",
+                    locationArr.includes("dns-monitors") && "bg-sidebar-accent",
+                  )}
+                >
+                  <Link
+                    className="w-full flex items-center gap-x-2 text-sm font-light"
+                    to="/$teamId/dns-monitors"
+                    params={{ teamId }}
+                  >
+                    <ServerIcon />
+                    DNS Monitors
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  className={cn(
+                    "",
                     locationArr.includes("heartbeats") && "bg-sidebar-accent",
                   )}
                 >
                   <Link
-                    className="w-full flex items-center gap-x-2 text-base font-light"
+                    className="w-full flex items-center gap-x-2 text-sm font-light"
                     to="/$teamId/heartbeats"
                     params={{ teamId }}
                   >
@@ -86,7 +104,7 @@ export function DashboardSidebar() {
                   )}
                 >
                   <Link
-                    className="w-full flex items-center gap-x-2 text-base font-light"
+                    className="w-full flex items-center gap-x-2 text-sm font-light"
                     to="/$teamId/incidents"
                     params={{ teamId }}
                   >
@@ -103,7 +121,7 @@ export function DashboardSidebar() {
                   )}
                 >
                   <Link
-                    className="w-full flex items-center gap-x-2 text-base font-light"
+                    className="w-full flex items-center gap-x-2 text-sm font-light"
                     to="/$teamId/status-pages"
                     params={{ teamId }}
                   >
@@ -121,7 +139,7 @@ export function DashboardSidebar() {
                   )}
                 >
                   <Link
-                    className="w-full flex items-center gap-x-2 text-base font-light"
+                    className="w-full flex items-center gap-x-2 text-sm font-light"
                     to="/$teamId/integrations"
                     params={{ teamId }}
                   >
@@ -134,12 +152,12 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="[&_svg]:!size-3.5">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton>
               <Link
-                className="w-full flex items-center gap-x-2 text-base font-light"
+                className="w-full flex items-center gap-x-2 text-sm font-light"
                 to="/"
               >
                 <FileTextIcon />
@@ -155,7 +173,7 @@ export function DashboardSidebar() {
               )}
             >
               <Link
-                className="w-full flex items-center gap-x-2 text-base font-light"
+                className="w-full flex items-center gap-x-2 text-sm font-light"
                 to="/$teamId/settings"
                 params={{ teamId: teamId }}
               >
@@ -172,7 +190,7 @@ export function DashboardSidebar() {
               )}
             >
               <Link
-                className="w-full flex items-center gap-x-2 text-base font-light"
+                className="w-full flex items-center gap-x-2 text-sm font-light"
                 to="/$teamId/support"
                 params={{ teamId }}
               >

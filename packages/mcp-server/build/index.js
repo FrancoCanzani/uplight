@@ -29033,6 +29033,10 @@ class StdioServerTransport {
 
 // src/api-client.ts
 var UNSAFE_METHODS = new Set(["POST", "PATCH", "PUT", "DELETE"]);
+var REQUEST_TIMEOUT_MS = 15000;
+function encodePathSegment(value) {
+  return encodeURIComponent(String(value));
+}
 
 class UplightApiClient {
   baseUrl;
@@ -29058,11 +29062,24 @@ class UplightApiClient {
     if (body !== undefined) {
       headers["Content-Type"] = "application/json";
     }
-    const res = await fetch(url, {
-      method,
-      headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined
-    });
+    const controller = new AbortController;
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    let res;
+    try {
+      res = await fetch(url, {
+        method,
+        headers,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+        signal: controller.signal
+      });
+    } catch (error2) {
+      if (error2 instanceof Error && error2.name === "AbortError") {
+        throw new Error(`API ${method} ${path} timed out after ${REQUEST_TIMEOUT_MS}ms`);
+      }
+      throw error2;
+    } finally {
+      clearTimeout(timeoutId);
+    }
     if (!res.ok) {
       const text = await res.text().catch(() => "");
       let message;
@@ -29077,14 +29094,14 @@ class UplightApiClient {
     return res.json();
   }
   async listMonitors(teamId) {
-    return this.request("GET", `/monitors/${teamId}`);
+    return this.request("GET", `/monitors/${encodePathSegment(teamId)}`);
   }
   async getMonitor(teamId, monitorId) {
-    return this.request("GET", `/monitors/${teamId}/${monitorId}`);
+    return this.request("GET", `/monitors/${encodePathSegment(teamId)}/${encodePathSegment(monitorId)}`);
   }
   async getMonitorStats(teamId, monitorId, days) {
     const query = days ? `?days=${days}` : "";
-    return this.request("GET", `/monitors/${teamId}/${monitorId}/stats${query}`);
+    return this.request("GET", `/monitors/${encodePathSegment(teamId)}/${encodePathSegment(monitorId)}/stats${query}`);
   }
   async getMonitorChecks(teamId, monitorId, params) {
     const searchParams = new URLSearchParams;
@@ -29099,7 +29116,7 @@ class UplightApiClient {
     if (params?.location)
       searchParams.set("location", params.location);
     const query = searchParams.toString();
-    return this.request("GET", `/monitors/${teamId}/${monitorId}/checks${query ? `?${query}` : ""}`);
+    return this.request("GET", `/monitors/${encodePathSegment(teamId)}/${encodePathSegment(monitorId)}/checks${query ? `?${query}` : ""}`);
   }
   async listIncidents(teamId, params) {
     const searchParams = new URLSearchParams;
@@ -29112,48 +29129,52 @@ class UplightApiClient {
     if (params?.heartbeatId)
       searchParams.set("heartbeatId", params.heartbeatId);
     const query = searchParams.toString();
-    return this.request("GET", `/incidents/${teamId}${query ? `?${query}` : ""}`);
+    return this.request("GET", `/incidents/${encodePathSegment(teamId)}${query ? `?${query}` : ""}`);
   }
   async getIncident(teamId, incidentId) {
-    return this.request("GET", `/incidents/${teamId}/${incidentId}`);
+    return this.request("GET", `/incidents/${encodePathSegment(teamId)}/${encodePathSegment(incidentId)}`);
   }
   async getIncidentActivities(teamId, incidentId) {
-    return this.request("GET", `/incidents/${teamId}/${incidentId}/activities`);
+    return this.request("GET", `/incidents/${encodePathSegment(teamId)}/${encodePathSegment(incidentId)}/activities`);
   }
   async updateIncidentStatus(teamId, incidentId, status) {
-    return this.request("PATCH", `/incidents/${teamId}/${incidentId}`, { status });
+    return this.request("PATCH", `/incidents/${encodePathSegment(teamId)}/${encodePathSegment(incidentId)}`, { status });
   }
   async addIncidentComment(teamId, incidentId, content) {
-    return this.request("POST", `/incidents/${teamId}/${incidentId}/activities`, { content });
+    return this.request("POST", `/incidents/${encodePathSegment(teamId)}/${encodePathSegment(incidentId)}/activities`, { content });
   }
   async listHeartbeats(teamId) {
-    return this.request("GET", `/heartbeats/${teamId}`);
+    return this.request("GET", `/heartbeats/${encodePathSegment(teamId)}`);
   }
   async getHeartbeat(teamId, heartbeatId) {
-    return this.request("GET", `/heartbeats/${teamId}/${heartbeatId}`);
+    return this.request("GET", `/heartbeats/${encodePathSegment(teamId)}/${encodePathSegment(heartbeatId)}`);
   }
   async listTeams() {
     return this.request("GET", "/teams");
   }
   async listStatusPages(teamId) {
-    return this.request("GET", `/status-pages/${teamId}`);
+    return this.request("GET", `/status-pages/${encodePathSegment(teamId)}`);
   }
   async listIntegrations(teamId) {
-    return this.request("GET", `/integrations/${teamId}`);
+    return this.request("GET", `/integrations/${encodePathSegment(teamId)}`);
   }
   async listMaintenanceWindows(teamId, monitorId) {
-    return this.request("GET", `/maintenance/${teamId}/${monitorId}`);
+    return this.request("GET", `/maintenance/${encodePathSegment(teamId)}/${encodePathSegment(monitorId)}`);
   }
 }
 // src/tools/heartbeats.ts
 function registerHeartbeatTools(server, api2) {
   const defaultTeamId = api2.getDefaultTeamId();
+  const teamIdSchema = defaultTeamId ? exports_external.string().regex(/^\d+$/).optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().regex(/^\d+$/).describe("Team ID");
   server.tool("list_heartbeats", "List all heartbeat monitors for a team with recent pings and incident count", {
-    teamId: defaultTeamId ? exports_external.string().optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().describe("Team ID")
+    teamId: teamIdSchema
   }, async ({ teamId }) => {
     const tid = teamId ?? defaultTeamId;
     if (!tid) {
-      return { content: [{ type: "text", text: "Error: teamId is required" }] };
+      return {
+        content: [{ type: "text", text: "Error: teamId is required" }],
+        isError: true
+      };
     }
     try {
       const data = await api2.listHeartbeats(tid);
@@ -29163,12 +29184,15 @@ function registerHeartbeatTools(server, api2) {
     }
   });
   server.tool("get_heartbeat", "Get full details for a specific heartbeat monitor including recent pings", {
-    teamId: defaultTeamId ? exports_external.string().optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().describe("Team ID"),
-    heartbeatId: exports_external.string().describe("Heartbeat ID")
+    teamId: teamIdSchema,
+    heartbeatId: exports_external.string().regex(/^\d+$/).describe("Heartbeat ID")
   }, async ({ teamId, heartbeatId }) => {
     const tid = teamId ?? defaultTeamId;
     if (!tid) {
-      return { content: [{ type: "text", text: "Error: teamId is required" }] };
+      return {
+        content: [{ type: "text", text: "Error: teamId is required" }],
+        isError: true
+      };
     }
     try {
       const data = await api2.getHeartbeat(tid, heartbeatId);
@@ -29182,16 +29206,21 @@ function registerHeartbeatTools(server, api2) {
 // src/tools/incidents.ts
 function registerIncidentTools(server, api2) {
   const defaultTeamId = api2.getDefaultTeamId();
+  const teamIdSchema = defaultTeamId ? exports_external.string().regex(/^\d+$/).optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().regex(/^\d+$/).describe("Team ID");
+  const incidentIdSchema = exports_external.string().regex(/^\d+$/).describe("Incident ID");
   server.tool("list_incidents", "List incidents for a team, optionally filtered by monitor or heartbeat", {
-    teamId: defaultTeamId ? exports_external.string().optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().describe("Team ID"),
+    teamId: teamIdSchema,
     limit: exports_external.number().int().optional().describe("Number of results (default: 20)"),
     offset: exports_external.number().int().optional().describe("Offset for pagination (default: 0)"),
-    monitorId: exports_external.string().optional().describe("Filter by monitor ID"),
-    heartbeatId: exports_external.string().optional().describe("Filter by heartbeat ID")
+    monitorId: exports_external.string().regex(/^\d+$/).optional().describe("Filter by monitor ID"),
+    heartbeatId: exports_external.string().regex(/^\d+$/).optional().describe("Filter by heartbeat ID")
   }, async ({ teamId, ...params }) => {
     const tid = teamId ?? defaultTeamId;
     if (!tid) {
-      return { content: [{ type: "text", text: "Error: teamId is required" }] };
+      return {
+        content: [{ type: "text", text: "Error: teamId is required" }],
+        isError: true
+      };
     }
     try {
       const data = await api2.listIncidents(tid, params);
@@ -29201,12 +29230,15 @@ function registerIncidentTools(server, api2) {
     }
   });
   server.tool("get_incident", "Get full details for a specific incident including status timeline and assignees", {
-    teamId: defaultTeamId ? exports_external.string().optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().describe("Team ID"),
-    incidentId: exports_external.string().describe("Incident ID")
+    teamId: teamIdSchema,
+    incidentId: incidentIdSchema
   }, async ({ teamId, incidentId }) => {
     const tid = teamId ?? defaultTeamId;
     if (!tid) {
-      return { content: [{ type: "text", text: "Error: teamId is required" }] };
+      return {
+        content: [{ type: "text", text: "Error: teamId is required" }],
+        isError: true
+      };
     }
     try {
       const data = await api2.getIncident(tid, incidentId);
@@ -29216,12 +29248,15 @@ function registerIncidentTools(server, api2) {
     }
   });
   server.tool("get_incident_activities", "Get the activity timeline for an incident (status changes, comments, assignments)", {
-    teamId: defaultTeamId ? exports_external.string().optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().describe("Team ID"),
-    incidentId: exports_external.string().describe("Incident ID")
+    teamId: teamIdSchema,
+    incidentId: incidentIdSchema
   }, async ({ teamId, incidentId }) => {
     const tid = teamId ?? defaultTeamId;
     if (!tid) {
-      return { content: [{ type: "text", text: "Error: teamId is required" }] };
+      return {
+        content: [{ type: "text", text: "Error: teamId is required" }],
+        isError: true
+      };
     }
     try {
       const data = await api2.getIncidentActivities(tid, incidentId);
@@ -29231,13 +29266,16 @@ function registerIncidentTools(server, api2) {
     }
   });
   server.tool("update_incident_status", "Update the status of an incident (acknowledge, fixing, recovered, resolved)", {
-    teamId: defaultTeamId ? exports_external.string().optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().describe("Team ID"),
-    incidentId: exports_external.string().describe("Incident ID"),
+    teamId: teamIdSchema,
+    incidentId: incidentIdSchema,
     status: exports_external.enum(["ongoing", "acknowledged", "fixing", "recovered", "resolved"]).describe("New status for the incident")
   }, async ({ teamId, incidentId, status }) => {
     const tid = teamId ?? defaultTeamId;
     if (!tid) {
-      return { content: [{ type: "text", text: "Error: teamId is required" }] };
+      return {
+        content: [{ type: "text", text: "Error: teamId is required" }],
+        isError: true
+      };
     }
     try {
       const data = await api2.updateIncidentStatus(tid, incidentId, status);
@@ -29247,13 +29285,16 @@ function registerIncidentTools(server, api2) {
     }
   });
   server.tool("add_incident_comment", "Add a comment to an incident's activity timeline", {
-    teamId: defaultTeamId ? exports_external.string().optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().describe("Team ID"),
-    incidentId: exports_external.string().describe("Incident ID"),
+    teamId: teamIdSchema,
+    incidentId: incidentIdSchema,
     content: exports_external.string().describe("Comment text to add")
   }, async ({ teamId, incidentId, content }) => {
     const tid = teamId ?? defaultTeamId;
     if (!tid) {
-      return { content: [{ type: "text", text: "Error: teamId is required" }] };
+      return {
+        content: [{ type: "text", text: "Error: teamId is required" }],
+        isError: true
+      };
     }
     try {
       const data = await api2.addIncidentComment(tid, incidentId, content);
@@ -29267,12 +29308,17 @@ function registerIncidentTools(server, api2) {
 // src/tools/monitors.ts
 function registerMonitorTools(server, api2) {
   const defaultTeamId = api2.getDefaultTeamId();
+  const teamIdSchema = defaultTeamId ? exports_external.string().regex(/^\d+$/).optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().regex(/^\d+$/).describe("Team ID");
+  const monitorIdSchema = exports_external.string().regex(/^\d+$/).describe("Monitor ID");
   server.tool("list_monitors", "List all monitors for a team with their current status and recent checks", {
-    teamId: defaultTeamId ? exports_external.string().optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().describe("Team ID")
+    teamId: teamIdSchema
   }, async ({ teamId }) => {
     const tid = teamId ?? defaultTeamId;
     if (!tid) {
-      return { content: [{ type: "text", text: "Error: teamId is required" }] };
+      return {
+        content: [{ type: "text", text: "Error: teamId is required" }],
+        isError: true
+      };
     }
     try {
       const data = await api2.listMonitors(tid);
@@ -29282,12 +29328,15 @@ function registerMonitorTools(server, api2) {
     }
   });
   server.tool("get_monitor", "Get full details for a specific monitor including domain check info", {
-    teamId: defaultTeamId ? exports_external.string().optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().describe("Team ID"),
-    monitorId: exports_external.string().describe("Monitor ID")
+    teamId: teamIdSchema,
+    monitorId: monitorIdSchema
   }, async ({ teamId, monitorId }) => {
     const tid = teamId ?? defaultTeamId;
     if (!tid) {
-      return { content: [{ type: "text", text: "Error: teamId is required" }] };
+      return {
+        content: [{ type: "text", text: "Error: teamId is required" }],
+        isError: true
+      };
     }
     try {
       const data = await api2.getMonitor(tid, monitorId);
@@ -29297,13 +29346,16 @@ function registerMonitorTools(server, api2) {
     }
   });
   server.tool("get_monitor_stats", "Get uptime percentage, average response time, and per-location stats for a monitor", {
-    teamId: defaultTeamId ? exports_external.string().optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().describe("Team ID"),
-    monitorId: exports_external.string().describe("Monitor ID"),
+    teamId: teamIdSchema,
+    monitorId: monitorIdSchema,
     days: exports_external.number().int().min(1).max(90).optional().describe("Number of days to look back (default: 14, max: 90)")
   }, async ({ teamId, monitorId, days }) => {
     const tid = teamId ?? defaultTeamId;
     if (!tid) {
-      return { content: [{ type: "text", text: "Error: teamId is required" }] };
+      return {
+        content: [{ type: "text", text: "Error: teamId is required" }],
+        isError: true
+      };
     }
     try {
       const data = await api2.getMonitorStats(tid, monitorId, days);
@@ -29313,8 +29365,8 @@ function registerMonitorTools(server, api2) {
     }
   });
   server.tool("get_monitor_checks", "Get check history for a monitor with pagination and filtering by result or location", {
-    teamId: defaultTeamId ? exports_external.string().optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().describe("Team ID"),
-    monitorId: exports_external.string().describe("Monitor ID"),
+    teamId: teamIdSchema,
+    monitorId: monitorIdSchema,
     limit: exports_external.number().int().optional().describe("Number of results (default: 50)"),
     offset: exports_external.number().int().optional().describe("Offset for pagination (default: 0)"),
     days: exports_external.number().int().optional().describe("Days to look back (default: 14)"),
@@ -29323,7 +29375,10 @@ function registerMonitorTools(server, api2) {
   }, async ({ teamId, monitorId, ...params }) => {
     const tid = teamId ?? defaultTeamId;
     if (!tid) {
-      return { content: [{ type: "text", text: "Error: teamId is required" }] };
+      return {
+        content: [{ type: "text", text: "Error: teamId is required" }],
+        isError: true
+      };
     }
     try {
       const data = await api2.getMonitorChecks(tid, monitorId, params);
@@ -29335,8 +29390,24 @@ function registerMonitorTools(server, api2) {
 }
 
 // src/tools/overview.ts
+var REDACTED_VALUE = "[REDACTED]";
+var SENSITIVE_KEY_PATTERN = /(token|secret|password|api[-_]?key|auth|webhook[-_]?url|routing[-_]?key)/i;
+function redactSensitiveData(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => redactSensitiveData(item));
+  }
+  if (value && typeof value === "object") {
+    const redacted = {};
+    for (const [key, nestedValue] of Object.entries(value)) {
+      redacted[key] = SENSITIVE_KEY_PATTERN.test(key) ? REDACTED_VALUE : redactSensitiveData(nestedValue);
+    }
+    return redacted;
+  }
+  return value;
+}
 function registerOverviewTools(server, api2) {
   const defaultTeamId = api2.getDefaultTeamId();
+  const teamIdSchema = defaultTeamId ? exports_external.string().regex(/^\d+$/).optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().regex(/^\d+$/).describe("Team ID");
   server.tool("list_teams", "List all teams the authenticated user belongs to", {}, async () => {
     try {
       const data = await api2.listTeams();
@@ -29346,11 +29417,14 @@ function registerOverviewTools(server, api2) {
     }
   });
   server.tool("list_status_pages", "List all public status pages for a team", {
-    teamId: defaultTeamId ? exports_external.string().optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().describe("Team ID")
+    teamId: teamIdSchema
   }, async ({ teamId }) => {
     const tid = teamId ?? defaultTeamId;
     if (!tid) {
-      return { content: [{ type: "text", text: "Error: teamId is required" }] };
+      return {
+        content: [{ type: "text", text: "Error: teamId is required" }],
+        isError: true
+      };
     }
     try {
       const data = await api2.listStatusPages(tid);
@@ -29360,26 +29434,33 @@ function registerOverviewTools(server, api2) {
     }
   });
   server.tool("list_integrations", "List all alert integrations (Slack, Discord, email, webhooks) for a team", {
-    teamId: defaultTeamId ? exports_external.string().optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().describe("Team ID")
+    teamId: teamIdSchema
   }, async ({ teamId }) => {
     const tid = teamId ?? defaultTeamId;
     if (!tid) {
-      return { content: [{ type: "text", text: "Error: teamId is required" }] };
+      return {
+        content: [{ type: "text", text: "Error: teamId is required" }],
+        isError: true
+      };
     }
     try {
       const data = await api2.listIntegrations(tid);
-      return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+      const redactedData = redactSensitiveData(data);
+      return { content: [{ type: "text", text: JSON.stringify(redactedData, null, 2) }] };
     } catch (e) {
       return { content: [{ type: "text", text: `Error: ${e.message}` }], isError: true };
     }
   });
   server.tool("list_maintenance_windows", "List maintenance windows for a specific monitor", {
-    teamId: defaultTeamId ? exports_external.string().optional().describe(`Team ID (default: ${defaultTeamId})`) : exports_external.string().describe("Team ID"),
-    monitorId: exports_external.string().describe("Monitor ID")
+    teamId: teamIdSchema,
+    monitorId: exports_external.string().regex(/^\d+$/).describe("Monitor ID")
   }, async ({ teamId, monitorId }) => {
     const tid = teamId ?? defaultTeamId;
     if (!tid) {
-      return { content: [{ type: "text", text: "Error: teamId is required" }] };
+      return {
+        content: [{ type: "text", text: "Error: teamId is required" }],
+        isError: true
+      };
     }
     try {
       const data = await api2.listMaintenanceWindows(tid, monitorId);
@@ -29400,6 +29481,10 @@ if (!apiUrl) {
 }
 if (!sessionToken) {
   console.error("UPLIGHT_SESSION_TOKEN environment variable is required");
+  process.exit(1);
+}
+if (defaultTeamId && !/^\d+$/.test(defaultTeamId)) {
+  console.error("UPLIGHT_TEAM_ID must be a numeric team ID");
   process.exit(1);
 }
 var api2 = new UplightApiClient(apiUrl, sessionToken, defaultTeamId);

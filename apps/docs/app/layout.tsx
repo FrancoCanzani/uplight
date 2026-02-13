@@ -3,7 +3,18 @@ import { Head } from "nextra/components";
 import { getPageMap } from "nextra/page-map";
 import "nextra-theme-docs/style.css";
 import type { Metadata } from "next";
+import { JetBrains_Mono, Manrope } from "next/font/google";
 import "./globals.css";
+
+const sans = Manrope({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -39,14 +50,16 @@ export default async function RootLayout({
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning>
       <Head faviconGlyph="⚡" />
-      <body>
+      <body className={`${sans.variable} ${mono.variable}`}>
         <Layout
           navbar={navbar}
           pageMap={await getPageMap()}
           docsRepositoryBase="https://github.com/francocanzani/uplight/tree/main/apps/docs"
           footer={footer}
-          editLink="Edit this page on GitHub"
-          feedback={{ content: "Question? Give us feedback →" }}
+          darkMode={false}
+          editLink={null}
+          feedback={{ content: null }}
+          toc={{ float: false, title: "Contents", backToTop: null }}
           sidebar={{ defaultMenuCollapseLevel: 1 }}
         >
           {children}

@@ -37,7 +37,7 @@ function getMonitorDomain(monitor: {
   url?: string | null;
   domainCheck?: { domain: string } | null;
 }): string {
-  if (monitor.type === "tcp") {
+  if (monitor.type === "tcp" || monitor.type === "dns") {
     return monitor.host || "";
   }
   if (monitor.domainCheck?.domain) {

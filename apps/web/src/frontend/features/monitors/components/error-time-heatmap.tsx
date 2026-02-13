@@ -1,6 +1,11 @@
 import { useMemo } from "react";
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { addHours, addMilliseconds, format, startOfDay, subDays } from "date-fns";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { CheckResult } from "../api/fetch-checks";
 
 const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
@@ -12,11 +17,11 @@ export default function ErrorTimeHeatmap({ checks }: { checks: CheckResult[] }) 
   const region = search.region;
   const period = Number(search.period || "7");
 
-  const { days, slots, maxChecks, totalChecks } = useMemo(() => {
+  const { days, slots, maxErrors, totalChecks, totalErrors } = useMemo(() => {
     const dayCount = period > 0 ? period : 7;
     const lastDay = startOfDay(new Date());
     const rows = Array.from({ length: dayCount }, (_, i) => subDays(lastDay, dayCount - 1 - i));
-    const matrix = new Map<string, { checks: number }>();
+    const matrix = new Map<string, { checks: number; errors: number }>();
 
     for (const check of checks) {
       const checkedAt = new Date(check.checkedAt);
@@ -24,8 +29,15 @@ export default function ErrorTimeHeatmap({ checks }: { checks: CheckResult[] }) 
       const hour = checkedAt.getHours();
       const key = `${day}-${hour}`;
 
-      const current = matrix.get(key) ?? { checks: 0 };
+      const current = matrix.get(key) ?? { checks: 0, errors: 0 };
       current.checks += 1;
+      if (
+        check.result !== "success" &&
+        check.result !== "degraded" &&
+        check.result !== "maintenance"
+      ) {
+        current.errors += 1;
+      }
       matrix.set(key, current);
     }
 
@@ -33,38 +45,46 @@ export default function ErrorTimeHeatmap({ checks }: { checks: CheckResult[] }) 
       const dayTs = day.getTime();
       return Array.from({ length: 24 }, (_, hour) => {
         const key = `${dayTs}-${hour}`;
-        const entry = matrix.get(key) ?? { checks: 0 };
+        const entry = matrix.get(key) ?? { checks: 0, errors: 0 };
         return {
           dayTs,
           hour,
           checks: entry.checks,
+          errors: entry.errors,
         };
       });
     });
 
-    const checkTotals = builtSlots.flatMap((row) => row.map((slot) => slot.checks));
+    const errorTotals = builtSlots.flatMap((row) => row.map((slot) => slot.errors));
 
     return {
       days: rows,
       slots: builtSlots,
-      maxChecks: Math.max(...checkTotals, 0),
-      totalChecks: checkTotals.reduce((acc, val) => acc + val, 0),
+      maxErrors: Math.max(...errorTotals, 0),
+      totalChecks: builtSlots
+        .flatMap((row) => row.map((slot) => slot.checks))
+        .reduce((acc, val) => acc + val, 0),
+      totalErrors: errorTotals.reduce((acc, val) => acc + val, 0),
     };
   }, [checks, period]);
 
-  const getIntensityClass = (checkCount: number) => {
+  const getIntensityClass = (checkCount: number, errorCount: number) => {
     if (checkCount <= 0) return "bg-muted/35 hover:bg-muted/55";
-    if (maxChecks <= 1) return "bg-green-700/70 hover:bg-green-700/85";
+    if (errorCount <= 0) return "bg-green-700/70 hover:bg-green-700/85";
+    if (maxErrors <= 1) return "bg-amber-600/80 hover:bg-amber-600/95";
 
-    const normalized = checkCount / maxChecks;
-    if (normalized < 0.2) return "bg-green-700/50 hover:bg-green-700/65";
-    if (normalized < 0.4) return "bg-green-700/75 hover:bg-green-700/90";
-    if (normalized < 0.6) return "bg-amber-600/80 hover:bg-amber-600/95";
-    if (normalized < 0.85) return "bg-red-600/75 hover:bg-red-600/90";
+    const normalized = errorCount / maxErrors;
+    if (normalized < 0.35) return "bg-amber-600/80 hover:bg-amber-600/95";
+    if (normalized < 0.7) return "bg-red-600/75 hover:bg-red-600/90";
     return "bg-red-700/95 hover:bg-red-700";
   };
 
-  const openLogsAtSlot = (dayTs: number, hour: number, checkCount: number) => {
+  const openLogsAtSlot = (
+    dayTs: number,
+    hour: number,
+    checkCount: number,
+    errorCount: number,
+  ) => {
     if (checkCount <= 0) return;
     const slotStart = addHours(new Date(dayTs), hour).getTime();
     const slotEnd = addMilliseconds(addHours(new Date(dayTs), hour + 1), -1).getTime();
@@ -74,7 +94,7 @@ export default function ErrorTimeHeatmap({ checks }: { checks: CheckResult[] }) 
       params: { teamId, monitorId },
       search: (prev) => ({
         ...prev,
-        status: undefined,
+        status: errorCount > 0 ? "issues" : undefined,
         date: undefined,
         dateFrom: String(slotStart),
         dateTo: String(slotEnd),
@@ -86,10 +106,10 @@ export default function ErrorTimeHeatmap({ checks }: { checks: CheckResult[] }) 
 
   return (
     <div className="space-y-4">
-      <h3 className="font-medium">Heatmap</h3>
+      <h3 className="font-medium">Error Heatmap</h3>
       <div className="text-xs text-muted-foreground">
-        {totalChecks} checks over the last {period} day{period === 1 ? "" : "s"}.
-        Select a cell to inspect matching logs.
+        {totalErrors} errors across {totalChecks} checks over the last {period} day
+        {period === 1 ? "" : "s"}. Select a cell to inspect matching logs.
       </div>
 
       <div className="space-y-1.5">
@@ -113,15 +133,53 @@ export default function ErrorTimeHeatmap({ checks }: { checks: CheckResult[] }) 
               </div>
               {row.map((slot) => {
                 const slotDate = addHours(new Date(slot.dayTs), slot.hour);
-                return (
+                const errorRate =
+                  slot.checks > 0
+                    ? Math.round((slot.errors / slot.checks) * 100)
+                    : 0;
+
+                const cell = (
                   <button
-                    key={`${slot.dayTs}-${slot.hour}`}
                     type="button"
-                    className={`h-3.5 transition-colors ${getIntensityClass(slot.checks)} ${slot.checks > 0 ? "cursor-pointer" : "cursor-default"}`}
-                    title={`${format(slotDate, "MMM d, HH:00")} • ${slot.checks} check${slot.checks === 1 ? "" : "s"}`}
-                    aria-label={`${format(slotDate, "MMM d, HH:00")}: ${slot.checks} checks`}
-                    onClick={() => openLogsAtSlot(slot.dayTs, slot.hour, slot.checks)}
+                    className={`h-3.5 transition-colors ${getIntensityClass(slot.checks, slot.errors)} ${slot.checks > 0 ? "cursor-pointer" : "cursor-default"}`}
+                    title={`${format(slotDate, "MMM d, HH:00")} • ${slot.errors} error${slot.errors === 1 ? "" : "s"} • ${slot.checks} check${slot.checks === 1 ? "" : "s"}`}
+                    aria-label={`${format(slotDate, "MMM d, HH:00")}: ${slot.errors} errors from ${slot.checks} checks`}
+                    onClick={() =>
+                      openLogsAtSlot(
+                        slot.dayTs,
+                        slot.hour,
+                        slot.checks,
+                        slot.errors,
+                      )
+                    }
                   />
+                );
+
+                if (slot.checks <= 0) {
+                  return (
+                    <div key={`${slot.dayTs}-${slot.hour}`}>
+                      {cell}
+                    </div>
+                  );
+                }
+
+                return (
+                  <Tooltip key={`${slot.dayTs}-${slot.hour}-tooltip`}>
+                    <TooltipTrigger render={cell} />
+                    <TooltipContent side="top" className="text-xs">
+                      <div className="space-y-1">
+                        <div className="font-medium">
+                          {format(slotDate, "MMM d, HH:00")}
+                        </div>
+                        <div className="font-mono">
+                          {slot.errors} errors / {slot.checks} checks
+                        </div>
+                        <div className="text-muted-foreground">
+                          Error rate: {errorRate}%
+                        </div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
                 );
               })}
             </div>
@@ -132,8 +190,6 @@ export default function ErrorTimeHeatmap({ checks }: { checks: CheckResult[] }) 
       <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
         <span>Less</span>
         <div className="h-3 w-4 bg-muted/35" />
-        <div className="h-3 w-4 bg-green-700/50" />
-        <div className="h-3 w-4 bg-green-700/75" />
         <div className="h-3 w-4 bg-amber-600/80" />
         <div className="h-3 w-4 bg-red-600/75" />
         <div className="h-3 w-4 bg-red-700/95" />

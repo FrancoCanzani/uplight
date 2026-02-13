@@ -4,19 +4,23 @@ import type { UplightApiClient } from "../api-client.js";
 
 export function registerHeartbeatTools(server: McpServer, api: UplightApiClient) {
   const defaultTeamId = api.getDefaultTeamId();
+  const teamIdSchema = defaultTeamId
+    ? z.string().regex(/^\d+$/).optional().describe(`Team ID (default: ${defaultTeamId})`)
+    : z.string().regex(/^\d+$/).describe("Team ID");
 
   server.tool(
     "list_heartbeats",
     "List all heartbeat monitors for a team with recent pings and incident count",
     {
-      teamId: defaultTeamId
-        ? z.string().optional().describe(`Team ID (default: ${defaultTeamId})`)
-        : z.string().describe("Team ID"),
+      teamId: teamIdSchema,
     },
     async ({ teamId }) => {
       const tid = teamId ?? defaultTeamId;
       if (!tid) {
-        return { content: [{ type: "text", text: "Error: teamId is required" }] };
+        return {
+          content: [{ type: "text", text: "Error: teamId is required" }],
+          isError: true,
+        };
       }
       try {
         const data = await api.listHeartbeats(tid);
@@ -31,15 +35,16 @@ export function registerHeartbeatTools(server: McpServer, api: UplightApiClient)
     "get_heartbeat",
     "Get full details for a specific heartbeat monitor including recent pings",
     {
-      teamId: defaultTeamId
-        ? z.string().optional().describe(`Team ID (default: ${defaultTeamId})`)
-        : z.string().describe("Team ID"),
-      heartbeatId: z.string().describe("Heartbeat ID"),
+      teamId: teamIdSchema,
+      heartbeatId: z.string().regex(/^\d+$/).describe("Heartbeat ID"),
     },
     async ({ teamId, heartbeatId }) => {
       const tid = teamId ?? defaultTeamId;
       if (!tid) {
-        return { content: [{ type: "text", text: "Error: teamId is required" }] };
+        return {
+          content: [{ type: "text", text: "Error: teamId is required" }],
+          isError: true,
+        };
       }
       try {
         const data = await api.getHeartbeat(tid, heartbeatId);

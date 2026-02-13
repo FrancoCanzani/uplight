@@ -58,9 +58,30 @@ export const TcpMonitorSchema = z.object({
     .min(1, "Please select at least one monitoring location"),
 });
 
+export const DnsMonitorSchema = z.object({
+  type: z.literal("dns"),
+  name: z.string().min(1).max(50),
+  host: z.string().min(1).max(255),
+  assertions: z
+    .array(
+      z.object({
+        recordType: z.enum(["A", "AAAA", "CNAME", "MX", "TXT", "NS"]),
+        value: z.string().min(1).max(255),
+      }),
+    )
+    .min(1, "Please add at least one DNS assertion"),
+  interval: z.int().min(60000).max(1800000),
+  timeout: z.int().min(1).max(30).default(30),
+  responseTimeThreshold: z.int().min(1).optional(),
+  locations: z
+    .array(LocationSchema)
+    .min(1, "Please select at least one monitoring location"),
+});
+
 export const MonitorSchema = z.discriminatedUnion("type", [
   HttpMonitorSchema,
   TcpMonitorSchema,
+  DnsMonitorSchema,
 ]);
 
 export const CreateMonitorSchema = MonitorSchema;
@@ -68,6 +89,7 @@ export const CreateMonitorSchema = MonitorSchema;
 export const UpdateMonitorSchema = z.discriminatedUnion("type", [
   HttpMonitorSchema.partial().extend({ type: z.literal("http") }),
   TcpMonitorSchema.partial().extend({ type: z.literal("tcp") }),
+  DnsMonitorSchema.partial().extend({ type: z.literal("dns") }),
 ]);
 
 export const MonitorStatusSchema = z.enum([
@@ -109,7 +131,7 @@ export const RecentCheckSchema = z.object({
 export const MonitorResponseSchema = z.object({
   id: z.number(),
   teamId: z.number(),
-  type: z.enum(["http", "tcp"]),
+  type: z.enum(["http", "tcp", "dns"]),
   name: z.string(),
   interval: z.number(),
   timeout: z.number(),
@@ -129,6 +151,9 @@ export const MonitorResponseSchema = z.object({
   checkDomain: z.boolean(),
   host: z.string().nullable(),
   port: z.number().nullable(),
+  dnsRecordType: z.string().nullable(),
+  dnsExpectedValue: z.string().nullable(),
+  dnsResolver: z.enum(["cloudflare", "google"]),
   status: MonitorStatusSchema,
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -148,6 +173,9 @@ export type HttpMonitorInput = z.input<typeof HttpMonitorSchema>;
 
 export type TcpMonitor = z.infer<typeof TcpMonitorSchema>;
 export type TcpMonitorInput = z.input<typeof TcpMonitorSchema>;
+
+export type DnsMonitor = z.infer<typeof DnsMonitorSchema>;
+export type DnsMonitorInput = z.input<typeof DnsMonitorSchema>;
 
 export type Monitor = z.infer<typeof MonitorSchema>;
 export type CreateMonitor = z.infer<typeof CreateMonitorSchema>;

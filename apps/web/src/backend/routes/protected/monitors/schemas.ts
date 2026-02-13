@@ -76,10 +76,44 @@ export const TcpMonitorSchema = z
   })
   .openapi("TcpMonitor");
 
+export const DnsMonitorSchema = z
+  .object({
+    type: z.literal("dns"),
+    name: z.string().min(1).max(50).openapi({ example: "DNS Record Check" }),
+    host: z.string().min(1).max(255).openapi({ example: "example.com" }),
+    assertions: z
+      .array(
+        z.object({
+          recordType: z.enum(["A", "AAAA", "CNAME", "MX", "TXT", "NS"]),
+          value: z.string().min(1).max(255),
+        }),
+      )
+      .min(1, "Please add at least one DNS assertion")
+      .openapi({
+        example: [
+          { recordType: "A", value: "203.0.113.10" },
+          { recordType: "TXT", value: "v=spf1 include:_spf.google.com ~all" },
+        ],
+      }),
+    interval: z
+      .number()
+      .int()
+      .min(60000)
+      .max(1800000)
+      .openapi({ example: 60000 }),
+    timeout: z.number().int().min(1).max(30).default(30),
+    responseTimeThreshold: z.number().int().min(1).optional(),
+    locations: z
+      .array(LocationSchema)
+      .min(1, "Please select at least one monitoring location"),
+  })
+  .openapi("DnsMonitor");
+
 export const CreateMonitorSchema = z
   .discriminatedUnion("type", [
     HttpMonitorSchema,
     TcpMonitorSchema,
+    DnsMonitorSchema,
   ])
   .openapi("CreateMonitor");
 
@@ -126,7 +160,7 @@ export const MonitorResponseSchema = z
   .object({
     id: z.number().int().openapi({ example: 1 }),
     teamId: z.number().int(),
-    type: z.enum(["http", "tcp"]),
+    type: z.enum(["http", "tcp", "dns"]),
     name: z.string(),
     interval: z.number().int(),
     timeout: z.number().int(),
@@ -146,6 +180,11 @@ export const MonitorResponseSchema = z
     checkDomain: z.boolean(),
     host: z.string().nullable(),
     port: z.number().int().nullable(),
+    dnsRecordType: z
+      .string()
+      .nullable(),
+    dnsExpectedValue: z.string().nullable(),
+    dnsResolver: z.enum(["cloudflare", "google"]),
     status: MonitorStatusSchema,
     createdAt: z.string(),
     updatedAt: z.string(),
@@ -160,5 +199,6 @@ export type Location = z.infer<typeof LocationSchema>;
 export type ContentCheck = z.infer<typeof ContentCheckSchema>;
 export type HttpMonitor = z.infer<typeof HttpMonitorSchema>;
 export type TcpMonitor = z.infer<typeof TcpMonitorSchema>;
+export type DnsMonitor = z.infer<typeof DnsMonitorSchema>;
 export type CreateMonitor = z.infer<typeof CreateMonitorSchema>;
 export type MonitorResponse = z.infer<typeof MonitorResponseSchema>;

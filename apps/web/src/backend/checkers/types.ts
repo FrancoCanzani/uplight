@@ -29,6 +29,13 @@ export type IncidentCause =
   | "tcp_failure"
   | "network_error";
 
+export type DnsRecordType = "A" | "AAAA" | "CNAME" | "MX" | "TXT" | "NS";
+export type DnsResolver = "cloudflare" | "google";
+export interface DnsAssertion {
+  recordType: DnsRecordType;
+  value: string;
+}
+
 export interface ContentCheck {
   enabled: boolean;
   mode: "contains" | "not_contains";
@@ -60,7 +67,14 @@ export interface TcpCheckRequest extends BaseCheckRequest {
   port: number;
 }
 
-export type CheckRequest = HttpCheckRequest | TcpCheckRequest;
+export interface DnsCheckRequest extends BaseCheckRequest {
+  type: "dns";
+  host: string;
+  assertions: DnsAssertion[];
+  resolver: DnsResolver;
+}
+
+export type CheckRequest = HttpCheckRequest | TcpCheckRequest | DnsCheckRequest;
 
 export interface CheckConfig {
   timeout: number;
@@ -88,7 +102,7 @@ export interface CheckResult extends RawCheckResult {
 export interface MonitorRow {
   id: number;
   teamId: number;
-  type: "http" | "tcp";
+  type: "http" | "tcp" | "dns";
   name: string;
   interval: number;
   timeout: number;
@@ -106,6 +120,9 @@ export interface MonitorRow {
   checkDomain: boolean;
   host: string | null;
   port: number | null;
+  dnsRecordType: string | null;
+  dnsExpectedValue: string | null;
+  dnsResolver: DnsResolver;
   status: string;
   createdAt: Date;
   updatedAt: Date;

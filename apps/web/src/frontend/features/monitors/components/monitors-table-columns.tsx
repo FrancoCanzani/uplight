@@ -2,6 +2,20 @@ import { type ColumnDef } from "@tanstack/react-table";
 import type { MonitorResponse } from "../schemas";
 import ChecksVisualization from "./checks-visualization";
 import MonitorStatusIndicator from "./monitor-status-indicator";
+import MonitorTableRowActions from "./monitors-table-row-actions";
+
+function formatDnsRecordTypes(raw: string | null): string {
+  if (!raw) return "A";
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed.join(", ");
+    }
+  } catch {
+    return raw;
+  }
+  return "A";
+}
 
 export const monitorsTableColumns: ColumnDef<MonitorResponse>[] = [
   {
@@ -31,13 +45,19 @@ export const monitorsTableColumns: ColumnDef<MonitorResponse>[] = [
   {
     id: "endpoint",
     header: "Endpoint",
-    accessorFn: (row) =>
-      row.type === "http" ? row.url : `${row.host}:${row.port}`,
+    accessorFn: (row) => {
+      if (row.type === "http") return row.url;
+      if (row.type === "dns")
+        return `${row.host} (${formatDnsRecordTypes(row.dnsRecordType)})`;
+      return `${row.host}:${row.port}`;
+    },
     cell: ({ row }) => {
       const endpoint =
-        row.original.type != "tcp"
+        row.original.type === "http"
           ? row.original.url
-          : `${row.original.host}:${row.original.port}`;
+          : row.original.type === "dns"
+            ? `${row.original.host} (${formatDnsRecordTypes(row.original.dnsRecordType)})`
+            : `${row.original.host}:${row.original.port}`;
       return (
         <span className="text-muted-foreground truncate max-w-xs block">
           {endpoint}
@@ -96,6 +116,12 @@ export const monitorsTableColumns: ColumnDef<MonitorResponse>[] = [
         />
       </div>
     ),
+    enableSorting: false,
+  },
+  {
+    id: "actions",
+    header: "",
+    cell: ({ row }) => <MonitorTableRowActions monitor={row.original} />,
     enableSorting: false,
   },
 ];
