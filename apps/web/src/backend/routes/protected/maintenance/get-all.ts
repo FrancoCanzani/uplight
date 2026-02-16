@@ -1,14 +1,14 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { and, eq } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { maintenance, monitor } from "../../../db/schema";
+import { maintenance, maintenanceMonitor, monitor } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 import { MaintenanceResponseSchema } from "./schemas";
 
 const route = createRoute({
   method: "get",
-  path: "/:teamId/:monitorId",
+  path: "/:teamId",
   tags: ["maintenance"],
   summary: "List maintenance windows",
   responses: {
@@ -26,7 +26,6 @@ const route = createRoute({
 export function registerGetAllMaintenance(api: OpenAPIHono<AppEnv>) {
   return api.openapi(route, async (c) => {
     const teamContext = c.get("team");
-    const { monitorId } = c.req.param();
 
     if (!teamContext) {
       throw new HTTPException(401, { message: "Unauthorized" });
@@ -34,35 +33,69 @@ export function registerGetAllMaintenance(api: OpenAPIHono<AppEnv>) {
 
     const db = createDb(c.env.DB);
 
-    const [mon] = await db
-      .select()
-      .from(monitor)
-      .where(
-        and(
-          eq(monitor.id, Number(monitorId)),
-          eq(monitor.teamId, teamContext.teamId),
-        ),
-      )
-      .limit(1);
-
-    if (!mon) {
-      throw new HTTPException(404, { message: "Monitor not found" });
-    }
-
-    const results = await db
+    const windows = await db
       .select()
       .from(maintenance)
-      .where(eq(maintenance.monitorId, Number(monitorId)));
+      .where(eq(maintenance.teamId, teamContext.teamId))
+      .orderBy(desc(maintenance.startsAt));
+
+    if (windows.length === 0) {
+      return c.json([], 200);
+    }
+
+    const windowIds = windows.map((window) => window.id);
+
+    const assignments = await db
+      .select({
+        maintenanceId: maintenanceMonitor.maintenanceId,
+        id: monitor.id,
+        name: monitor.name,
+        status: monitor.status,
+      })
+      .from(maintenanceMonitor)
+      .innerJoin(monitor, eq(maintenanceMonitor.monitorId, monitor.id))
+      .where(inArray(maintenanceMonitor.maintenanceId, windowIds));
+
+    const assignmentsByWindowId = new Map<
+      number,
+      Array<{
+        id: number;
+        name: string;
+        status:
+          | "up"
+          | "down"
+          | "degraded"
+          | "maintenance"
+          | "paused"
+          | "initializing";
+      }>
+    >();
+
+    for (const assignment of assignments) {
+      const existing =
+        assignmentsByWindowId.get(assignment.maintenanceId) ?? [];
+      existing.push({
+        id: assignment.id,
+        name: assignment.name,
+        status: assignment.status,
+      });
+      assignmentsByWindowId.set(assignment.maintenanceId, existing);
+    }
 
     return c.json(
-      results.map((m) => ({
-        id: m.id,
-        monitorId: m.monitorId,
-        reason: m.reason,
-        startsAt: m.startsAt.getTime(),
-        endsAt: m.endsAt.getTime(),
-        createdAt: m.createdAt.getTime(),
-      })),
+      windows.map((window) => {
+        const monitorsForWindow = assignmentsByWindowId.get(window.id) ?? [];
+        return {
+          id: window.id,
+          teamId: window.teamId,
+          reason: window.reason,
+          startsAt: window.startsAt.getTime(),
+          endsAt: window.endsAt.getTime(),
+          createdAt: window.createdAt.getTime(),
+          monitorIds: monitorsForWindow.map((item) => item.id),
+          monitors: monitorsForWindow,
+        };
+      }),
       200,
     );
   });

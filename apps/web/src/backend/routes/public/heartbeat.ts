@@ -33,7 +33,7 @@ async function handlePing(c: Context<AppEnv>, method: AllowedMethod) {
     c.req.header("x-forwarded-for")?.split(",")[0]?.trim() ??
     null;
 
-  await db
+  const updateHeartbeat = db
     .update(heartbeat)
     .set({
       lastPingAt: new Date(now),
@@ -41,7 +41,7 @@ async function handlePing(c: Context<AppEnv>, method: AllowedMethod) {
     })
     .where(eq(heartbeat.id, hb.id));
 
-  await db.insert(heartbeatPing).values({
+  const insertPing = db.insert(heartbeatPing).values({
     heartbeatId: hb.id,
     method,
     userAgent,
@@ -50,7 +50,7 @@ async function handlePing(c: Context<AppEnv>, method: AllowedMethod) {
   });
 
   if (wasDown) {
-    await db
+    const resolveIncident = db
       .update(heartbeatIncident)
       .set({
         status: "resolved",
@@ -62,6 +62,9 @@ async function handlePing(c: Context<AppEnv>, method: AllowedMethod) {
           eq(heartbeatIncident.status, "ongoing"),
         ),
       );
+    await db.batch([updateHeartbeat, insertPing, resolveIncident]);
+  } else {
+    await db.batch([updateHeartbeat, insertPing]);
   }
 
   return c.text("OK", 200);

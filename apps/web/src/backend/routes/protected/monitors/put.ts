@@ -187,6 +187,7 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
     return c.json(
       {
         ...updatedMonitor,
+        atRisk: false,
         password: updatedMonitor.password ? "********" : null,
         createdAt: updatedMonitor.createdAt.toISOString(),
         updatedAt: updatedMonitor.updatedAt.toISOString(),
@@ -208,6 +209,7 @@ export function registerPutMonitor(api: OpenAPIHono<AppEnv>) {
           : null,
         lastCheckAt: lastCheck?.checkedAt.getTime() ?? null,
         lastResponseTime: lastCheck?.responseTime ?? null,
+        recentChecks: [],
       },
       200,
     );

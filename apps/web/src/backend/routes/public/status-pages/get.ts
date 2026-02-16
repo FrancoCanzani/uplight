@@ -1,5 +1,5 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
 import {
@@ -10,6 +10,8 @@ import {
     statusPageMonitor,
 } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
+
+const MAX_CHECKS_PER_MONITOR = 100;
 
 export function registerGetPublicStatusPage(api: OpenAPIHono<AppEnv>) {
   return api.get("/status/:slug", async (c) => {
@@ -31,33 +33,53 @@ export function registerGetPublicStatusPage(api: OpenAPIHono<AppEnv>) {
       throw new HTTPException(404, { message: "Status page not found" });
     }
 
-    const groups = await db
-      .select()
-      .from(statusPageGroup)
-      .where(eq(statusPageGroup.statusPageId, page.id))
-      .orderBy(statusPageGroup.displayOrder);
+    const [groups, monitors] = await Promise.all([
+      db
+        .select()
+        .from(statusPageGroup)
+        .where(eq(statusPageGroup.statusPageId, page.id))
+        .orderBy(statusPageGroup.displayOrder),
+      db
+        .select({
+          statusPageMonitor,
+          monitor,
+        })
+        .from(statusPageMonitor)
+        .innerJoin(monitor, eq(statusPageMonitor.monitorId, monitor.id))
+        .where(eq(statusPageMonitor.statusPageId, page.id))
+        .orderBy(statusPageMonitor.displayOrder),
+    ]);
 
-    const monitors = await db
-      .select({
-        statusPageMonitor,
-        monitor,
-      })
-      .from(statusPageMonitor)
-      .innerJoin(monitor, eq(statusPageMonitor.monitorId, monitor.id))
-      .where(eq(statusPageMonitor.statusPageId, page.id))
-      .orderBy(statusPageMonitor.displayOrder);
+    const monitorIds = monitors.map((m) => m.monitor.id);
 
-    const monitorsWithUptime = await Promise.all(
-      monitors.map(async ({ statusPageMonitor: spm, monitor: mon }) => {
-        const checks = await db
-          .select()
-          .from(checkResult)
-          .where(eq(checkResult.monitorId, mon.id))
-          .orderBy(desc(checkResult.checkedAt))
-          .limit(100);
+    // Batch-load all checks in a single query instead of per-monitor
+    const checksMap = new Map<number, (typeof checkResult.$inferSelect)[]>();
+    if (monitorIds.length > 0) {
+      const allChecks = await db
+        .select()
+        .from(checkResult)
+        .where(inArray(checkResult.monitorId, monitorIds))
+        .orderBy(desc(checkResult.checkedAt));
 
-        const successCount = checks.filter((c) => c.result === "success").length;
-        const uptime = checks.length > 0 ? (successCount / checks.length) * 100 : 100;
+      for (const check of allChecks) {
+        if (!checksMap.has(check.monitorId)) {
+          checksMap.set(check.monitorId, []);
+        }
+        const checks = checksMap.get(check.monitorId)!;
+        if (checks.length < MAX_CHECKS_PER_MONITOR) {
+          checks.push(check);
+        }
+      }
+    }
+
+    const monitorsWithUptime = monitors.map(
+      ({ statusPageMonitor: spm, monitor: mon }) => {
+        const checks = checksMap.get(mon.id) ?? [];
+        const successCount = checks.filter(
+          (c) => c.result === "success",
+        ).length;
+        const uptime =
+          checks.length > 0 ? (successCount / checks.length) * 100 : 100;
 
         return {
           monitorId: mon.id,
@@ -74,7 +96,7 @@ export function registerGetPublicStatusPage(api: OpenAPIHono<AppEnv>) {
               }
             : null,
         };
-      }),
+      },
     );
 
     const groupsWithMonitors = groups.map((group) => ({

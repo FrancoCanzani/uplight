@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { getRouteApi, Link } from "@tanstack/react-router";
 import { Funnel } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -122,7 +123,10 @@ export default function MonitorsList() {
               >
                 <div className="flex items-center gap-2">
                   <div
-                    className={cn("size-2 rounded-full", getStatusBgColor("up"))}
+                    className={cn(
+                      "size-2 rounded-full",
+                      getStatusBgColor("up"),
+                    )}
                   />
                   Up ({statusCounts.up})
                 </div>
@@ -135,7 +139,10 @@ export default function MonitorsList() {
               >
                 <div className="flex items-center gap-2">
                   <div
-                    className={cn("size-2 rounded-full", getStatusBgColor("down"))}
+                    className={cn(
+                      "size-2 rounded-full",
+                      getStatusBgColor("down"),
+                    )}
                   />
                   Down ({statusCounts.down})
                 </div>
@@ -247,6 +254,14 @@ export default function MonitorsList() {
                   <div className="flex items-center space-x-2 justify-start min-w-0">
                     <MonitorStatusIndicator status={monitor.status} />
                     <h2 className="truncate">{monitor.name}</h2>
+                    {monitor.atRisk && (
+                      <Badge
+                        variant="outline"
+                        className="border-amber-300 bg-amber-50 text-amber-700"
+                      >
+                        At risk
+                      </Badge>
+                    )}
                   </div>
                   <span className="text-xs text-muted-foreground truncate max-w-44 sm:max-w-full shrink-0">
                     {urlOrHost}

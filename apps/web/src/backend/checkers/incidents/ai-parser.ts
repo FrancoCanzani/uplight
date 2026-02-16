@@ -1,12 +1,12 @@
-import { generateText, Output } from "ai";
+import { generateObject } from "ai";
 import { createWorkersAI } from "workers-ai-provider";
 import { z } from "zod";
 import type { IncidentCause } from "../types";
 
 const parsedIncidentSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  hint: z.string(),
+  title: z.string().describe("Brief incident title, max 60 characters"),
+  description: z.string().describe("One sentence describing what happened"),
+  hint: z.string().describe("One actionable sentence to help resolve this"),
   severity: z.enum(["low", "medium", "high", "critical"]),
 });
 
@@ -54,13 +54,13 @@ export async function parseIncidentWithAI(
 ): Promise<ParsedIncident> {
   const workersAI = createWorkersAI({ binding: env.AI });
 
-  const { output } = await generateText({
+  const { object } = await generateObject({
     model: workersAI("@cf/deepseek-ai/deepseek-r1-distill-qwen-32b"),
-    output: Output.object({ schema: parsedIncidentSchema }),
+    schema: parsedIncidentSchema,
     prompt: buildPrompt(ctx),
   });
 
-  return output;
+  return object;
 }
 
 function buildPrompt(ctx: IncidentContext): string {

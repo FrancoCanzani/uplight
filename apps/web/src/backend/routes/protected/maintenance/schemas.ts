@@ -2,7 +2,7 @@ import { z } from "@hono/zod-openapi";
 
 export const CreateMaintenanceSchema = z
   .object({
-    monitorId: z.number().int(),
+    monitorIds: z.array(z.number().int()).min(1),
     reason: z.string().max(500).optional(),
     startsAt: z.number().int(),
     endsAt: z.number().int(),
@@ -14,20 +14,48 @@ export const CreateMaintenanceSchema = z
 
 export const UpdateMaintenanceSchema = z
   .object({
+    monitorIds: z.array(z.number().int()).min(1).optional(),
     reason: z.string().max(500).optional(),
     startsAt: z.number().int().optional(),
     endsAt: z.number().int().optional(),
   })
+  .refine(
+    (data) =>
+      data.startsAt === undefined ||
+      data.endsAt === undefined ||
+      data.endsAt > data.startsAt,
+    {
+      message: "End time must be after start time",
+      path: ["endsAt"],
+    },
+  )
   .openapi("UpdateMaintenance");
+
+export const MaintenanceMonitorSchema = z
+  .object({
+    id: z.number().int(),
+    name: z.string(),
+    status: z.enum([
+      "up",
+      "down",
+      "degraded",
+      "maintenance",
+      "paused",
+      "initializing",
+    ]),
+  })
+  .openapi("MaintenanceMonitor");
 
 export const MaintenanceResponseSchema = z
   .object({
     id: z.number().int(),
-    monitorId: z.number().int(),
+    teamId: z.number().int(),
     reason: z.string().nullable(),
     startsAt: z.number().int(),
     endsAt: z.number().int(),
     createdAt: z.number().int(),
+    monitorIds: z.array(z.number().int()),
+    monitors: z.array(MaintenanceMonitorSchema),
   })
   .openapi("MaintenanceResponse");
 

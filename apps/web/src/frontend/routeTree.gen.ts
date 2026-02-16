@@ -23,6 +23,8 @@ import { Route as dashboardTeamIdTeamRouteImport } from './routes/(dashboard)/$t
 import { Route as dashboardTeamIdSupportRouteImport } from './routes/(dashboard)/$teamId/support'
 import { Route as dashboardTeamIdSettingsRouteImport } from './routes/(dashboard)/$teamId/settings'
 import { Route as dashboardTeamIdNewTeamRouteImport } from './routes/(dashboard)/$teamId/new-team'
+import { Route as dashboardTeamIdMaintenancesNewRouteImport } from './routes/(dashboard)/$teamId/maintenances-new'
+import { Route as dashboardTeamIdMaintenancesRouteImport } from './routes/(dashboard)/$teamId/maintenances'
 import { Route as contentUseCasesSlugRouteImport } from './routes/(content)/use-cases/$slug'
 import { Route as contentStatusSlugRouteImport } from './routes/(content)/status/$slug'
 import { Route as contentGuidesSlugRouteImport } from './routes/(content)/guides/$slug'
@@ -116,6 +118,18 @@ const dashboardTeamIdNewTeamRoute = dashboardTeamIdNewTeamRouteImport.update({
   path: '/new-team',
   getParentRoute: () => dashboardTeamIdRouteRoute,
 } as any)
+const dashboardTeamIdMaintenancesNewRoute =
+  dashboardTeamIdMaintenancesNewRouteImport.update({
+    id: '/maintenances-new',
+    path: '/maintenances-new',
+    getParentRoute: () => dashboardTeamIdRouteRoute,
+  } as any)
+const dashboardTeamIdMaintenancesRoute =
+  dashboardTeamIdMaintenancesRouteImport.update({
+    id: '/maintenances',
+    path: '/maintenances',
+    getParentRoute: () => dashboardTeamIdRouteRoute,
+  } as any)
 const contentUseCasesSlugRoute = contentUseCasesSlugRouteImport.update({
   id: '/(content)/use-cases/$slug',
   path: '/use-cases/$slug',
@@ -257,6 +271,8 @@ export interface FileRoutesByFullPath {
   '/guides/$slug': typeof contentGuidesSlugRoute
   '/status/$slug': typeof contentStatusSlugRoute
   '/use-cases/$slug': typeof contentUseCasesSlugRoute
+  '/$teamId/maintenances': typeof dashboardTeamIdMaintenancesRoute
+  '/$teamId/maintenances-new': typeof dashboardTeamIdMaintenancesNewRoute
   '/$teamId/new-team': typeof dashboardTeamIdNewTeamRoute
   '/$teamId/settings': typeof dashboardTeamIdSettingsRoute
   '/$teamId/support': typeof dashboardTeamIdSupportRoute
@@ -295,6 +311,8 @@ export interface FileRoutesByTo {
   '/guides/$slug': typeof contentGuidesSlugRoute
   '/status/$slug': typeof contentStatusSlugRoute
   '/use-cases/$slug': typeof contentUseCasesSlugRoute
+  '/$teamId/maintenances': typeof dashboardTeamIdMaintenancesRoute
+  '/$teamId/maintenances-new': typeof dashboardTeamIdMaintenancesNewRoute
   '/$teamId/new-team': typeof dashboardTeamIdNewTeamRoute
   '/$teamId/settings': typeof dashboardTeamIdSettingsRoute
   '/$teamId/support': typeof dashboardTeamIdSupportRoute
@@ -334,6 +352,8 @@ export interface FileRoutesById {
   '/(content)/guides/$slug': typeof contentGuidesSlugRoute
   '/(content)/status/$slug': typeof contentStatusSlugRoute
   '/(content)/use-cases/$slug': typeof contentUseCasesSlugRoute
+  '/(dashboard)/$teamId/maintenances': typeof dashboardTeamIdMaintenancesRoute
+  '/(dashboard)/$teamId/maintenances-new': typeof dashboardTeamIdMaintenancesNewRoute
   '/(dashboard)/$teamId/new-team': typeof dashboardTeamIdNewTeamRoute
   '/(dashboard)/$teamId/settings': typeof dashboardTeamIdSettingsRoute
   '/(dashboard)/$teamId/support': typeof dashboardTeamIdSupportRoute
@@ -374,6 +394,8 @@ export interface FileRouteTypes {
     | '/guides/$slug'
     | '/status/$slug'
     | '/use-cases/$slug'
+    | '/$teamId/maintenances'
+    | '/$teamId/maintenances-new'
     | '/$teamId/new-team'
     | '/$teamId/settings'
     | '/$teamId/support'
@@ -412,6 +434,8 @@ export interface FileRouteTypes {
     | '/guides/$slug'
     | '/status/$slug'
     | '/use-cases/$slug'
+    | '/$teamId/maintenances'
+    | '/$teamId/maintenances-new'
     | '/$teamId/new-team'
     | '/$teamId/settings'
     | '/$teamId/support'
@@ -450,6 +474,8 @@ export interface FileRouteTypes {
     | '/(content)/guides/$slug'
     | '/(content)/status/$slug'
     | '/(content)/use-cases/$slug'
+    | '/(dashboard)/$teamId/maintenances'
+    | '/(dashboard)/$teamId/maintenances-new'
     | '/(dashboard)/$teamId/new-team'
     | '/(dashboard)/$teamId/settings'
     | '/(dashboard)/$teamId/support'
@@ -593,6 +619,20 @@ declare module '@tanstack/react-router' {
       path: '/new-team'
       fullPath: '/$teamId/new-team'
       preLoaderRoute: typeof dashboardTeamIdNewTeamRouteImport
+      parentRoute: typeof dashboardTeamIdRouteRoute
+    }
+    '/(dashboard)/$teamId/maintenances-new': {
+      id: '/(dashboard)/$teamId/maintenances-new'
+      path: '/maintenances-new'
+      fullPath: '/$teamId/maintenances-new'
+      preLoaderRoute: typeof dashboardTeamIdMaintenancesNewRouteImport
+      parentRoute: typeof dashboardTeamIdRouteRoute
+    }
+    '/(dashboard)/$teamId/maintenances': {
+      id: '/(dashboard)/$teamId/maintenances'
+      path: '/maintenances'
+      fullPath: '/$teamId/maintenances'
+      preLoaderRoute: typeof dashboardTeamIdMaintenancesRouteImport
       parentRoute: typeof dashboardTeamIdRouteRoute
     }
     '/(content)/use-cases/$slug': {
@@ -753,6 +793,8 @@ declare module '@tanstack/react-router' {
 }
 
 interface dashboardTeamIdRouteRouteChildren {
+  dashboardTeamIdMaintenancesRoute: typeof dashboardTeamIdMaintenancesRoute
+  dashboardTeamIdMaintenancesNewRoute: typeof dashboardTeamIdMaintenancesNewRoute
   dashboardTeamIdNewTeamRoute: typeof dashboardTeamIdNewTeamRoute
   dashboardTeamIdSettingsRoute: typeof dashboardTeamIdSettingsRoute
   dashboardTeamIdSupportRoute: typeof dashboardTeamIdSupportRoute
@@ -777,6 +819,8 @@ interface dashboardTeamIdRouteRouteChildren {
 }
 
 const dashboardTeamIdRouteRouteChildren: dashboardTeamIdRouteRouteChildren = {
+  dashboardTeamIdMaintenancesRoute: dashboardTeamIdMaintenancesRoute,
+  dashboardTeamIdMaintenancesNewRoute: dashboardTeamIdMaintenancesNewRoute,
   dashboardTeamIdNewTeamRoute: dashboardTeamIdNewTeamRoute,
   dashboardTeamIdSettingsRoute: dashboardTeamIdSettingsRoute,
   dashboardTeamIdSupportRoute: dashboardTeamIdSupportRoute,

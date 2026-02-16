@@ -5,7 +5,6 @@ import { toast } from "sonner";
 interface DeleteMaintenanceParams {
   teamId: string;
   maintenanceId: number;
-  monitorId: number;
 }
 
 async function deleteMaintenance({

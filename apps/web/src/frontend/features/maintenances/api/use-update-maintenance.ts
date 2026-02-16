@@ -6,7 +6,6 @@ import type { Maintenance, UpdateMaintenance } from "../schemas";
 interface UpdateMaintenanceParams {
   teamId: string;
   maintenanceId: number;
-  monitorId: number;
   data: UpdateMaintenance;
 }
 

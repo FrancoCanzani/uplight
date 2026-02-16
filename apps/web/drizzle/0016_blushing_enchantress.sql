@@ -1,0 +1,12 @@
+-- Intentionally left as a no-op.
+--
+-- This migration was superseded by:
+-- - 0016_fix_dns_column_names.sql (DNS snake_case columns + backfill)
+-- - 0017_analyst_phase1.sql
+-- - 0018_provider_status.sql
+-- - 0019_metric_hourly.sql
+-- - 0020_prediction_outcomes.sql
+--
+-- Keeping the file preserves migration ordering for environments where
+-- this filename is pending in `d1_migrations`.
+SELECT 1;

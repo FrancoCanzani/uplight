@@ -95,7 +95,11 @@ export default function MonitorActions() {
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button variant="outline" size="xs" aria-label="Monitor actions menu">
+            <Button
+              variant="outline"
+              size="xs"
+              aria-label="Monitor actions menu"
+            >
               <MoreVertical className="size-3" />
             </Button>
           }
@@ -128,8 +132,9 @@ export default function MonitorActions() {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <Link
-            to="/$teamId/monitors/$monitorId/maintenance"
-            params={{ teamId, monitorId }}
+            to="/$teamId/maintenances-new"
+            params={{ teamId }}
+            search={{ monitorId }}
           >
             <DropdownMenuItem className="text-xs">
               <Wrench className="size-2.5" />

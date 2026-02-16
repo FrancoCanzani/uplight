@@ -1,8 +1,9 @@
 import { type ColumnDef } from "@tanstack/react-table";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { MonitorResponse } from "../schemas";
+import { getTextStatusColor } from "../utils/get-status-color";
 import ChecksVisualization from "./checks-visualization";
-import MonitorStatusIndicator from "./monitor-status-indicator";
-import MonitorTableRowActions from "./monitors-table-row-actions";
 
 function formatDnsRecordTypes(raw: string | null): string {
   if (!raw) return "A";
@@ -19,16 +20,49 @@ function formatDnsRecordTypes(raw: string | null): string {
 
 export const monitorsTableColumns: ColumnDef<MonitorResponse>[] = [
   {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        indeterminate={table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+  },
+  {
     accessorKey: "status",
-    header: "",
-    cell: ({ row }) => <MonitorStatusIndicator status={row.original.status} />,
+    header: "Status",
+    cell: ({ row }) => (
+      <span className={`capitalize text-xs font-medium ${getTextStatusColor(row.original.status)}`}>
+        {row.original.status}
+      </span>
+    ),
     enableSorting: true,
   },
   {
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => (
-      <span className="truncate max-w-xs block">{row.original.name}</span>
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="truncate max-w-xs block">{row.original.name}</span>
+        {row.original.atRisk && (
+          <Badge
+            variant="outline"
+            className="border-amber-300 bg-amber-50 text-amber-700"
+          >
+            At risk
+          </Badge>
+        )}
+      </div>
     ),
     enableSorting: true,
   },
@@ -59,7 +93,7 @@ export const monitorsTableColumns: ColumnDef<MonitorResponse>[] = [
             ? `${row.original.host} (${formatDnsRecordTypes(row.original.dnsRecordType)})`
             : `${row.original.host}:${row.original.port}`;
       return (
-        <span className="text-muted-foreground truncate max-w-xs block">
+        <span className="text-muted-foreground truncate max-w-48 block" title={endpoint}>
           {endpoint}
         </span>
       );
@@ -116,12 +150,6 @@ export const monitorsTableColumns: ColumnDef<MonitorResponse>[] = [
         />
       </div>
     ),
-    enableSorting: false,
-  },
-  {
-    id: "actions",
-    header: "",
-    cell: ({ row }) => <MonitorTableRowActions monitor={row.original} />,
     enableSorting: false,
   },
 ];

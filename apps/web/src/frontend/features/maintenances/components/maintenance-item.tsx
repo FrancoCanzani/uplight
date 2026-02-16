@@ -1,17 +1,21 @@
 import { useState } from "react";
-import { useParams } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { MonitorResponse } from "@/features/monitors/schemas";
 import { useDeleteMaintenance } from "../api/use-delete-maintenance";
 import MaintenanceForm from "../forms/maintenance-form";
 import type { Maintenance } from "../schemas";
 
-export default function MaintenanceItem({ item }: { item: Maintenance }) {
-  const { teamId, monitorId } = useParams({
-    from: "/(dashboard)/$teamId/monitors/$monitorId/maintenance",
-  });
-
+export default function MaintenanceItem({
+  teamId,
+  monitors,
+  item,
+}: {
+  teamId: string;
+  monitors: MonitorResponse[];
+  item: Maintenance;
+}) {
   const [editing, setEditing] = useState(false);
   const deleteMutation = useDeleteMaintenance();
   const [now] = useState(() => Date.now());
@@ -22,7 +26,12 @@ export default function MaintenanceItem({ item }: { item: Maintenance }) {
 
   if (editing) {
     return (
-      <MaintenanceForm existing={item} onClose={() => setEditing(false)} />
+      <MaintenanceForm
+        teamId={teamId}
+        monitors={monitors}
+        existing={item}
+        onClose={() => setEditing(false)}
+      />
     );
   }
 
@@ -44,6 +53,10 @@ export default function MaintenanceItem({ item }: { item: Maintenance }) {
             )}
           </div>
 
+          <p className="text-xs text-muted-foreground">
+            {item.monitors.map((monitor) => monitor.name).join(", ")}
+          </p>
+
           <div className="flex items-center text-muted-foreground gap-2 text-xs">
             <span>{format(new Date(item.startsAt), "MMM d, yyyy HH:mm")}</span>
             <span className="text-muted-foreground">→</span>
@@ -62,7 +75,6 @@ export default function MaintenanceItem({ item }: { item: Maintenance }) {
               deleteMutation.mutate({
                 teamId,
                 maintenanceId: item.id,
-                monitorId: Number(monitorId),
               })
             }
             disabled={deleteMutation.isPending}

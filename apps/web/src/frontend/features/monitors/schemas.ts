@@ -155,6 +155,7 @@ export const MonitorResponseSchema = z.object({
   dnsExpectedValue: z.string().nullable(),
   dnsResolver: z.enum(["cloudflare", "google"]),
   status: MonitorStatusSchema,
+  atRisk: z.boolean().default(false),
   createdAt: z.string(),
   updatedAt: z.string(),
   domainCheck: DomainCheckSchema,

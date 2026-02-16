@@ -47,10 +47,7 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
 
     let encryptedPassword: string | null = null;
     if (data.type === "http" && data.password) {
-      encryptedPassword = await encrypt(
-        data.password,
-        c.env.ENCRYPTION_SECRET,
-      );
+      encryptedPassword = await encrypt(data.password, c.env.ENCRYPTION_SECRET);
     }
 
     const insertData =
@@ -100,25 +97,25 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
               dnsResolver: "cloudflare" as const,
             }
           : {
-            // dns type
-            teamId: teamContext.teamId,
-            type: data.type,
-            name: data.name,
-            interval: data.interval,
-            timeout: data.timeout,
-            responseTimeThreshold: data.responseTimeThreshold ?? null,
-            locations: JSON.stringify(data.locations),
-            status: "initializing" as const,
-            host: data.host,
-            followRedirects: false,
-            checkDomain: false,
-            contentCheck: null,
-            dnsRecordType: JSON.stringify(
-              Array.from(new Set(data.assertions.map((a) => a.recordType))),
-            ),
-            dnsExpectedValue: JSON.stringify(data.assertions),
-            dnsResolver: "cloudflare" as const,
-          };
+              // dns type
+              teamId: teamContext.teamId,
+              type: data.type,
+              name: data.name,
+              interval: data.interval,
+              timeout: data.timeout,
+              responseTimeThreshold: data.responseTimeThreshold ?? null,
+              locations: JSON.stringify(data.locations),
+              status: "initializing" as const,
+              host: data.host,
+              followRedirects: false,
+              checkDomain: false,
+              contentCheck: null,
+              dnsRecordType: JSON.stringify(
+                Array.from(new Set(data.assertions.map((a) => a.recordType))),
+              ),
+              dnsExpectedValue: JSON.stringify(data.assertions),
+              dnsResolver: "cloudflare" as const,
+            };
 
     const [createdMonitor] = await db
       .insert(monitor)
@@ -145,6 +142,7 @@ export function registerPostMonitor(api: OpenAPIHono<AppEnv>) {
     return c.json(
       {
         ...createdMonitor,
+        atRisk: false,
         password: createdMonitor.password ? "********" : null,
         createdAt: createdMonitor.createdAt.toISOString(),
         updatedAt: createdMonitor.updatedAt.toISOString(),

@@ -20,8 +20,8 @@ import { FileTextIcon } from "./motion/icons/file-text";
 import { HeartIcon } from "./motion/icons/heart";
 import { LayoutPanelTopIcon } from "./motion/icons/layout-panel-top";
 import { MessageSquareIcon } from "./motion/icons/message-square";
-import { ServerIcon } from "./motion/icons/server";
 import { SettingsIcon } from "./motion/icons/settings";
+import { WrenchIcon } from "./motion/icons/wrench";
 
 const routeApi = getRouteApi("/(dashboard)/$teamId");
 
@@ -40,7 +40,7 @@ export function DashboardSidebar() {
       <SidebarHeader className="h-14 p-0">
         <TeamSwitcher />
       </SidebarHeader>
-      <SidebarContent className="[&_svg]:!size-3.5">
+      <SidebarContent className="[&_svg]:size-3.5!">
         <SidebarGroup className="py-2">
           <SidebarGroupLabel>Workspace</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -59,23 +59,6 @@ export function DashboardSidebar() {
                   >
                     <ActivityIcon />
                     Monitors
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  className={cn(
-                    "",
-                    locationArr.includes("dns-monitors") && "bg-sidebar-accent",
-                  )}
-                >
-                  <Link
-                    className="w-full flex items-center gap-x-2 text-sm font-light"
-                    to="/$teamId/dns-monitors"
-                    params={{ teamId }}
-                  >
-                    <ServerIcon />
-                    DNS Monitors
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -117,6 +100,23 @@ export function DashboardSidebar() {
                 <SidebarMenuButton
                   className={cn(
                     "",
+                    locationArr.includes("maintenances") && "bg-sidebar-accent",
+                  )}
+                >
+                  <Link
+                    className="w-full flex items-center gap-x-2 text-sm font-light"
+                    to="/$teamId/maintenances"
+                    params={{ teamId }}
+                  >
+                    <WrenchIcon />
+                    Maintenances
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  className={cn(
+                    "",
                     locationArr.includes("status-pages") && "bg-sidebar-accent",
                   )}
                 >
@@ -134,8 +134,7 @@ export function DashboardSidebar() {
                 <SidebarMenuButton
                   className={cn(
                     "",
-                    locationArr.includes("integrations") &&
-                      "bg-sidebar-accent",
+                    locationArr.includes("integrations") && "bg-sidebar-accent",
                   )}
                 >
                   <Link
@@ -152,7 +151,7 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="[&_svg]:!size-3.5">
+      <SidebarFooter className="[&_svg]:size-3.5!">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton>

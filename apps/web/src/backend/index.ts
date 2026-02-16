@@ -6,6 +6,11 @@ import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { secureHeaders } from "hono/secure-headers";
 import { createAuth } from "../../auth";
+import { runAnomalyPass } from "./analyst/jobs/run-anomaly-pass";
+import { runBaselineJob } from "./analyst/jobs/run-baseline-job";
+import { runPredictionPass } from "./analyst/jobs/run-prediction-pass";
+import { runProviderPoller } from "./analyst/jobs/run-provider-poller";
+import { runRollupJob } from "./analyst/jobs/run-rollup-job";
 import { handleDomainChecks } from "./checkers/cron/domains";
 import { handleHeartbeatChecks } from "./checkers/cron/heartbeats";
 import { handleMonitorChecks } from "./checkers/cron/monitors";
@@ -101,7 +106,7 @@ export default {
   async scheduled(
     controller: ScheduledController,
     env: Env,
-    ctx: ExecutionContext, // eslint-disable-line
+    ctx: ExecutionContext,
   ) {
     if (!controller.cron) {
       // Fallback: run all checks if cron is null/undefined
@@ -114,7 +119,26 @@ export default {
         case "* * * * *":
           waitUntil(handleMonitorChecks(env));
           waitUntil(handleHeartbeatChecks(env));
-          console.log("Monitors and heartbeats check processed");
+          waitUntil(runProviderPoller(env));
+          console.log(
+            "Monitors, heartbeats, and provider status check processed",
+          );
+          break;
+        case "*/5 * * * *":
+          waitUntil(runAnomalyPass(env));
+          console.log("Analyst anomaly pass processed");
+          break;
+        case "0 */6 * * *":
+          waitUntil(runBaselineJob(env));
+          console.log("Analyst baseline job processed");
+          break;
+        case "5 * * * *":
+          waitUntil(runRollupJob(env));
+          console.log("Analyst hourly rollup processed");
+          break;
+        case "30 * * * *":
+          waitUntil(runPredictionPass(env));
+          console.log("Analyst prediction pass processed");
           break;
         case "0 0,12 * * *":
           waitUntil(handleDomainChecks(env));
@@ -135,10 +159,7 @@ export default {
     }
     console.log("cron processed");
   },
-  async queue(
-    batch: MessageBatch<QueueMessage>,
-    env: Env,
-  ) {
+  async queue(batch: MessageBatch<QueueMessage>, env: Env) {
     if (batch.queue === "uplight-integrations") {
       await handleIntegrationQueue(batch as MessageBatch<QueueMessage>, env);
     }

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import z from "zod";
 import fetchChecks from "@/features/monitors/api/fetch-checks";
+import fetchFindings from "@/features/monitors/api/fetch-findings";
 import fetchIncidents from "@/features/monitors/api/fetch-incidents";
 import fetchMonitor from "@/features/monitors/api/fetch-monitor";
 import fetchStats from "@/features/monitors/api/fetch-stats";
@@ -26,14 +27,15 @@ export const Route = createFileRoute(
   }),
   loader: async ({ params, deps }) => {
     const days = Number(deps.period || 7);
-    const [monitor, stats, checks, incidents] = await Promise.all([
+    const [monitor, stats, checks, incidents, findings] = await Promise.all([
       fetchMonitor(params.teamId, params.monitorId),
       fetchStats(params.teamId, params.monitorId, days),
       fetchChecks(params.teamId, params.monitorId, days),
       fetchIncidents(params.teamId, params.monitorId, 10),
+      fetchFindings(params.teamId, params.monitorId, 30),
     ]);
 
-    return { monitor, stats, checks, incidents };
+    return { monitor, stats, checks, incidents, findings };
   },
   // 15 minutes
   staleTime: 900_000,

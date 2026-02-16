@@ -2,7 +2,7 @@ import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createDb } from "../../../db";
-import { maintenance, monitor } from "../../../db/schema";
+import { maintenance } from "../../../db/schema";
 import type { AppEnv } from "../../../types";
 
 const route = createRoute({
@@ -29,16 +29,12 @@ export function registerDeleteMaintenance(api: OpenAPIHono<AppEnv>) {
     const db = createDb(c.env.DB);
 
     const [existing] = await db
-      .select({
-        maintenance: maintenance,
-        monitor: monitor,
-      })
+      .select()
       .from(maintenance)
-      .innerJoin(monitor, eq(maintenance.monitorId, monitor.id))
       .where(
         and(
           eq(maintenance.id, Number(maintenanceId)),
-          eq(monitor.teamId, teamContext.teamId),
+          eq(maintenance.teamId, teamContext.teamId),
         ),
       )
       .limit(1);

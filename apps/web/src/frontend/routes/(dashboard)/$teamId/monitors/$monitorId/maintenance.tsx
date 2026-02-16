@@ -1,8 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
-import MaintenancePage from "@/features/maintenances/components/maintenance-page";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute(
   "/(dashboard)/$teamId/monitors/$monitorId/maintenance",
 )({
-  component: MaintenancePage,
+  beforeLoad: ({ params }) => {
+    throw redirect({
+      to: "/$teamId/maintenances-new",
+      params: { teamId: params.teamId },
+      search: { monitorId: params.monitorId },
+    });
+  },
 });

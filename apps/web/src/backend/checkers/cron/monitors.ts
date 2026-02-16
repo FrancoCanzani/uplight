@@ -1,6 +1,11 @@
 import { and, eq, gt, lte, ne } from "drizzle-orm";
 import { createDb } from "../../db";
-import { checkResult, maintenance, monitor } from "../../db/schema";
+import {
+  checkResult,
+  maintenance,
+  maintenanceMonitor,
+  monitor,
+} from "../../db/schema";
 import { runPipeline } from "../pipeline";
 import type { Location } from "../types";
 
@@ -15,10 +20,15 @@ export async function handleMonitorChecks(env: Env): Promise<void> {
     .where(ne(monitor.status, "paused"));
 
   const activeMaintenances = await db
-    .select()
-    .from(maintenance)
-    .where(
-      and(lte(maintenance.startsAt, nowDate), gt(maintenance.endsAt, nowDate)),
+    .select({ monitorId: maintenanceMonitor.monitorId })
+    .from(maintenanceMonitor)
+    .innerJoin(
+      maintenance,
+      and(
+        eq(maintenanceMonitor.maintenanceId, maintenance.id),
+        lte(maintenance.startsAt, nowDate),
+        gt(maintenance.endsAt, nowDate),
+      ),
     );
 
   const maintenanceByMonitor = new Map<number, boolean>();
@@ -91,7 +101,5 @@ export async function handleMonitorChecks(env: Env): Promise<void> {
 
   await runPipeline(monitorsToCheck, env);
 
-  console.log(
-    `[CRON] Processed checks for ${monitorsToCheck.length} monitors`,
-  );
+  console.log(`[CRON] Processed checks for ${monitorsToCheck.length} monitors`);
 }

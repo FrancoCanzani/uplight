@@ -3,6 +3,7 @@ import {
   index,
   integer,
   primaryKey,
+  real,
   sqliteTable,
   text,
   uniqueIndex,
@@ -174,8 +175,11 @@ export const monitorRelations = relations(monitor, ({ one, many }) => ({
     references: [team.id],
   }),
   checkResults: many(checkResult),
+  metricHourly: many(metricHourly),
+  analystFindings: many(analystFinding),
+  predictionOutcomes: many(analystPredictionOutcome),
   incidents: many(incident),
-  maintenances: many(maintenance),
+  maintenanceWindows: many(maintenanceMonitor),
   domainCheckResults: many(domainCheckResult),
 }));
 
@@ -221,6 +225,136 @@ export const checkResult = sqliteTable(
 export const checkResultRelations = relations(checkResult, ({ one }) => ({
   monitor: one(monitor, {
     fields: [checkResult.monitorId],
+    references: [monitor.id],
+  }),
+}));
+
+export const monitorBaseline = sqliteTable("monitor_baselines", {
+  monitorId: integer()
+    .primaryKey()
+    .references(() => monitor.id, { onDelete: "cascade" }),
+  avgResponseMs: real(),
+  p95ResponseMs: real(),
+  avgErrorRate: real(),
+  computedAt: integer({ mode: "timestamp_ms" }).notNull(),
+  sampleCount: integer().default(0).notNull(),
+});
+
+export const monitorBaselineRelations = relations(
+  monitorBaseline,
+  ({ one }) => ({
+    monitor: one(monitor, {
+      fields: [monitorBaseline.monitorId],
+      references: [monitor.id],
+    }),
+  }),
+);
+
+export const analystFinding = sqliteTable(
+  "analyst_findings",
+  {
+    id: text().primaryKey(),
+    monitorId: integer()
+      .notNull()
+      .references(() => monitor.id, { onDelete: "cascade" }),
+    createdAt: integer({ mode: "timestamp_ms" })
+      .default(sql`(unixepoch() * 1000)`)
+      .notNull(),
+    severity: text({
+      enum: ["healthy", "watch", "warning", "critical", "predicted"],
+    }).notNull(),
+    anomalies: text(),
+    prediction: text(),
+    summary: text(),
+    notified: integer({ mode: "boolean" }).default(false).notNull(),
+  },
+  (table) => [
+    index("analyst_findings_monitor_created_idx").on(
+      table.monitorId,
+      table.createdAt,
+    ),
+    index("analyst_findings_created_idx").on(table.createdAt),
+  ],
+);
+
+export const analystFindingRelations = relations(analystFinding, ({ one }) => ({
+  monitor: one(monitor, {
+    fields: [analystFinding.monitorId],
+    references: [monitor.id],
+  }),
+}));
+
+export const analystPredictionOutcome = sqliteTable(
+  "analyst_prediction_outcomes",
+  {
+    id: text().primaryKey(),
+    findingId: text()
+      .notNull()
+      .references(() => analystFinding.id, { onDelete: "cascade" }),
+    monitorId: integer()
+      .notNull()
+      .references(() => monitor.id, { onDelete: "cascade" }),
+    predictedAtMs: integer().notNull(),
+    evaluateAtMs: integer().notNull(),
+    horizon: text({ enum: ["1h", "3h", "6h"] }).notNull(),
+    failureProbability: real().notNull(),
+    outcome: text({ enum: ["pending", "hit", "miss"] })
+      .default("pending")
+      .notNull(),
+    evidence: text(),
+    evaluatedAtMs: integer(),
+    createdAtMs: integer().notNull(),
+  },
+  (table) => [
+    uniqueIndex("analyst_prediction_outcomes_finding_idx").on(table.findingId),
+    index("analyst_prediction_outcomes_monitor_idx").on(
+      table.monitorId,
+      table.predictedAtMs,
+    ),
+    index("analyst_prediction_outcomes_due_idx").on(
+      table.outcome,
+      table.evaluateAtMs,
+    ),
+  ],
+);
+
+export const analystPredictionOutcomeRelations = relations(
+  analystPredictionOutcome,
+  ({ one }) => ({
+    finding: one(analystFinding, {
+      fields: [analystPredictionOutcome.findingId],
+      references: [analystFinding.id],
+    }),
+    monitor: one(monitor, {
+      fields: [analystPredictionOutcome.monitorId],
+      references: [monitor.id],
+    }),
+  }),
+);
+
+export const metricHourly = sqliteTable(
+  "metric_hourly",
+  {
+    monitorId: integer()
+      .notNull()
+      .references(() => monitor.id, { onDelete: "cascade" }),
+    location: text().notNull(),
+    hour: integer({ mode: "timestamp_ms" }).notNull(),
+    avgResponseMs: real(),
+    p95ResponseMs: real(),
+    errorRate: real(),
+    checkCount: integer().default(0).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.monitorId, table.location, table.hour] }),
+    index("metric_hourly_monitor_hour_idx").on(table.monitorId, table.hour),
+    index("metric_hourly_hour_idx").on(table.hour),
+  ],
+);
+
+export const metricHourlyRelations = relations(metricHourly, ({ one }) => ({
+  monitor: one(monitor, {
+    fields: [metricHourly.monitorId],
     references: [monitor.id],
   }),
 }));
@@ -318,9 +452,9 @@ export const maintenance = sqliteTable(
   "maintenance",
   {
     id: integer().primaryKey({ autoIncrement: true }),
-    monitorId: integer()
+    teamId: integer()
       .notNull()
-      .references(() => monitor.id, { onDelete: "cascade" }),
+      .references(() => team.id, { onDelete: "cascade" }),
     reason: text(),
     startsAt: integer({ mode: "timestamp_ms" }).notNull(),
     endsAt: integer({ mode: "timestamp_ms" }).notNull(),
@@ -329,17 +463,52 @@ export const maintenance = sqliteTable(
       .notNull(),
   },
   (table) => [
-    index("maintenance_monitor_idx").on(table.monitorId),
+    index("maintenance_team_idx").on(table.teamId),
     index("maintenance_active_idx").on(table.startsAt, table.endsAt),
   ],
 );
 
-export const maintenanceRelations = relations(maintenance, ({ one }) => ({
-  monitor: one(monitor, {
-    fields: [maintenance.monitorId],
-    references: [monitor.id],
+export const maintenanceMonitor = sqliteTable(
+  "maintenance_monitor",
+  {
+    maintenanceId: integer()
+      .notNull()
+      .references(() => maintenance.id, { onDelete: "cascade" }),
+    monitorId: integer()
+      .notNull()
+      .references(() => monitor.id, { onDelete: "cascade" }),
+    createdAt: integer({ mode: "timestamp_ms" })
+      .default(sql`(unixepoch() * 1000)`)
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.maintenanceId, table.monitorId] }),
+    index("maintenance_monitor_maintenance_idx").on(table.maintenanceId),
+    index("maintenance_monitor_monitor_idx").on(table.monitorId),
+  ],
+);
+
+export const maintenanceRelations = relations(maintenance, ({ one, many }) => ({
+  team: one(team, {
+    fields: [maintenance.teamId],
+    references: [team.id],
   }),
+  monitors: many(maintenanceMonitor),
 }));
+
+export const maintenanceMonitorRelations = relations(
+  maintenanceMonitor,
+  ({ one }) => ({
+    maintenance: one(maintenance, {
+      fields: [maintenanceMonitor.maintenanceId],
+      references: [maintenance.id],
+    }),
+    monitor: one(monitor, {
+      fields: [maintenanceMonitor.monitorId],
+      references: [monitor.id],
+    }),
+  }),
+);
 
 export const domainCheckResult = sqliteTable(
   "domain_check_result",
@@ -582,10 +751,22 @@ export const statusPageSubscriberRelations = relations(
   }),
 );
 
+export const providerStatus = sqliteTable("provider_status", {
+  provider: text().primaryKey(),
+  status: text().notNull(),
+  description: text(),
+  sinceMs: integer(),
+  polledAtMs: integer().notNull(),
+  sourceUrl: text().notNull(),
+  rawJson: text().notNull(),
+  updatedAtMs: integer().notNull(),
+});
+
 export const teamRelations = relations(team, ({ many }) => ({
   members: many(teamMember),
   monitors: many(monitor),
   heartbeats: many(heartbeat),
+  maintenances: many(maintenance),
   integrations: many(integration),
   statusPages: many(statusPage),
 }));
@@ -595,10 +776,15 @@ export const schema = {
   team,
   teamMember,
   monitor,
+  monitorBaseline,
   checkResult,
+  metricHourly,
+  analystFinding,
+  analystPredictionOutcome,
   incident,
   incidentActivity,
   maintenance,
+  maintenanceMonitor,
   domainCheckResult,
   heartbeat,
   heartbeatIncident,
@@ -608,4 +794,5 @@ export const schema = {
   statusPageGroup,
   statusPageMonitor,
   statusPageSubscriber,
+  providerStatus,
 } as const;

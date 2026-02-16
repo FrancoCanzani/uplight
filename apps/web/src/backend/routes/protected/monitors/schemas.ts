@@ -180,12 +180,11 @@ export const MonitorResponseSchema = z
     checkDomain: z.boolean(),
     host: z.string().nullable(),
     port: z.number().int().nullable(),
-    dnsRecordType: z
-      .string()
-      .nullable(),
+    dnsRecordType: z.string().nullable(),
     dnsExpectedValue: z.string().nullable(),
     dnsResolver: z.enum(["cloudflare", "google"]),
     status: MonitorStatusSchema,
+    atRisk: z.boolean().default(false),
     createdAt: z.string(),
     updatedAt: z.string(),
     domainCheck: DomainCheckSchema,

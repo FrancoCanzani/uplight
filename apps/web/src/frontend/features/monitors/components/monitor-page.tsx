@@ -1,8 +1,11 @@
 import { getRouteApi } from "@tanstack/react-router";
 import NoDataMessage from "@/components/no-data-message";
 import { PageHeader } from "@/components/page-header";
+import { Badge } from "@/components/ui/badge";
 import getLocationLabel from "../utils/get-location-label";
+import AnalystFindingsTimeline from "./analyst-findings-timeline";
 import CheckStatusChart from "./check-status-chart";
+import ErrorTimeHeatmap from "./error-time-heatmap";
 import MonitorActions from "./monitor-actions";
 import MonitorDomainInfo from "./monitor-domain-info";
 import MonitorInfoSheet from "./monitor-info-sheet";
@@ -13,11 +16,10 @@ import RegionFilter from "./region-filter";
 import ResponseTimeChart from "./response-time-chart";
 import ResponseTimeStats from "./response-time-stats";
 import TimePeriodFilter from "./time-period-filter";
-import ErrorTimeHeatmap from "./error-time-heatmap";
 
 export default function MonitorPage() {
   const routeApi = getRouteApi("/(dashboard)/$teamId/monitors/$monitorId/");
-  const { monitor, checks } = routeApi.useLoaderData();
+  const { monitor, checks, findings } = routeApi.useLoaderData();
   const { teamId, monitorId } = routeApi.useParams();
   const search = routeApi.useSearch();
   const { region, period } = search;
@@ -37,6 +39,14 @@ export default function MonitorPage() {
         title={monitor.name}
         actions={
           <>
+            {monitor.atRisk && (
+              <Badge
+                variant="outline"
+                className="border-amber-300 bg-amber-50 text-amber-700"
+              >
+                At risk
+              </Badge>
+            )}
             <MonitorDomainInfo monitor={monitor} />
             <MonitorInfoSheet monitor={monitor} />
             <MonitorActions />
@@ -98,10 +108,12 @@ export default function MonitorPage() {
               <ResponseTimeStats checks={filteredChecks} />
             </div>
 
-            <ResponseTimeChart checks={filteredChecks} />
+            <ResponseTimeChart checks={filteredChecks} findings={findings} />
           </div>
 
           <ErrorTimeHeatmap checks={filteredChecks} />
+
+          <AnalystFindingsTimeline findings={findings} />
 
           <div className="space-y-4">
             <h3 className="font-medium">Recent Logs</h3>

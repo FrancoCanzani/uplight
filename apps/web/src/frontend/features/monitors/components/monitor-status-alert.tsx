@@ -52,9 +52,10 @@ export default function MonitorStatusAlert({
         <CardContent className="flex items-center justify-between">
           <span>Your monitor is in maintenance</span>
           <Link
-            to="/$teamId/monitors/$monitorId/maintenance"
+            to="/$teamId/maintenances-new"
             className="text-muted-foreground hover:underline hover:text-primary"
-            params={{ teamId: teamId, monitorId: monitorId }}
+            params={{ teamId: teamId }}
+            search={{ monitorId }}
           >
             Manage maintenance
           </Link>
